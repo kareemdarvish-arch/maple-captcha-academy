@@ -356,23 +356,6 @@ class MapleCaptchaGenerator {
     });
 
     ctx.restore();
-
-    // Authentic KMS micro horizontal slice displacement
-    this.applyGlitchSliceDisplacement(ctx, bx, by, bw, bh);
-  }
-
-  applyGlitchSliceDisplacement(ctx, bx, by, bw, bh) {
-    const sliceCount = 3;
-    for (let s = 0; s < sliceCount; s++) {
-      const sliceY = Math.floor(by + 20 + Math.random() * (bh - 40));
-      const sliceH = Math.floor(2 + Math.random() * 2);
-      const shiftX = (Math.random() < 0.5 ? 2 : -2);
-
-      try {
-        const imgData = ctx.getImageData(bx + 10, sliceY, bw - 20, sliceH);
-        ctx.putImageData(imgData, bx + 10 + shiftX, sliceY);
-      } catch (e) {}
-    }
   }
 
   /**

@@ -386,6 +386,11 @@ class MapleCaptchaGame {
 
     this.showFeedback(msg, 'error');
 
+    // Trigger Egyptian Coach witty banter on failure
+    if (typeof EgyptianCoach !== 'undefined' && Math.random() < 0.6) {
+      setTimeout(() => EgyptianCoach.showRandomBanter(), 400);
+    }
+
     if (this.mode === 'practice') {
       this.showHint();
     }
@@ -418,6 +423,11 @@ class MapleCaptchaGame {
         : I18n.t('diagWrong', { typed: typed || '—', target });
       if (smartTip) msg += `<div class="smart-tip-box">${smartTip}</div>`;
       this.showFeedback(msg, 'error');
+
+    // Trigger Egyptian Coach witty banter on failure
+    if (typeof EgyptianCoach !== 'undefined' && Math.random() < 0.6) {
+      setTimeout(() => EgyptianCoach.showRandomBanter(), 400);
+    }
     }
 
     this.examCurrentIndex += 1;

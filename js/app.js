@@ -415,6 +415,14 @@ document.addEventListener('DOMContentLoaded', () => {
   game.newRound();
   game.updateStatsUI();
 
+  if (typeof EgyptianCoach !== 'undefined') {
+    EgyptianCoach.init();
+  }
+
+  // Expose for debugging & accessibility
+  window.game = game;
+  window.generator = generator;
+
   academy.renderLookalikes('lookalikes-container');
   academy.inspectCharacter('빛');
   MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
