@@ -341,6 +341,80 @@ const SoundFX = (() => {
     } catch (e) {}
   }
 
+  // Comical, light Egyptian warning sting for mistake / wrong answer banter
+  function playEgyptianCoachErrorTune() {
+    if (isMuted) return;
+    const ctx = getContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime + 0.03;
+
+      // 1. Darbuka "Tak" rim click followed by deep low "Dum"
+      const oscTak = ctx.createOscillator();
+      const gainTak = ctx.createGain();
+      oscTak.type = 'triangle';
+      oscTak.frequency.setValueAtTime(880, now);
+      oscTak.frequency.exponentialRampToValueAtTime(260, now + 0.04);
+      gainTak.gain.setValueAtTime(0.14 * volume, now);
+      gainTak.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      oscTak.connect(gainTak);
+      gainTak.connect(ctx.destination);
+      oscTak.start(now);
+      oscTak.stop(now + 0.05);
+
+      const oscDum = ctx.createOscillator();
+      const gainDum = ctx.createGain();
+      oscDum.type = 'sine';
+      oscDum.frequency.setValueAtTime(130, now + 0.18);
+      oscDum.frequency.exponentialRampToValueAtTime(38, now + 0.35);
+      gainDum.gain.setValueAtTime(0.25 * volume, now + 0.18);
+      gainDum.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      oscDum.connect(gainDum);
+      gainDum.connect(ctx.destination);
+      oscDum.start(now + 0.18);
+      oscDum.stop(now + 0.38);
+
+      // 2. Comical descending oriental slide (F#5 -> F5 -> Eb5 -> D4)
+      const errNotes = [
+        { f: 739.99, t: 0.04, d: 0.12 }, // F#5
+        { f: 698.46, t: 0.16, d: 0.12 }, // F5
+        { f: 622.25, t: 0.28, d: 0.14 }, // Eb5
+        { f: 440.00, t: 0.44, d: 0.40, slideTo: 293.66 } // A4 sliding down to D4
+      ];
+
+      errNotes.forEach(n => {
+        const nt = now + n.t;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1600, nt);
+        filter.Q.setValueAtTime(2.5, nt);
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.f, nt);
+
+        if (n.slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(n.slideTo, nt + n.d);
+        }
+
+        gain.gain.setValueAtTime(0.001, nt);
+        gain.gain.linearRampToValueAtTime(0.15 * volume, nt + 0.02);
+        gain.gain.setValueAtTime(0.13 * volume, nt + n.d - 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + n.d + 0.06);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(nt);
+        osc.stop(nt + n.d + 0.06);
+      });
+    } catch (e) {}
+  }
+
   // Unlock AudioContext on first user interaction
   if (typeof document !== 'undefined') {
     ['click', 'keydown', 'touchstart'].forEach(evt => {
@@ -358,6 +432,7 @@ const SoundFX = (() => {
     playTick,
     playFanfare,
     playEgyptianCoachTune,
+    playEgyptianCoachErrorTune,
     getContext,
     setMuted,
     getMuted,

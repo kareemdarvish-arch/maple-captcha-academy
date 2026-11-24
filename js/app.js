@@ -296,6 +296,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Quick Jump from Trainer to Keyboard Setup & Floating Guide
+  function navigateToKeyboardGuide() {
+    const guideTabBtn = document.querySelector('[data-tab="guide"]');
+    if (guideTabBtn) guideTabBtn.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const btnGotoGuide = document.getElementById('btn-goto-keyboard-guide');
+  if (btnGotoGuide) btnGotoGuide.addEventListener('click', navigateToKeyboardGuide);
+
+  const btnBannerGuide = document.getElementById('btn-banner-keyboard-guide');
+  if (btnBannerGuide) btnBannerGuide.addEventListener('click', navigateToKeyboardGuide);
+
   // 5. Standalone Exam Tab Setup
   const btnStartExam = document.getElementById('btn-start-exam-standalone');
   const selectStandaloneLength = document.getElementById('select-standalone-exam-length');
