@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     width: 520,
     height: 115,
     background: 'sky_rock',
-    noisePreset: 'normal',
+    noisePreset: 'hard',
     tiltAngle: -4.5
   });
 
@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
       width: 520,
       height: 115,
       background: 'sky_rock',
-      noisePreset: 'normal',
+      noisePreset: 'hard',
       tiltAngle: -4.5
     });
     sandboxGen.generate('메이플스토리');

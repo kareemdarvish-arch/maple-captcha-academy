@@ -17,7 +17,7 @@ class MapleCaptchaGenerator {
       charCount: 6,
       tiltAngle: -4.5,           // Authentic slant angle from screenshots
       background: 'sky_rock',    // 'sky_rock', 'ellinia_portal', 'cloud_balcony', 'dark_dungeon', 'clean'
-      noisePreset: 'normal',     // 'easy', 'normal', 'hard', 'insane'
+      noisePreset: 'hard',       // Default matching authentic KMS game noise (صعب - مطابق للعبة)
       fontFamily: "'Galmuri11', 'Galmuri9', 'NeoDunggeunmo', 'Dotum', monospace",
       fontSize: 64               // Optimal pixel scale matching KMS reference screenshots
     }, options);

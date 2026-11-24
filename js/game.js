@@ -188,6 +188,12 @@ class MapleCaptchaGame {
       this.stopTimer();
     }
 
+    if (this.mode === 'practice' && this.generator) {
+      const noiseSelect = document.getElementById('select-noise-level');
+      const preset = noiseSelect ? noiseSelect.value : 'hard';
+      this.generator.setConfig({ noisePreset: preset });
+    }
+
     this.newRound();
   }
 
@@ -201,6 +207,11 @@ class MapleCaptchaGame {
     this.examTotalTime = 0;
     this.examQuestions = [];
     this.examFailedQueue = [];
+
+    // Official Exam Default Noise is HARD (Authentic KMS Game Accurate / مطابق للعبة تماماً)
+    if (this.generator) {
+      this.generator.setConfig({ noisePreset: 'hard' });
+    }
 
     // Pre-generate authentic questions
     for (let i = 0; i < length; i++) {

@@ -76,9 +76,9 @@ const I18n = (() => {
       setLookalikes: 'Lookalike Traps (ㅓ/ㅏ, ㅗ/ㅜ)',
       setAll: 'All 11,172 Hangul Syllables',
 
-      noiseEasy: 'Easy (Low Noise)',
-      noiseNormal: 'Normal (Game Accurate)',
-      noiseHard: 'Hard (Dense Noise & Lines)',
+      noiseEasy: 'Easy (Light Noise)',
+      noiseNormal: 'Medium',
+      noiseHard: 'Hard (Game Accurate)',
       noiseInsane: 'Insane (Nightmare)',
 
       sceneSky: 'Sky & Rock (Screenshot 4)',
@@ -295,8 +295,8 @@ const I18n = (() => {
       setAll: 'جميع مقاطع الهانغل (11,172 حرف)',
 
       noiseEasy: 'سهل (تشويش خفيف)',
-      noiseNormal: 'عادي (مطابق للعبة تماماً)',
-      noiseHard: 'صعب (خطوط وتشويش كثيف)',
+      noiseNormal: 'متوسط',
+      noiseHard: 'صعب (مطابق للعبة تماماً)',
       noiseInsane: 'كابوس (صعوبة قصوى)',
 
       sceneSky: 'السماء والصخور (لقطة 4)',

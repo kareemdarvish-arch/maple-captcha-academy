@@ -2493,6 +2493,28 @@ body {
   color: var(--accent-gold);
 }
 
+.exam-difficulty-badge-box {
+  display: flex;
+  align-items: center;
+}
+
+.exam-difficulty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(249, 115, 22, 0.14);
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.exam-difficulty-badge strong {
+  color: #ffffff;
+}
+
 .exam-setup-row .setup-actions {
   flex: 1;
   display: flex;
