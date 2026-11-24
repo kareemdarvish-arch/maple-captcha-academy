@@ -2000,31 +2000,239 @@ body {
 }
 
 /* ==========================================================================
-   Floating Keyboard Prompt Card
+   Built-in Visual Windows Keyboard Diagram (Photo Guide)
    ========================================================================== */
 
-.floating-kb-prompt-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.12), rgba(15, 17, 23, 0.95));
-  border: 1px solid rgba(74, 144, 226, 0.35);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1.25rem;
-  margin-top: 1rem;
+.visual-keyboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: var(--shadow-card);
 }
 
-.floating-kb-prompt-card .prompt-icon {
+.visual-kb-header {
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.visual-kb-title-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.visual-kb-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.visual-kb-title-box h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.visual-kb-title-box p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.visual-kb-legend {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.legend-consonant {
+  background: rgba(33, 150, 243, 0.12);
+  border-color: rgba(33, 150, 243, 0.4);
+  color: #64b5f6;
+}
+
+.legend-vowel {
+  background: rgba(255, 87, 34, 0.12);
+  border-color: rgba(255, 87, 34, 0.4);
+  color: #ff8a65;
+}
+
+.legend-shift {
+  background: rgba(245, 166, 35, 0.12);
+  border-color: rgba(245, 166, 35, 0.4);
+  color: var(--accent-gold);
+}
+
+.legend-color-box {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.color-consonant { background: #2196f3; }
+.color-vowel { background: #ff5722; }
+.color-shift { background: #f5a623; }
+
+/* Built-in Keycap Graphics */
+.vkb-keys-graphic {
+  background: #0d0f15;
+  border: 2px solid #232733;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
+  user-select: none;
+}
+
+.vkb-row {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.vkb-key {
+  position: relative;
+  background: linear-gradient(180deg, #242938 0%, #171b26 100%);
+  border: 1px solid #333a4d;
+  border-bottom: 2px solid #10131a;
+  border-radius: 6px;
+  height: 48px;
+  min-width: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.vkb-consonant {
+  background: linear-gradient(180deg, rgba(33, 150, 243, 0.16) 0%, rgba(20, 30, 50, 0.95) 100%);
+  border-color: rgba(33, 150, 243, 0.5);
+}
+
+.vkb-consonant .k-hangul {
+  color: #64b5f6;
+  font-weight: 900;
+  font-size: 1.15rem;
+  font-family: var(--font-pixel), sans-serif;
+  line-height: 1.1;
+}
+
+.vkb-vowel {
+  background: linear-gradient(180deg, rgba(255, 87, 34, 0.16) 0%, rgba(50, 25, 20, 0.95) 100%);
+  border-color: rgba(255, 87, 34, 0.5);
+}
+
+.vkb-vowel .k-hangul {
+  color: #ff8a65;
+  font-weight: 900;
+  font-size: 1.15rem;
+  font-family: var(--font-pixel), sans-serif;
+  line-height: 1.1;
+}
+
+.k-shift {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  line-height: 1;
+}
+
+.k-qwerty {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.k-main {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.k-sub {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+.key-sm { min-width: 38px; }
+.key-backspace { min-width: 80px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+.key-tab { min-width: 65px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+.key-caps { min-width: 72px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+.key-enter { min-width: 85px; font-size: 0.8rem; font-weight: 800; color: var(--accent-green); background: rgba(46, 204, 113, 0.12); border-color: rgba(46, 204, 113, 0.4); }
+.key-shift-l { min-width: 95px; font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); background: rgba(245, 166, 35, 0.08); border-color: rgba(245, 166, 35, 0.3); }
+.key-shift-r { min-width: 105px; font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); background: rgba(245, 166, 35, 0.08); border-color: rgba(245, 166, 35, 0.3); }
+.key-ctrl, .key-win, .key-alt { min-width: 55px; font-size: 0.72rem; font-weight: 700; color: var(--text-dim); }
+.key-space {
+  flex: 1;
+  max-width: 320px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.key-space .space-title {
+  font-weight: 700;
+  color: #fff;
+}
+.key-alt-kr {
+  min-width: 75px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  background: rgba(33, 150, 243, 0.15);
+  border-color: rgba(33, 150, 243, 0.4);
+}
+
+/* Exam Notice Card */
+.exam-kb-notice-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(33, 150, 243, 0.08);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+}
+
+.exam-kb-notice-card .notice-icon {
   font-size: 1.8rem;
   flex-shrink: 0;
 }
 
-.floating-kb-prompt-card .prompt-text {
-  flex: 1;
+.exam-kb-notice-card .notice-text {
   font-size: 0.88rem;
-  line-height: 1.45;
   color: var(--text-main);
+  line-height: 1.5;
+}
+
+.exam-kb-notice-card .notice-text strong {
+  color: var(--accent-blue);
+  margin-inline-end: 0.35rem;
 }
 
 /* ==========================================================================

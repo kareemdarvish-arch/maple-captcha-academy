@@ -128,9 +128,6 @@
             <button id="btn-toggle-hint" class="btn btn-icon" title="Deconstruct Characters / Keystrokes Hint" data-i18n="btnHint">
               💡 تلميح الحروف
             </button>
-            <button id="btn-toggle-float-keyboard" class="btn btn-secondary" title="Detach Floating Keyboard" data-i18n="btnFloatingKb">
-              🪟 كيبورد عائم
-            </button>
             <button id="btn-next-captcha" class="btn btn-primary" title="Generate New Captcha" data-i18n="btnNew">
               🔄 كابتشا جديدة
             </button>
@@ -210,15 +207,112 @@
           </div>
         </div>
 
-        <!-- Floating Keyboard Prompt (Replaces static docked Dubeolsik keyboard) -->
-        <div class="floating-kb-prompt-card">
-          <div class="prompt-icon">💡</div>
-          <div class="prompt-text">
-            <span data-i18n="floatingKbPrompt">تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!</span>
+        <!-- Built-in Windows Keyboard Visual Reference Map (Photo Guide) -->
+        <div class="visual-keyboard-card">
+          <div class="visual-kb-header">
+            <div class="visual-kb-title-box">
+              <span class="visual-kb-icon">⌨️</span>
+              <div>
+                <h3 data-i18n="visualKbTitle">مخطط لوحة المفاتيح الكورية (Windows Dubeolsik Keyboard)</h3>
+                <p data-i18n="visualKbPrompt">اكتب الحروف مباشرة باستخدام لوحة مفاتيح حاسوبك (Windows Physical Keyboard). سيقوم النظام بتجميع الحروف تلقائياً عند الكتابة بمفاتيح QWERTY الإنجليزية أو تفعيل اللغة الكورية.</p>
+              </div>
+            </div>
+            <div class="visual-kb-legend">
+              <div class="legend-chip legend-consonant">
+                <span class="legend-color-box color-consonant"></span>
+                <span data-i18n="legendLeftHand">اليد اليسرى: الحروف الساكنة (자음)</span>
+              </div>
+              <div class="legend-chip legend-vowel">
+                <span class="legend-color-box color-vowel"></span>
+                <span data-i18n="legendRightHand">اليد اليمنى: حروف العلة (모음)</span>
+              </div>
+              <div class="legend-chip legend-shift">
+                <span class="legend-color-box color-shift"></span>
+                <span data-i18n="legendShift">اضغط Shift للحروف المزدوجة (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㅒ, ㅖ)</span>
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn btn-secondary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
-            🪟 افتح الكيبورد الكوري العائم
-          </button>
+
+          <!-- Built-in Graphic Layout of Keys -->
+          <div class="vkb-keys-graphic" dir="ltr">
+            <!-- Row 1: Numbers -->
+            <div class="vkb-row">
+              <div class="vkb-key key-sm"><span class="k-sub">~</span><span class="k-main">`</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">!</span><span class="k-main">1</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">@</span><span class="k-main">2</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">#</span><span class="k-main">3</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">$</span><span class="k-main">4</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">%</span><span class="k-main">5</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">^</span><span class="k-main">6</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">&</span><span class="k-main">7</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">*</span><span class="k-main">8</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">(</span><span class="k-main">9</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">)</span><span class="k-main">0</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">_</span><span class="k-main">-</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">+</span><span class="k-main">=</span></div>
+              <div class="vkb-key key-backspace">⌫ Backspace</div>
+            </div>
+
+            <!-- Row 2: Q to P -->
+            <div class="vkb-row">
+              <div class="vkb-key key-tab">Tab ⇥</div>
+              <div class="vkb-key vkb-consonant" title="Q -> ㅂ / Shift: ㅃ"><span class="k-shift">ㅃ</span><span class="k-hangul">ㅂ</span><span class="k-qwerty">Q</span></div>
+              <div class="vkb-key vkb-consonant" title="W -> ㅈ / Shift: ㅉ"><span class="k-shift">ㅉ</span><span class="k-hangul">ㅈ</span><span class="k-qwerty">W</span></div>
+              <div class="vkb-key vkb-consonant" title="E -> ㄷ / Shift: ㄸ"><span class="k-shift">ㄸ</span><span class="k-hangul">ㄷ</span><span class="k-qwerty">E</span></div>
+              <div class="vkb-key vkb-consonant" title="R -> ㄱ / Shift: ㄲ"><span class="k-shift">ㄲ</span><span class="k-hangul">ㄱ</span><span class="k-qwerty">R</span></div>
+              <div class="vkb-key vkb-consonant" title="T -> ㅅ / Shift: ㅆ"><span class="k-shift">ㅆ</span><span class="k-hangul">ㅅ</span><span class="k-qwerty">T</span></div>
+              <div class="vkb-key vkb-vowel" title="Y -> ㅛ"><span class="k-hangul">ㅛ</span><span class="k-qwerty">Y</span></div>
+              <div class="vkb-key vkb-vowel" title="U -> ㅕ"><span class="k-hangul">ㅕ</span><span class="k-qwerty">U</span></div>
+              <div class="vkb-key vkb-vowel" title="I -> ㅑ"><span class="k-hangul">ㅑ</span><span class="k-qwerty">I</span></div>
+              <div class="vkb-key vkb-vowel" title="O -> ㅐ / Shift: ㅒ"><span class="k-shift">ㅒ</span><span class="k-hangul">ㅐ</span><span class="k-qwerty">O</span></div>
+              <div class="vkb-key vkb-vowel" title="P -> ㅔ / Shift: ㅖ"><span class="k-shift">ㅖ</span><span class="k-hangul">ㅔ</span><span class="k-qwerty">P</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">{</span><span class="k-main">[</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">}</span><span class="k-main">]</span></div>
+            </div>
+
+            <!-- Row 3: A to L -->
+            <div class="vkb-row">
+              <div class="vkb-key key-caps">Caps ⇪</div>
+              <div class="vkb-key vkb-consonant" title="A -> ㅁ"><span class="k-hangul">ㅁ</span><span class="k-qwerty">A</span></div>
+              <div class="vkb-key vkb-consonant" title="S -> ㄴ"><span class="k-hangul">ㄴ</span><span class="k-qwerty">S</span></div>
+              <div class="vkb-key vkb-consonant" title="D -> ㅇ"><span class="k-hangul">ㅇ</span><span class="k-qwerty">D</span></div>
+              <div class="vkb-key vkb-consonant" title="F -> ㄹ"><span class="k-hangul">ㄹ</span><span class="k-qwerty">F</span></div>
+              <div class="vkb-key vkb-consonant" title="G -> ㅎ"><span class="k-hangul">ㅎ</span><span class="k-qwerty">G</span></div>
+              <div class="vkb-key vkb-vowel" title="H -> ㅗ"><span class="k-hangul">ㅗ</span><span class="k-qwerty">H</span></div>
+              <div class="vkb-key vkb-vowel" title="J -> ㅓ"><span class="k-hangul">ㅓ</span><span class="k-qwerty">J</span></div>
+              <div class="vkb-key vkb-vowel" title="K -> ㅏ"><span class="k-hangul">ㅏ</span><span class="k-qwerty">K</span></div>
+              <div class="vkb-key vkb-vowel" title="L -> ㅣ"><span class="k-hangul">ㅣ</span><span class="k-qwerty">L</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">:</span><span class="k-main">;</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">"</span><span class="k-main">'</span></div>
+              <div class="vkb-key key-enter">Enter ↵</div>
+            </div>
+
+            <!-- Row 4: Z to M -->
+            <div class="vkb-row">
+              <div class="vkb-key key-shift-l">⇧ Shift</div>
+              <div class="vkb-key vkb-consonant" title="Z -> ㅋ"><span class="k-hangul">ㅋ</span><span class="k-qwerty">Z</span></div>
+              <div class="vkb-key vkb-consonant" title="X -> ㅌ"><span class="k-hangul">ㅌ</span><span class="k-qwerty">X</span></div>
+              <div class="vkb-key vkb-consonant" title="C -> ㅊ"><span class="k-hangul">ㅊ</span><span class="k-qwerty">C</span></div>
+              <div class="vkb-key vkb-consonant" title="V -> ㅍ"><span class="k-hangul">ㅍ</span><span class="k-qwerty">V</span></div>
+              <div class="vkb-key vkb-vowel" title="B -> ㅠ"><span class="k-hangul">ㅠ</span><span class="k-qwerty">B</span></div>
+              <div class="vkb-key vkb-vowel" title="N -> ㅜ"><span class="k-hangul">ㅜ</span><span class="k-qwerty">N</span></div>
+              <div class="vkb-key vkb-vowel" title="M -> ㅡ"><span class="k-hangul">ㅡ</span><span class="k-qwerty">M</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">&lt;</span><span class="k-main">,</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">&gt;</span><span class="k-main">.</span></div>
+              <div class="vkb-key key-sm"><span class="k-sub">?</span><span class="k-main">/</span></div>
+              <div class="vkb-key key-shift-r">⇧ Shift</div>
+            </div>
+
+            <!-- Row 5: Spacebar & Modifiers -->
+            <div class="vkb-row">
+              <div class="vkb-key key-ctrl">Ctrl</div>
+              <div class="vkb-key key-win">⊞ Win</div>
+              <div class="vkb-key key-alt">Alt</div>
+              <div class="vkb-key key-space"><span class="space-title">Space (مسافة)</span> • اكتب مباشرة من كيبورد جهازك</div>
+              <div class="vkb-key key-alt-kr" title="한/영 (Korean/English Switch)">한/영 (Alt)</div>
+              <div class="vkb-key key-ctrl">Ctrl</div>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -270,15 +364,13 @@
 
           <!-- Captcha Stage is dynamically moved here during exam -->
 
-          <!-- Floating Keyboard Prompt inside Exam -->
-          <div class="floating-kb-prompt-card" style="margin-top: 1rem;">
-            <div class="prompt-icon">💡</div>
-            <div class="prompt-text">
-              <span data-i18n="floatingKbPrompt">تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!</span>
+          <!-- Windows Keyboard Guide Notice for Exam -->
+          <div class="exam-kb-notice-card" style="margin-top: 1rem;">
+            <span class="notice-icon">⌨️</span>
+            <div class="notice-text">
+              <strong data-i18n="examKbNoticeTitle">تنبيه أثناء الاختبار:</strong>
+              <span data-i18n="examKbNoticeDesc">اكتب الإجابات مباشرة من كيبورد حاسوبك (Windows Keyboard). يمكنك الكتابة بمفاتيح QWERTY الإنجليزية وسيتم تجميعها كوري تلقائياً باليد اليسرى (الساكنة) واليمنى (العلة).</span>
             </div>
-            <button type="button" class="btn btn-secondary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
-              🪟 افتح الكيبورد الكوري العائم
-            </button>
           </div>
         </div>
 
@@ -440,21 +532,16 @@
           <div class="guide-step-card">
             <div class="guide-step-header">
               <span class="step-badge">3</span>
-              <h3 data-i18n="guideStep3Title">الخطوة 3: جعل لوحة المفاتيح تطفو فوق شاشة اللعبة</h3>
+              <h3 data-i18n="guideStep3Title">الخطوة 3: فتح كيبورد الشاشة العائم في ويندوز (Windows OSK)</h3>
             </div>
             <div class="guide-step-body">
               <p data-i18n="guideStep3Desc">
-                • اضغط على Win + Ctrl + O لفتح لوحة المفاتيح المعروضة على الشاشة (On-Screen Keyboard).<br>
-                • يمكنك سحبها وتغيير حجمها ووضعها في أي مكان فوق أو بجوار نافذة لعبة مابل ستوري أثناء اللعب!<br>
-                • كما يمكنك أيضاً النقر على زر "🪟 كيبورد عائم" هنا في الموقع لتجربة الكيبورد العائم القابل للسحب فوراً!
+                • اضغط على Win + Ctrl + O لفتح لوحة مفاتيح ويندوز المعروضة على الشاشة (Windows On-Screen Keyboard).<br>
+                • يمكنك سحبها وتصغير حجمها ووضعها مباشرة فوق أو بجوار نافذة مابل ستوري لتشاهد الحروف الكورية مباشرة أثناء اللعب.<br>
+                • أو اعتمد على مخطط لوحة المفاتيح المدمج في الموقع لحفظ توزيع الحروف بيدك اليسرى واليمنى.
               </p>
               <div class="guide-code-box">
-                <code>Launch Floating On-Screen Keyboard: Win + Ctrl + O</code>
-              </div>
-              <div class="guide-action-row">
-                <button type="button" class="btn btn-primary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
-                  🪟 افتح الكيبورد الكوري العائم لتجربته الآن
-                </button>
+                <code>اختصار كيبورد الشاشة في ويندوز: Win + Ctrl + O</code>
               </div>
             </div>
           </div>
@@ -519,9 +606,6 @@
       </section>
 
     </main>
-
-    <!-- Floating Draggable Keyboard Window (Detached / On-Demand) -->
-    <div id="virtual-keyboard-container" class="virtual-keyboard-box"></div>
 
     <!-- Sign In & Player Profile Modal -->
     <div id="signin-modal" class="modal-overlay">

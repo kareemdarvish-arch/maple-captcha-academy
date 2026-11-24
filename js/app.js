@@ -15,10 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tiltAngle: -4.5
   });
 
-  const keyboard = new KoreanKeyboard('virtual-keyboard-container');
-  const game = new MapleCaptchaGame(generator, keyboard);
+  // Use keyboard stub for physical Windows keyboard
+  const keyboardStub = {
+    highlightKey: () => {},
+    options: {}
+  };
+  const game = new MapleCaptchaGame(generator, keyboardStub);
   const academy = new HangulAcademy({
-    onHighlightKey: (key) => keyboard.highlightKey(key),
+    onHighlightKey: () => {},
     onPlaySound: (type) => {
       if (type === 'correct') SoundFX.playCorrect();
       else if (type === 'error') SoundFX.playError();
@@ -179,12 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (examIntroCard) examIntroCard.style.display = 'none';
       if (examStageContainer) {
         examStageContainer.style.display = 'block';
-        // Move the canvas and input into exam container cleanly before the prompt
+        // Move the canvas and input into exam container cleanly before the notice
         const stageCard = document.getElementById('captcha-main-stage-card');
         if (stageCard) {
-          const promptCard = examStageContainer.querySelector('.floating-kb-prompt-card');
-          if (promptCard) {
-            examStageContainer.insertBefore(stageCard, promptCard);
+          const noticeCard = examStageContainer.querySelector('.exam-kb-notice-card');
+          if (noticeCard) {
+            examStageContainer.insertBefore(stageCard, noticeCard);
           } else {
             examStageContainer.appendChild(stageCard);
           }
@@ -221,26 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 7. Floating Keyboard Prompts
-  const openFloatingKbButtons = document.querySelectorAll('.btn-trigger-floating-kb');
-  openFloatingKbButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      SoundFX.playKeyClick();
-      keyboard.toggleFloating(true);
-    });
-  });
-
-  const btnFloatToggle = document.getElementById('btn-toggle-float-keyboard');
-  if (btnFloatToggle) {
-    btnFloatToggle.addEventListener('click', () => {
-      SoundFX.playKeyClick();
-      const isFloating = keyboard.toggleFloating();
-      btnFloatToggle.innerHTML = isFloating ? I18n.t('btnDockKb') : I18n.t('btnFloatingKb');
-      btnFloatToggle.classList.toggle('btn-active', isFloating);
-    });
-  }
-
-  // 8. Trainer Controls
+  // 7. Trainer Controls
   const categorySelect = document.getElementById('select-syllable-set');
   if (categorySelect) {
     categorySelect.addEventListener('change', (e) => {

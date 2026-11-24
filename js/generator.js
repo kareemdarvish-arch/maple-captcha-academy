@@ -18,28 +18,28 @@ class MapleCaptchaGenerator {
       tiltAngle: -4.5,           // Authentic slant angle from screenshots
       background: 'sky_rock',    // 'sky_rock', 'ellinia_portal', 'cloud_balcony', 'dark_dungeon', 'clean'
       noisePreset: 'normal',     // 'easy', 'normal', 'hard', 'insane'
-      fontFamily: "'Gulim', 'Dotum', 'Galmuri11', 'NeoDunggeunmo', 'Malgun Gothic', monospace",
+      fontFamily: "'Galmuri11', 'Galmuri9', 'NeoDunggeunmo', 'Dotum', monospace",
       fontSize: 72               // Characters fill ~85% of banner height
     }, options);
 
     // Exact color sampling from the user's reference screenshots
     this.retroColors = [
-      '#cf467d', // Bright Pink / Magenta (Screenshot 1: "일", "동")
-      '#2748c0', // Deep Royal Blue (Screenshot 1: "귀", "와", Screenshot 2: "살", "낄")
-      '#cd4532', // Terracotta / Rust Red (Screenshot 1: "이", "듬", Screenshot 3: "소", "추")
-      '#77436b', // Plum / Dark Violet (Screenshot 2: "빛", "엊", "얹")
-      '#b822bb', // Vivid Magenta (Screenshot 5: "도", "아", "ㅋ")
-      '#873b26', // Earthy Brown (Screenshot 5: "징", "지")
-      '#273b4d'  // Slate Navy (Screenshot 3: "화")
+      '#cf467d', // Bright Pink / Vivid Magenta (Screenshot 1: "일", "동", Screenshot 5: "도", "아")
+      '#2143b8', // Deep Royal Blue (Screenshot 1: "귀", "와", Screenshot 2: "살", "낄", "버", "리")
+      '#cb3e2b', // Terracotta / Coral Red (Screenshot 1: "이", "듬", Screenshot 3: "소", "수", "자")
+      '#753c74', // Plum / Dark Violet (Screenshot 2: "빛", "없", "어")
+      '#b822bb', // Electric Magenta (Screenshot 5: "크")
+      '#873b26', // Earthy Bronze Brown (Screenshot 5: "첫", "시")
+      '#233549'  // Slate Navy Charcoal (Screenshot 3: "회")
     ];
 
     // Colored noise streaks cutting through the text (Screenshot 1-6)
     this.noiseLineColors = [
-      '#3db054', // Vivid Green (most prominent in game)
-      '#00bcd4', // Cyan
-      '#e91e63', // Magenta
+      '#34a853', // Vivid Maple Green (cuts through text in all screenshots)
+      '#00bcd4', // Vibrant Cyan
+      '#e91e63', // Magenta Pink
       '#1e88e5', // Royal Blue
-      '#ff9800'  // Orange
+      '#ff9800'  // Bright Orange
     ];
 
     // Current state
@@ -276,19 +276,21 @@ class MapleCaptchaGenerator {
   drawBanner(ctx, bx, by, bw, bh) {
     ctx.save();
 
+    // Authentic translucent frosted paper matching KMS screenshots (background slightly visible)
     const paperGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-    paperGrad.addColorStop(0, '#d2d1e2');
-    paperGrad.addColorStop(0.5, '#c9c9de');
-    paperGrad.addColorStop(1, '#bebfd6');
+    paperGrad.addColorStop(0, 'rgba(215, 222, 245, 0.86)');
+    paperGrad.addColorStop(0.5, 'rgba(202, 210, 238, 0.82)');
+    paperGrad.addColorStop(1, 'rgba(188, 198, 228, 0.80)');
 
     ctx.fillStyle = paperGrad;
     ctx.fillRect(bx, by, bw, bh);
 
-    ctx.strokeStyle = '#9a9cb8';
+    // Subtle faint jagged border
+    ctx.strokeStyle = 'rgba(145, 155, 185, 0.6)';
     ctx.lineWidth = 1;
     ctx.strokeRect(bx, by, bw, bh);
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
     ctx.beginPath();
     ctx.moveTo(bx + 1, by + 1);
     ctx.lineTo(bx + bw - 1, by + 1);
@@ -307,15 +309,25 @@ class MapleCaptchaGenerator {
     const slotWidth = usableW / count;
     const startX = bx + 8;
 
+    // Authentic color cluster patterns matching user's screenshots
+    const clusterPatterns = [
+      [0, 0, 5, 4, 2, 5], // Screenshot 1: pink, pink, brown, magenta, red, brown ("도아첫크종시")
+      [1, 2, 2, 5, 1, 6], // Screenshot 2: blue, red, red, rust, blue, navy ("버소수데리회")
+      [3, 3, 3, 1, 1, 2], // Screenshot 3: plum, plum, plum, blue, blue, red ("빛없어살낄자")
+      [0, 1, 1, 2, 0, 2]  // Screenshot 4: pink, blue, blue, red, pink, red ("일귀와이동듬")
+    ];
+    const chosenPattern = clusterPatterns[Math.floor(Math.random() * clusterPatterns.length)];
+
     ctx.save();
     ctx.font = `bold ${this.config.fontSize}px ${this.config.fontFamily}`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
 
     chars.forEach((char, idx) => {
-      const color = this.retroColors[idx % this.retroColors.length];
+      const colorIndex = chosenPattern[idx % chosenPattern.length];
+      const color = this.retroColors[colorIndex % this.retroColors.length];
 
-      const jitterX = Math.round((Math.random() - 0.5) * 3);
+      const jitterX = Math.round((Math.random() - 0.5) * 2);
       const jitterY = Math.round((Math.random() - 0.5) * 2);
       const cx = Math.floor(startX + slotWidth * idx + slotWidth / 2 + jitterX);
       const cy = Math.floor(by + bh / 2 + jitterY);
@@ -332,7 +344,7 @@ class MapleCaptchaGenerator {
       ctx.fillStyle = color;
       ctx.translate(cx, cy);
       // Characteristic vertical pixel ratio of KMS Lie Detector glyphs
-      ctx.scale(0.92, 1.18);
+      ctx.scale(0.92, 1.20);
 
       // Authentic thick solid bitmap weight
       ctx.fillText(char, 0, 0);
@@ -344,6 +356,23 @@ class MapleCaptchaGenerator {
     });
 
     ctx.restore();
+
+    // Authentic KMS micro horizontal slice displacement
+    this.applyGlitchSliceDisplacement(ctx, bx, by, bw, bh);
+  }
+
+  applyGlitchSliceDisplacement(ctx, bx, by, bw, bh) {
+    const sliceCount = 3;
+    for (let s = 0; s < sliceCount; s++) {
+      const sliceY = Math.floor(by + 20 + Math.random() * (bh - 40));
+      const sliceH = Math.floor(2 + Math.random() * 2);
+      const shiftX = (Math.random() < 0.5 ? 2 : -2);
+
+      try {
+        const imgData = ctx.getImageData(bx + 10, sliceY, bw - 20, sliceH);
+        ctx.putImageData(imgData, bx + 10 + shiftX, sliceY);
+      } catch (e) {}
+    }
   }
 
   /**
@@ -378,7 +407,28 @@ class MapleCaptchaGenerator {
       }
     }
 
-    // 2. Medium scratch streaks (length 35px to 70px) with stepped pixel jitter
+    // 2. Continuous green & blue piercing scanlines cutting straight across multiple characters (Signature KMS Lie Detector feature)
+    const piercingLines = 3;
+    for (let p = 0; p < piercingLines; p++) {
+      ctx.strokeStyle = p === 0 ? '#34a853' : (p === 1 ? '#00bcd4' : '#1e88e5');
+      ctx.lineWidth = 1;
+      const lineY = Math.floor(by + 28 + p * 20 + (Math.random() - 0.5) * 8);
+      const startX = Math.floor(bx + 15 + Math.random() * 30);
+      const endX = Math.floor(bx + bw - 20 - Math.random() * 40);
+
+      ctx.beginPath();
+      ctx.moveTo(startX, lineY);
+      let cx = startX;
+      let cy = lineY;
+      while (cx < endX) {
+        cx += Math.floor(8 + Math.random() * 16);
+        if (Math.random() < 0.25) cy += (Math.random() < 0.5 ? 1 : -1);
+        ctx.lineTo(cx, cy);
+      }
+      ctx.stroke();
+    }
+
+    // 3. Medium scratch streaks (length 35px to 70px) with stepped pixel jitter
     for (let i = 0; i < streakCount; i++) {
       const color = this.noiseLineColors[(i + 2) % this.noiseLineColors.length];
       ctx.strokeStyle = color;
@@ -422,11 +472,11 @@ class MapleCaptchaGenerator {
 
   drawNoiseDots(ctx, bx, by, bw, bh) {
     const preset = this.config.noisePreset;
-    let dotCount = 1800;
-    if (preset === 'easy') dotCount = 400;
-    else if (preset === 'normal') dotCount = 1800;
-    else if (preset === 'hard') dotCount = 3000;
-    else if (preset === 'insane') dotCount = 4500;
+    let dotCount = 2800;
+    if (preset === 'easy') dotCount = 800;
+    else if (preset === 'normal') dotCount = 2800;
+    else if (preset === 'hard') dotCount = 4200;
+    else if (preset === 'insane') dotCount = 6000;
 
     const dotColors = [
       '#e53935', '#43a047', '#1e88e5', '#fdd835',

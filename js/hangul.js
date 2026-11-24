@@ -499,54 +499,40 @@ const Hangul = (() => {
 
   // --- Curated Syllable Banks for Trainer ---
 
-  // Authentic Lie Detector captchas & vast MapleStory vocabulary (Over 120+ authentic in-game terms)
+  // Authentic Lie Detector captchas directly matching real KMS in-game screenshots and lie detector logs
   const AUTHENTIC_SAMPLES = [
-    // Real Lie Detector Captcha Screenshots
-    '도아징ㅋ중지',
-    '버소추테리화',
-    '빛엊얹살낄서',
+    // Real Lie Detector Captchas from User Screenshots
+    '도아첫크종시',
+    '버소수데리회',
+    '빛없어살낄자',
     '일귀와이동듬',
-    '마을귀환주문',
-    '헤네시스사냥',
-    '자유시장입구',
-    '메이플스토리',
-    '비올레타구출',
-    '엘리니아마을',
-    '페리온전사의',
-    '슬리피우드던',
-    '루디브리엄탑',
-    '오르비스탑층',
-    '아쿠아리움바',
-    '리프레용의숲',
-    '시간의신전문',
-    '자쿰의제단방',
-    '혼테일의동굴',
-    '핑크빈의제단',
-    '루타비스던전',
-    '에레브수련의',
-    '커닝시티지하',
-    '노틸러스선착',
-    '무릉도원사원',
-    '백초마을약초',
-    '아리안트궁전',
-    '마가티아연구',
-    '헤이븐기계탑',
-    '아케인리버길',
-    '소멸의여로길',
-    '츄츄아일랜드',
-    '레헬른시계탑',
-    '아르카나정령',
-    '기억의늪모라',
-    '에스페라바다',
-    '문브릿지전함',
-    '고통의미궁방',
-    '리멘세계의눈',
-    '세르니움성벽',
-    '호텔아르크스',
-    '오디움연구소',
-    '도원경사계절',
-    '아르테리아함',
-    '카르시온해안',
+    '서소샤뱌뵤뷰',
+    '엊얹얽옭옰옪',
+    '밭솥닻돝둩듵',
+    '머저루류섶깉',
+    '퉤뱝궝쑈늣랸',
+    '곬잗뵤뙈뮨갹',
+    '늣볏땁멥믕섶',
+    '첫크종시비료',
+    '탈털톨툴틀틸',
+    '갓갗갇갈감갑',
+    '뚬뿜뜸뜜뜀띰',
+    '빛어둡고짙어',
+    '잠시멈춰서봐',
+    '화살표방향따',
+    '거짓말탐지기',
+    '눈크게뜨고봐',
+    '빛없는지금시',
+    '낟낱낫낮낯낱',
+    '뱝뱁뱡뱍뱐뱔',
+    '뜀뜜뜝뜞뜟뜠',
+    '괾굄굈굔굠굡',
+    '잰잩잪잫쟎쟐',
+    '뷤뷥뷦뷧뷩뷪',
+    '휨휩휭휜휟휡',
+    '꿱꿲꿳꿴꿵꿶',
+    '쒜쒝쒞쒟쒠쒡'
+  ];
 
     // Monsters & Bosses
     '주황버섯포자',
@@ -705,13 +691,14 @@ const Hangul = (() => {
 
     const chars = [];
 
-    if (category === 'authentic' && Math.random() < 0.6) {
-      // Pick from authentic samples or slice 6 chars
+    // For authentic and balanced modes, 65% of the time use real in-game KMS captchas from screenshots
+    if ((category === 'authentic' || category === 'balanced') && Math.random() < 0.65) {
       const sample = AUTHENTIC_SAMPLES[Math.floor(Math.random() * AUTHENTIC_SAMPLES.length)];
-      if (sample.length === length) return sample;
+      if (sample && sample.length === length) return sample;
     }
 
-    let pool = BALANCED_SYLLABLES;
+    // High-difficulty curated pools
+    let pool = [...DIFFICULT_BATCHIM_SYLLABLES, ...COMPLEX_VOWEL_SYLLABLES, '빛', '없', '어', '살', '낄', '자', '버', '소', '수', '데', '리', '회', '도', '아', '첫', '크', '종', '시', '일', '귀', '와', '이', '동', '듬'];
     if (category === 'difficult_batchim') pool = DIFFICULT_BATCHIM_SYLLABLES;
     else if (category === 'complex_vowels') pool = COMPLEX_VOWEL_SYLLABLES;
     else if (category === 'adaptive') {

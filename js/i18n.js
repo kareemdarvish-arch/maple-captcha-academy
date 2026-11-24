@@ -30,9 +30,16 @@ const I18n = (() => {
       chooseAvatar: 'Choose Character Avatar:',
       signInPromptBeforeExam: 'Sign in to record your score on the live Leaderboard!',
 
-      // Floating Keyboard Prompt
-      floatingKbPrompt: '💡 Keyboard Notice: Use your physical keyboard or click below to open the Floating Korean Keyboard just like in MapleStory!',
-      btnOpenFloatingKb: '🪟 Open Floating Korean Keyboard',
+      // Visual Keyboard Guide (Photo Guide)
+      visualKbTitle: 'Korean Keyboard Layout (Windows Dubeolsik)',
+      visualKbPrompt: 'Type letters directly using your physical computer keyboard (Windows Keyboard). Keystrokes are automatically assembled into Korean characters, or switch to Korean IME in Windows.',
+      legendLeftHand: 'Left Hand: Consonants (자음)',
+      legendRightHand: 'Right Hand: Vowels (모음)',
+      legendShift: 'Press Shift for Double Consonants (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㅒ, ㅖ)',
+      examKbNoticeTitle: 'Notice during Exam:',
+      examKbNoticeDesc: 'Type answers directly from your computer keyboard (Windows Keyboard). You can type using English QWERTY keys and they will be assembled automatically into Korean.',
+      floatingKbPrompt: '💡 Keyboard Notice: Type directly using your physical Windows keyboard!',
+      btnOpenFloatingKb: '⌨️ Physical Windows Keyboard Active',
 
       // Standalone Exam Tab
       examIntroTitle: 'Official Lie Detector Exam Session',
@@ -240,9 +247,16 @@ const I18n = (() => {
       chooseAvatar: 'اختر شكل الشخصية:',
       signInPromptBeforeExam: 'سجل اسمك ليتم حفظ نتيجتك في لوحة المتصدرين وقائمة الشرف!',
 
-      // Floating Keyboard Prompt
-      floatingKbPrompt: '💡 تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!',
-      btnOpenFloatingKb: '🪟 افتح الكيبورد الكوري العائم',
+      // Visual Keyboard Guide (Photo Guide)
+      visualKbTitle: 'مخطط لوحة المفاتيح الكورية (Windows Dubeolsik Keyboard)',
+      visualKbPrompt: 'اكتب الحروف مباشرة باستخدام لوحة مفاتيح حاسوبك (Windows Physical Keyboard). سيقوم النظام بتجميع الحروف تلقائياً عند الكتابة بمفاتيح QWERTY الإنجليزية أو تفعيل اللغة الكورية.',
+      legendLeftHand: 'اليد اليسرى: الحروف الساكنة (자음)',
+      legendRightHand: 'اليد اليمنى: حروف العلة (모음)',
+      legendShift: 'اضغط Shift للحروف المزدوجة (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㅒ, ㅖ)',
+      examKbNoticeTitle: 'تنبيه أثناء الاختبار:',
+      examKbNoticeDesc: 'اكتب الإجابات مباشرة من كيبورد حاسوبك (Windows Keyboard). يمكنك الكتابة بمفاتيح QWERTY الإنجليزية وسيتم تجميعها كوري تلقائياً باليد اليسرى (الساكنة) واليمنى (العلة).',
+      floatingKbPrompt: '💡 تنبيه الكيبورد: اكتب مباشرة باستخدام لوحة مفاتيح حاسوبك (Windows Keyboard)!',
+      btnOpenFloatingKb: '⌨️ كيبورد الويندوز مفعل',
 
       // Standalone Exam Tab
       examIntroTitle: 'جلسة الاختبار الرسمي لكاشف الكذب (Lie Detector)',

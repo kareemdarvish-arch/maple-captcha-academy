@@ -6,22 +6,25 @@
 const MapleLeaderboard = (() => {
   const STORAGE_KEY = 'maple_captcha_leaderboard_data';
 
-  // Realistic default seed entries
+  // Only Kareem with 100% on all exam tiers with a realistic, beatable normal human speed (4.0s - 4.5s)
   const DEFAULT_LEADERBOARD = [
-    { id: 'lb_1', name: 'KMS_Pro_Gamer', avatar: '🍁', score: 20, total: 20, pct: 100, avgTime: 2.1, examType: 20, date: '2026-11-20' },
-    { id: 'lb_2', name: 'MapleHero_EG', avatar: '⚔️', score: 20, total: 20, pct: 100, avgTime: 2.5, examType: 20, date: '2026-11-21' },
-    { id: 'lb_3', name: 'NightWalker99', avatar: '🗡️', score: 15, total: 15, pct: 100, avgTime: 2.8, examType: 15, date: '2026-11-22' },
-    { id: 'lb_4', name: 'BishopLegend', avatar: '🧙', score: 15, total: 15, pct: 100, avgTime: 3.1, examType: 15, date: '2026-11-22' },
-    { id: 'lb_5', name: 'Shadower_K', avatar: '🗡️', score: 10, total: 10, pct: 100, avgTime: 2.4, examType: 10, date: '2026-11-23' },
-    { id: 'lb_6', name: 'ViperPunch', avatar: '🏴‍☠️', score: 10, total: 10, pct: 100, avgTime: 2.9, examType: 10, date: '2026-11-23' },
-    { id: 'lb_7', name: 'CairoSniper', avatar: '🏹', score: 18, total: 20, pct: 90, avgTime: 3.4, examType: 20, date: '2026-11-24' },
-    { id: 'lb_8', name: 'AlexandriaStar', avatar: '🍄', score: 14, total: 15, pct: 93, avgTime: 3.8, examType: 15, date: '2026-11-24' }
+    { id: 'lb_kareem_20', name: 'Kareem (كريم)', avatar: '🍁', score: 20, total: 20, pct: 100, avgTime: 4.5, examType: 20, date: '2026-11-24' },
+    { id: 'lb_kareem_15', name: 'Kareem (كريم)', avatar: '🍁', score: 15, total: 15, pct: 100, avgTime: 4.2, examType: 15, date: '2026-11-24' },
+    { id: 'lb_kareem_10', name: 'Kareem (كريم)', avatar: '🍁', score: 10, total: 10, pct: 100, avgTime: 4.0, examType: 10, date: '2026-11-24' }
   ];
 
   function loadData() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // If legacy seed data is detected, clean up and reset to Kareem only
+        if (Array.isArray(parsed) && parsed.some(e => e.name === 'KMS_Pro_Gamer' || e.name === 'MapleHero_EG')) {
+          saveData(DEFAULT_LEADERBOARD);
+          return DEFAULT_LEADERBOARD;
+        }
+        return parsed;
+      }
     } catch (e) {}
     saveData(DEFAULT_LEADERBOARD);
     return DEFAULT_LEADERBOARD;
