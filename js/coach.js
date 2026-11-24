@@ -24,11 +24,13 @@ const EgyptianCoach = (() => {
   ];
 
   let toastElem = null;
+  let ambientLightingElem = null;
   let timerId = null;
   let lastIndex = -1;
 
   function init() {
     createToastElement();
+    createAmbientLightingElement();
     
     // Show first humorous coach message shortly after page load
     setTimeout(() => {
@@ -46,6 +48,36 @@ const EgyptianCoach = (() => {
     }, 45000);
   }
 
+  function createAmbientLightingElement() {
+    if (document.getElementById('coach-ambient-lighting')) {
+      ambientLightingElem = document.getElementById('coach-ambient-lighting');
+      return;
+    }
+    ambientLightingElem = document.createElement('div');
+    ambientLightingElem.id = 'coach-ambient-lighting';
+    ambientLightingElem.className = 'coach-ambient-lighting';
+    document.body.appendChild(ambientLightingElem);
+  }
+
+  function triggerAmbientLighting() {
+    if (!ambientLightingElem) createAmbientLightingElement();
+    if (!ambientLightingElem) return;
+
+    // Reset and trigger smooth cinematic golden ambient pulse
+    ambientLightingElem.classList.remove('active');
+    document.body.classList.remove('coach-screen-flash');
+    void ambientLightingElem.offsetWidth; // force DOM reflow
+    void document.body.offsetWidth;
+
+    ambientLightingElem.classList.add('active');
+    document.body.classList.add('coach-screen-flash');
+
+    setTimeout(() => {
+      if (ambientLightingElem) ambientLightingElem.classList.remove('active');
+      document.body.classList.remove('coach-screen-flash');
+    }, 2400);
+  }
+
   function createToastElement() {
     if (document.getElementById('egyptian-coach-toast')) return;
     toastElem = document.createElement('div');
@@ -54,7 +86,7 @@ const EgyptianCoach = (() => {
     toastElem.innerHTML = `
       <div class="coach-icon-bubble">🍄</div>
       <div class="coach-content">
-        <div class="coach-badge">كوتش مابل المصري 🇪🇬</div>
+        <div class="coach-badge">✨ كوتش مابل المصري 🇪🇬 ✨</div>
         <div class="coach-message">ركز يا وحش بدل ما تجيب للأكونت حظر ونقعد نعيط جمبه! 🚨😂</div>
       </div>
       <button type="button" class="coach-close-btn" title="إغلاق">✕</button>
@@ -96,6 +128,16 @@ const EgyptianCoach = (() => {
 
     toastElem.classList.remove('hiding');
     toastElem.classList.add('active');
+
+    // 1. Play authentic Egyptian musical sting & darbuka beat
+    if (typeof SoundFX !== 'undefined' && typeof SoundFX.playEgyptianCoachTune === 'function') {
+      try {
+        SoundFX.playEgyptianCoachTune();
+      } catch (err) {}
+    }
+
+    // 2. Trigger screen ambient lighting pulse
+    triggerAmbientLighting();
 
     // Auto hide after 8.5 seconds
     if (timerId) clearTimeout(timerId);

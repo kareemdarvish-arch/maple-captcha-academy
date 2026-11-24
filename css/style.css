@@ -2655,8 +2655,62 @@ body {
 }
 
 /* ==========================================================================
-   Egyptian Coach Banter Toast
+   Egyptian Coach Banter Toast & Ambient Screen Lighting
    ========================================================================== */
+
+/* Fullscreen Ambient Lighting Pulse & Edge Glow */
+.coach-ambient-lighting {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.coach-ambient-lighting.active {
+  animation: coachLightingSequence 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes coachLightingSequence {
+  0% {
+    opacity: 0;
+    background: radial-gradient(circle at 90% 90%, rgba(245, 166, 35, 0.55) 0%, rgba(249, 115, 22, 0.28) 32%, rgba(0, 0, 0, 0) 70%);
+    box-shadow: inset 0 0 90px rgba(245, 166, 35, 0.65), inset 0 0 170px rgba(249, 115, 22, 0.38);
+  }
+  15% {
+    opacity: 1;
+    background: radial-gradient(circle at 90% 90%, rgba(245, 166, 35, 0.45) 0%, rgba(249, 115, 22, 0.22) 40%, rgba(0, 0, 0, 0) 75%);
+    box-shadow: inset 0 0 110px rgba(245, 166, 35, 0.55), inset 0 0 210px rgba(249, 115, 22, 0.30);
+  }
+  50% {
+    opacity: 0.8;
+    background: radial-gradient(circle at 90% 90%, rgba(245, 166, 35, 0.28) 0%, rgba(249, 115, 22, 0.12) 48%, rgba(0, 0, 0, 0) 80%);
+    box-shadow: inset 0 0 75px rgba(245, 166, 35, 0.35), inset 0 0 140px rgba(249, 115, 22, 0.18);
+  }
+  100% {
+    opacity: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+/* Subtle overall page ambient illumination flash */
+body.coach-screen-flash {
+  animation: bodyWarmLighting 2.0s ease-out forwards;
+}
+
+@keyframes bodyWarmLighting {
+  0% {
+    filter: brightness(1.22) contrast(1.05);
+  }
+  25% {
+    filter: brightness(1.12) contrast(1.02);
+  }
+  100% {
+    filter: brightness(1) contrast(1);
+  }
+}
 
 .egyptian-coach-toast {
   position: fixed;
@@ -2669,14 +2723,28 @@ body {
   background: linear-gradient(135deg, #1c202d 0%, #151822 100%);
   border: 2px solid var(--accent-gold);
   border-radius: var(--radius-lg);
-  padding: 0.85rem 1.25rem;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(245, 166, 35, 0.3);
+  padding: 0.95rem 1.35rem;
+  max-width: 440px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 166, 35, 0.45);
   animation: slideInUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .egyptian-coach-toast.active {
   display: flex;
+  box-shadow: 0 14px 45px rgba(0, 0, 0, 0.75), 0 0 35px rgba(245, 166, 35, 0.6), 0 0 70px rgba(249, 115, 22, 0.35);
+  animation: slideInUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastGlowPulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes toastGlowPulse {
+  0% {
+    border-color: var(--accent-gold);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 166, 35, 0.5);
+  }
+  100% {
+    border-color: var(--accent-orange);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 45px rgba(249, 115, 22, 0.8), 0 0 80px rgba(245, 166, 35, 0.45);
+  }
 }
 
 .egyptian-coach-toast.hiding {
@@ -2702,11 +2770,15 @@ body {
 }
 
 .coach-badge {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 800;
   color: var(--accent-gold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(245, 166, 35, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .coach-message {

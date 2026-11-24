@@ -219,6 +219,137 @@ const SoundFX = (() => {
     } catch (e) {}
   }
 
+  // Light, cheerful authentic Egyptian music riff & Darbuka percussion for Egyptian Coach banter
+  function playEgyptianCoachTune() {
+    if (isMuted) return;
+    const ctx = getContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime + 0.04;
+
+      // 1. Egyptian Darbuka Percussion Layer ("Dum - Tak - Tak - Dum - Tak")
+      const beats = [
+        { type: 'dum', t: 0.00 },
+        { type: 'tak', t: 0.22 },
+        { type: 'tak', t: 0.38 },
+        { type: 'dum', t: 0.60 },
+        { type: 'tak', t: 0.82 },
+        { type: 'dum', t: 1.05 },
+        { type: 'tak', t: 1.25 }
+      ];
+
+      beats.forEach(b => {
+        const bt = now + b.t;
+        if (b.type === 'dum') {
+          // Low resonant Darbuka "DUM"
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(145, bt);
+          osc.frequency.exponentialRampToValueAtTime(42, bt + 0.14);
+
+          gain.gain.setValueAtTime(0.24 * volume, bt);
+          gain.gain.exponentialRampToValueAtTime(0.001, bt + 0.16);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(bt);
+          osc.stop(bt + 0.16);
+        } else {
+          // Crisp high-rim "TAK"
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(920, bt);
+          osc.frequency.exponentialRampToValueAtTime(320, bt + 0.045);
+
+          gain.gain.setValueAtTime(0.13 * volume, bt);
+          gain.gain.exponentialRampToValueAtTime(0.001, bt + 0.05);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(bt);
+          osc.stop(bt + 0.05);
+        }
+      });
+
+      // 2. Authentic Oriental / Egyptian Maqam Hijaz Melody
+      // Notes: D5 (587Hz), Eb5 (622Hz), F#5 (740Hz), G5 (784Hz), A5 (880Hz)
+      const notes = [
+        { f: 587.33, t: 0.02, d: 0.12 }, // D5
+        { f: 622.25, t: 0.16, d: 0.10 }, // Eb5
+        { f: 739.99, t: 0.28, d: 0.18 }, // F#5 (Iconic Hijaz interval)
+        { f: 783.99, t: 0.48, d: 0.11 }, // G5
+        { f: 880.00, t: 0.61, d: 0.20, slideTo: 783.99 }, // A5 -> G5 slide
+        { f: 739.99, t: 0.83, d: 0.14 }, // F#5
+        { f: 622.25, t: 0.99, d: 0.12 }, // Eb5
+        { f: 587.33, t: 1.13, d: 0.42, vibrato: true }  // D5 with warm oriental trill
+      ];
+
+      notes.forEach(n => {
+        const nt = now + n.t;
+
+        // Dual oscillator for authentic accordion / mizmar / oud warmth
+        const oscTri = ctx.createOscillator();
+        const oscSaw = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1750, nt);
+        filter.Q.setValueAtTime(3.0, nt);
+
+        oscTri.type = 'triangle';
+        oscSaw.type = 'sawtooth';
+
+        oscTri.frequency.setValueAtTime(n.f, nt);
+        oscSaw.frequency.setValueAtTime(n.f * 1.002, nt); // subtle chorus detune
+
+        if (n.slideTo) {
+          oscTri.frequency.exponentialRampToValueAtTime(n.slideTo, nt + n.d);
+          oscSaw.frequency.exponentialRampToValueAtTime(n.slideTo * 1.002, nt + n.d);
+        }
+
+        if (n.vibrato) {
+          // Oriental vibrato on final resting note
+          const lfo = ctx.createOscillator();
+          const lfoGain = ctx.createGain();
+          lfo.frequency.setValueAtTime(5.8, nt); // 5.8 Hz oriental trill
+          lfoGain.gain.setValueAtTime(12, nt);   // pitch mod depth
+          lfo.connect(oscTri.frequency);
+          lfo.connect(oscSaw.frequency);
+          lfo.start(nt + 0.08);
+          lfo.stop(nt + n.d + 0.1);
+        }
+
+        gain.gain.setValueAtTime(0.001, nt);
+        gain.gain.linearRampToValueAtTime(0.18 * volume, nt + 0.02);
+        gain.gain.setValueAtTime(0.16 * volume, nt + n.d - 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, nt + n.d + 0.08);
+
+        oscTri.connect(filter);
+        oscSaw.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscTri.start(nt);
+        oscSaw.start(nt);
+        oscTri.stop(nt + n.d + 0.08);
+        oscSaw.stop(nt + n.d + 0.08);
+      });
+    } catch (e) {}
+  }
+
+  // Unlock AudioContext on first user interaction
+  if (typeof document !== 'undefined') {
+    ['click', 'keydown', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, () => {
+        getContext();
+      }, { once: true, passive: true });
+    });
+  }
+
   return {
     playKeyClick,
     playMatchSyllable,
@@ -226,6 +357,8 @@ const SoundFX = (() => {
     playError,
     playTick,
     playFanfare,
+    playEgyptianCoachTune,
+    getContext,
     setMuted,
     getMuted,
     setVolume
