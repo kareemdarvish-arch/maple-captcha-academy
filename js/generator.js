@@ -130,14 +130,6 @@ class MapleCaptchaGenerator {
 
     ctx.restore(); // Restore banner rotation
 
-    // Layer 7: Foreground scene props (Rocks, slimes, wizard hats overlaying bottom edge)
-    this.drawForegroundProps(ctx, width, height);
-
-    // Layer 8: Optional Magnifier Lens
-    if (this.magnifierActive) {
-      this.renderMagnifier(ctx);
-    }
-
     ctx.restore();
   }
 
@@ -204,72 +196,6 @@ class MapleCaptchaGenerator {
     } else if (bg === 'dark_dungeon') {
       ctx.fillStyle = '#1e3394';
       ctx.fillRect(0, 0, w, h);
-    }
-  }
-
-  drawForegroundProps(ctx, w, h) {
-    const bg = this.config.background;
-
-    if (bg === 'sky_rock') {
-      ctx.save();
-      ctx.fillStyle = '#7a5a46';
-      ctx.beginPath();
-      ctx.moveTo(90, h);
-      ctx.lineTo(105, h - 22);
-      ctx.lineTo(145, h - 28);
-      ctx.lineTo(195, h - 20);
-      ctx.lineTo(235, h - 25);
-      ctx.lineTo(250, h);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#9e7960';
-      ctx.fillRect(115, h - 22, 28, 4);
-      ctx.fillRect(170, h - 19, 24, 3);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(285, h - 6, 9, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    } else if (bg === 'ellinia_portal') {
-      ctx.save();
-      const hats = [25, 125, 380];
-      hats.forEach(hx => {
-        ctx.fillStyle = '#738e73';
-        ctx.beginPath();
-        ctx.moveTo(hx, h);
-        ctx.lineTo(hx + 18, h - 34);
-        ctx.lineTo(hx + 36, h);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = '#ffd54f';
-        ctx.fillRect(hx + 15, h - 18, 6, 6);
-      });
-      ctx.restore();
-    } else if (bg === 'cloud_balcony') {
-      ctx.save();
-      ctx.fillStyle = '#654434';
-      ctx.beginPath();
-      ctx.moveTo(250, 0);
-      ctx.lineTo(265, 18);
-      ctx.lineTo(335, 15);
-      ctx.lineTo(355, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    } else if (bg === 'dark_dungeon') {
-      ctx.save();
-      ctx.fillStyle = '#9c8172';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h - 35);
-      ctx.lineTo(35, h - 24);
-      ctx.lineTo(60, h);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
     }
   }
 
