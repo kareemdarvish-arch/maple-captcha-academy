@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MapleCaptcha Academy - Korean Lie Detector Trainer & Keyboard Master</title>
+  <meta name="description" content="Master MapleStory Korean Lie Detector captchas. Bilingual English/Arabic, interactive Dubeolsik keyboard, procedural noisy pixel captchas, Hangul letter academy, and test simulator.">
+
+  <!-- Korean Pixel, English & Arabic Modern Fonts -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;500;600;700;800&family=Cairo:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="logo-leaf">🍁</div>
+        <div>
+          <h1 class="logo-title"><span data-i18n="appName">MapleCaptcha</span> <span class="badge-accent" data-i18n="appBadge">Academy</span></h1>
+          <p class="logo-subtitle" data-i18n="appSubtitle">Korean Lie Detector (거짓말탐지기) Simulator, Keyboard & Hangul Trainer</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab-btn active" data-tab="trainer" role="tab" aria-selected="true">
+          <span class="tab-icon">🎯</span> <span data-i18n="tabTrainer">Captcha Trainer</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="academy" role="tab" aria-selected="false">
+          <span class="tab-icon">📚</span> <span data-i18n="tabAcademy">Hangul Academy</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="lookalikes" role="tab" aria-selected="false">
+          <span class="tab-icon">👁️</span> <span data-i18n="tabLookalikes">Lookalike Traps</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="drill" role="tab" aria-selected="false">
+          <span class="tab-icon">⚡</span> <span data-i18n="tabDrill">Letter Drills</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="guide" role="tab" aria-selected="false">
+          <span class="tab-icon">🪟</span> <span data-i18n="tabGuide">Keyboard Setup Guide</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="sandbox" role="tab" aria-selected="false">
+          <span class="tab-icon">🎨</span> <span data-i18n="tabSandbox">Custom Sandbox</span>
+        </button>
+      </nav>
+
+      <!-- Global Actions: Language & Sound -->
+      <div class="header-actions">
+        <div class="lang-selector-wrapper">
+          <select id="select-language" class="form-select lang-select" title="Switch Language / تغيير اللغة">
+            <option value="en">English 🇺🇸</option>
+            <option value="ar">العربية 🇸🇦</option>
+          </select>
+        </div>
+        <button id="btn-toggle-sound" class="btn btn-sm btn-outline" title="Toggle Sound FX" data-i18n="soundOn">
+          🔊 Sound On
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Panes -->
+    <main class="main-content">
+
+      <!-- ================= TAB 1: CAPTCHA TRAINER ================= -->
+      <section id="tab-trainer" class="tab-pane active" role="tabpanel">
+        
+        <!-- Controls & Configuration Toolbar -->
+        <div class="trainer-toolbar">
+          <div class="toolbar-group">
+            <label for="select-game-mode" data-i18n="labelMode">Mode:</label>
+            <select id="select-game-mode" class="form-select">
+              <option value="practice" data-i18n-option="modePractice">Endless Practice (No Timer)</option>
+              <option value="test" data-i18n-option="modeTest">Timed Exam (30s & Strikes)</option>
+              <option value="speedrun" data-i18n-option="modeSpeedrun">Speedrun (10-Streak Race)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-group">
+            <label for="select-syllable-set" data-i18n="labelSyllables">Syllables:</label>
+            <select id="select-syllable-set" class="form-select">
+              <option value="balanced" selected data-i18n-option="setBalanced">Balanced In-Game Mix</option>
+              <option value="authentic" data-i18n-option="setAuthentic">Authentic Maple Words</option>
+              <option value="adaptive" data-i18n-option="setAdaptive">🧠 Smart Adaptive (Your Weak Letters)</option>
+              <option value="difficult_batchim" data-i18n-option="setBatchim">Difficult Batchim (겹받침)</option>
+              <option value="complex_vowels" data-i18n-option="setVowels">Compound Vowels (이중모음)</option>
+              <option value="lookalikes" data-i18n-option="setLookalikes">Lookalike Traps (ㅓ/ㅏ, ㅗ/ㅜ)</option>
+              <option value="all_hangul" data-i18n-option="setAll">All 11,172 Hangul Syllables</option>
+            </select>
+          </div>
+
+          <div class="toolbar-group">
+            <label for="select-noise-level" data-i18n="labelNoise">Noise:</label>
+            <select id="select-noise-level" class="form-select">
+              <option value="easy" data-i18n-option="noiseEasy">Easy (Low Noise)</option>
+              <option value="normal" selected data-i18n-option="noiseNormal">Normal (Game Accurate)</option>
+              <option value="hard" data-i18n-option="noiseHard">Hard (Dense Noise & Lines)</option>
+              <option value="insane" data-i18n-option="noiseInsane">Insane (Nightmare)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-group">
+            <label for="select-background" data-i18n="labelScene">Scene:</label>
+            <select id="select-background" class="form-select">
+              <option value="sky_rock" selected data-i18n-option="sceneSky">Sky & Rock (Screenshot 4)</option>
+              <option value="cloud_balcony" data-i18n-option="sceneCloud">Cloud Balcony (Screenshot 1)</option>
+              <option value="ellinia_portal" data-i18n-option="scenePortal">Ellinia Portal (Screenshot 2)</option>
+              <option value="dark_dungeon" data-i18n-option="sceneDungeon">Dark Dungeon (Screenshot 3)</option>
+              <option value="clean" data-i18n-option="sceneClean">Clean Dark (Focus Mode)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-actions">
+            <button id="btn-toggle-magnifier" class="btn btn-icon" title="Toggle 3x Magnifier Lens" data-i18n="btnLens">
+              🔍 Lens
+            </button>
+            <button id="btn-toggle-hint" class="btn btn-icon" title="Deconstruct Characters / Keystrokes Hint" data-i18n="btnHint">
+              💡 Hint
+            </button>
+            <button id="btn-toggle-float-keyboard" class="btn btn-secondary" title="Detach Floating Keyboard" data-i18n="btnFloatingKb">
+              🪟 Float Keyboard
+            </button>
+            <button id="btn-next-captcha" class="btn btn-primary" title="Generate New Captcha" data-i18n="btnNew">
+              🔄 New (Skip)
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statStreak">Streak:</span>
+            <span id="stat-streak" class="stat-value highlight-streak">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statBest">Best Streak:</span>
+            <span id="stat-best-streak" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statSolved">Solved:</span>
+            <span id="stat-solved" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label" data-i18n="statAccuracy">Accuracy:</span>
+            <span id="stat-rate" class="stat-value">100%</span>
+          </div>
+          <div class="stat-item strikes-item">
+            <span class="stat-label" data-i18n="statStrikes">Strikes:</span>
+            <div id="strikes-container" class="strikes-box">
+              <span class="strike-marker">✕</span>
+              <span class="strike-marker">✕</span>
+              <span class="strike-marker">✕</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Captcha Stage Container -->
+        <div class="captcha-stage-card">
+          <!-- Timer Bar (Visible in Test and Speedrun modes) -->
+          <div id="timer-container" class="timer-wrapper" style="display: none;">
+            <div class="timer-label" data-i18n="timeLeft">Time Remaining:</div>
+            <div class="timer-bar-bg">
+              <div id="timer-progress-fill" class="timer-bar-fill" style="width: 100%;"></div>
+            </div>
+            <div id="timer-time-left" class="timer-digits">30.0s</div>
+          </div>
+
+          <!-- Maple Captcha Canvas with Frame -->
+          <div class="canvas-viewport-wrapper">
+            <div class="canvas-pixel-frame">
+              <canvas id="captcha-canvas" width="720" height="210"></canvas>
+            </div>
+            <div class="canvas-bottom-hint">
+              <span data-i18n="canvasHoverHint">Hover canvas with <strong>🔍 Lens</strong> enabled to inspect pixel strokes</span>
+              <span class="game-badge" data-i18n="engineBadge">KMS Lie Detector Engine</span>
+            </div>
+          </div>
+
+          <!-- Character Breakdown Drawer (Hints) -->
+          <div id="captcha-hint-drawer" class="hint-drawer">
+            <div class="hint-drawer-header">
+              <span class="hint-title" data-i18n="hintHeader">💡 Stroke Breakdown & QWERTY Keystrokes</span>
+              <span class="hint-note" data-i18n="hintSubnote">Click any letter card to inspect parts & hear pronunciation</span>
+            </div>
+            <div id="current-captcha-breakdown" class="hint-cards-row"></div>
+          </div>
+
+          <!-- Feedback Notification Banner -->
+          <div id="feedback-banner" class="feedback-banner" style="display: none;"></div>
+
+          <!-- Input Display & Typing Field -->
+          <div class="input-section">
+            <div class="input-display-wrapper">
+              <div id="captcha-input-display" class="captcha-slots-display">
+                <!-- Dynamic character slots rendered here -->
+              </div>
+
+              <!-- Hidden input capturing physical keystrokes / native Korean IME -->
+              <input type="text" id="captcha-hidden-input" class="trainer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
+            </div>
+
+            <div class="input-action-buttons">
+              <button id="btn-clear-input" class="btn btn-secondary" title="Clear typed text" data-i18n="btnClear">Clear</button>
+              <button id="btn-submit-captcha" class="btn btn-success btn-submit" title="Submit Captcha (or press Enter)" data-i18n="btnSubmit">Submit ↵</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Virtual Dubeolsik (2-Set) Keyboard -->
+        <div class="keyboard-section">
+          <div class="keyboard-section-header">
+            <h3 data-i18n="kbTitle">Interactive Dubeolsik (두벌식) Keyboard</h3>
+            <span class="keyboard-tip" data-i18n="kbSubnote">
+              Type on your English keyboard (auto-converted to Hangul!) or click keys below.
+            </span>
+          </div>
+          <div id="virtual-keyboard-container" class="virtual-keyboard-box"></div>
+        </div>
+
+      </section>
+
+
+      <!-- ================= TAB 2: HANGUL ACADEMY ================= -->
+      <section id="tab-academy" class="tab-pane" role="tabpanel">
+        
+        <div class="academy-hero-card">
+          <h2 data-i18n="academyTitle">Hangul Structure 101 for Gamers</h2>
+          <p data-i18n="academyDesc">
+            Korean is an alphabet assembled into blocks. Every block consists of an Initial Consonant (Left Hand) + Medial Vowel (Right Hand) + optional Final Batchim (Left Hand).
+          </p>
+          <div class="structure-visual-row">
+            <div class="structure-box">
+              <div class="struct-title" data-i18n="blockTwoPart">Two-Part Block (Initial + Vowel)</div>
+              <div class="struct-example">
+                <span class="part-c">ㄱ (r)</span> + <span class="part-v">ㅏ (k)</span> = <span class="part-result">가 (ga)</span>
+              </div>
+            </div>
+            <div class="structure-box">
+              <div class="struct-title" data-i18n="blockThreePart">Three-Part Block (Initial + Vowel + Batchim)</div>
+              <div class="struct-example">
+                <span class="part-c">ㄱ (r)</span> + <span class="part-v">ㅏ (k)</span> + <span class="part-b">ㄴ (s)</span> = <span class="part-result">간 (gan)</span>
+              </div>
+            </div>
+            <div class="structure-box">
+              <div class="struct-title" data-i18n="blockCompound">Compound Batchim Block</div>
+              <div class="struct-example">
+                <span class="part-c">ㄷ (e)</span> + <span class="part-v">ㅏ (k)</span> + <span class="part-b">ㄺ (f+r)</span> = <span class="part-result">닭 (dak)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Syllable Deconstructor & Search -->
+        <div class="deconstructor-widget-card">
+          <div class="widget-header">
+            <h3 data-i18n="deconTitle">🔬 Interactive Syllable Deconstructor & Speech</h3>
+            <p data-i18n="deconDesc">Type ANY Korean syllable or letter to see its stroke breakdown, English keys, and hear native pronunciation:</p>
+          </div>
+          <div class="widget-search-row">
+            <input type="text" id="inspect-char-input" class="form-input" maxlength="2" placeholder="e.g. 빛, 닭, 엊, 낄, 화" value="빛" data-i18n="deconPlaceholder" />
+            <button id="inspect-char-btn" class="btn btn-primary" data-i18n="deconBtn">Deconstruct</button>
+          </div>
+          <div id="deconstructor-output" class="deconstructor-result-box"></div>
+        </div>
+
+        <!-- Complete Jamo Alphabet Reference Table -->
+        <div class="jamo-reference-section">
+          <div class="jamo-filter-bar">
+            <h3>Complete Letter Reference (Click card to highlight on keyboard, click 🔊 to listen):</h3>
+            <div class="filter-btn-group">
+              <button class="jamo-filter-btn active" data-filter="all" data-i18n="allLetters">All Letters</button>
+              <button class="jamo-filter-btn" data-filter="consonant" data-i18n="consonants">Consonants (자음)</button>
+              <button class="jamo-filter-btn" data-filter="vowel" data-i18n="vowels">Vowels (모음)</button>
+              <button class="jamo-filter-btn" data-filter="compound_vowel" data-i18n="compoundVowels">Compound Vowels</button>
+              <button class="jamo-filter-btn" data-filter="batchim" data-i18n="batchim">Tricky Batchim (받침)</button>
+            </div>
+          </div>
+          <div id="jamo-grid-container" class="jamo-grid-container"></div>
+        </div>
+
+      </section>
+
+
+      <!-- ================= TAB 3: LOOKALIKE TRAPS ================= -->
+      <section id="tab-lookalikes" class="tab-pane" role="tabpanel">
+        <div class="lookalikes-hero-card">
+          <h2 data-i18n="lookalikeTitle">👁️ "Lookalike Traps" Spotter Guide</h2>
+          <p data-i18n="lookalikeDesc">
+            Under heavy pixel noise lines and confetti dots in MapleStory, certain characters look virtually identical. Memorize these key geometric differences to never fail a lie detector again!
+          </p>
+        </div>
+        <div id="lookalikes-container" class="lookalikes-container"></div>
+      </section>
+
+
+      <!-- ================= TAB 4: LETTER DRILLS ================= -->
+      <section id="tab-drill" class="tab-pane" role="tabpanel">
+        <div class="drill-hero-card">
+          <h2 data-i18n="drillTitle">⚡ Speed Letter Recognition Drill</h2>
+          <p data-i18n="drillDesc">
+            Train your brain to instantly identify noisy Korean letters and tap their QWERTY keys with muscle memory.
+          </p>
+        </div>
+        <div id="drill-container" class="drill-container"></div>
+      </section>
+
+
+      <!-- ================= TAB 5: KEYBOARD SETUP GUIDE ================= -->
+      <section id="tab-guide" class="tab-pane" role="tabpanel">
+        <div class="guide-hero-card">
+          <h2 data-i18n="guideTitle">🪟 Korean Keyboard Setup & Floating Screen Guide</h2>
+          <p data-i18n="guideDesc">
+            How to install the Korean IME in Windows and how to make the on-screen keyboard float over your game window.
+          </p>
+        </div>
+
+        <div class="guide-steps-grid">
+          <!-- Step 1 -->
+          <div class="guide-step-card">
+            <div class="guide-step-header">
+              <span class="step-badge">1</span>
+              <h3 data-i18n="guideStep1Title">Step 1: Install Korean Language in Windows 10/11</h3>
+            </div>
+            <div class="guide-step-body">
+              <p data-i18n="guideStep1Desc">
+                1. Open Windows Settings (Press Win + I).<br>
+                2. Go to "Time & Language" → "Language & Region".<br>
+                3. Click "Add a language" and search for "Korean (한국어)".<br>
+                4. Install the Basic Typing package.
+              </p>
+              <div class="guide-code-box">
+                <code>Win + I &gt; Time &amp; Language &gt; Add Language &gt; Korean</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="guide-step-card">
+            <div class="guide-step-header">
+              <span class="step-badge">2</span>
+              <h3 data-i18n="guideStep2Title">Step 2: Switching Between English/Arabic & Korean</h3>
+            </div>
+            <div class="guide-step-body">
+              <p data-i18n="guideStep2Desc">
+                • Press Win + Space or Left Alt + Shift to toggle between your languages.<br>
+                • When Korean is active, press the Right Alt key (한/영) to switch between English typing and Hangul typing (or click the "A" icon in the taskbar so it turns into "가").
+              </p>
+              <div class="guide-code-box">
+                <code>Toggle Language: Win + Space | Toggle Hangul: Right Alt</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="guide-step-card">
+            <div class="guide-step-header">
+              <span class="step-badge">3</span>
+              <h3 data-i18n="guideStep3Title">Step 3: Make the Keyboard Float On-Screen</h3>
+            </div>
+            <div class="guide-step-body">
+              <p data-i18n="guideStep3Desc">
+                • Press Win + Ctrl + O to launch the Windows On-Screen Keyboard (OSK).<br>
+                • You can drag it, resize it, and position it directly over or next to your MapleStory game window!<br>
+                • Alternatively, click "🪟 Float Keyboard" on this website to test using a floating keyboard right now.
+              </p>
+              <div class="guide-code-box">
+                <code>Launch Floating On-Screen Keyboard: Win + Ctrl + O</code>
+              </div>
+              <div class="guide-action-row">
+                <button type="button" class="btn btn-primary" onclick="document.querySelector('[data-tab=trainer]').click(); document.getElementById('btn-toggle-float-keyboard').click();">
+                  🪟 Test Floating Keyboard in Trainer Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ================= TAB 6: CUSTOM SANDBOX ================= -->
+      <section id="tab-sandbox" class="tab-pane" role="tabpanel">
+        <div class="sandbox-card">
+          <h2 data-i18n="sandboxTitle">🎨 Custom Captcha Generator & Image Exporter</h2>
+          <p data-i18n="sandboxDesc">Generate authentic MapleStory captchas with your own words, test guild members, or export PNG images.</p>
+
+          <div class="sandbox-controls-grid">
+            <div class="sandbox-control-item">
+              <label for="sandbox-custom-text" data-i18n="sandboxInputLabel">Custom Korean Text (Up to 8 chars):</label>
+              <div class="input-with-btn">
+                <input type="text" id="sandbox-custom-text" class="form-input" value="메이플스토리" maxlength="8" />
+                <button id="sandbox-generate-btn" class="btn btn-primary" data-i18n="sandboxBtnRender">Render</button>
+                <button id="sandbox-random-btn" class="btn btn-secondary" data-i18n="sandboxBtnRandom">Random</button>
+              </div>
+            </div>
+
+            <div class="sandbox-control-item">
+              <label for="sandbox-tilt-slider"><span data-i18n="sandboxTiltLabel">Banner Tilt Angle:</span> <span id="sandbox-tilt-val">-4.5°</span></label>
+              <input type="range" id="sandbox-tilt-slider" min="-12" max="12" step="0.5" value="-4.5" class="form-range" />
+            </div>
+
+            <div class="sandbox-control-item">
+              <label for="sandbox-noise-preset" data-i18n="sandboxNoiseLabel">Noise Intensity:</label>
+              <select id="sandbox-noise-preset" class="form-select">
+                <option value="easy" data-i18n-option="noiseEasy">Easy (Low Noise)</option>
+                <option value="normal" selected data-i18n-option="noiseNormal">Normal (Game Accurate)</option>
+                <option value="hard" data-i18n-option="noiseHard">Hard (Dense Noise)</option>
+                <option value="insane" data-i18n-option="noiseInsane">Insane (Nightmare)</option>
+              </select>
+            </div>
+
+            <div class="sandbox-control-item">
+              <label for="sandbox-bg" data-i18n="sandboxBgLabel">Background Scene:</label>
+              <select id="sandbox-bg" class="form-select">
+                <option value="sky_rock" selected data-i18n-option="sceneSky">Sky & Rock (Screenshot 4)</option>
+                <option value="cloud_balcony" data-i18n-option="sceneCloud">Cloud Balcony (Screenshot 1)</option>
+                <option value="ellinia_portal" data-i18n-option="scenePortal">Ellinia Portal (Screenshot 2)</option>
+                <option value="dark_dungeon" data-i18n-option="sceneDungeon">Dark Dungeon (Screenshot 3)</option>
+                <option value="clean" data-i18n-option="sceneClean">Clean Dark</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sandbox-canvas-wrapper">
+            <div class="canvas-pixel-frame">
+              <canvas id="sandbox-canvas" width="720" height="210"></canvas>
+            </div>
+            <div class="sandbox-export-row">
+              <button id="sandbox-export-btn" class="btn btn-success btn-lg" data-i18n="sandboxBtnExport">
+                💾 Export Image as PNG
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Truth Room Modal (MapleStory Prison Simulation on 3 Strikes) -->
+    <div id="truth-room-modal" class="modal-overlay">
+      <div class="truth-room-card">
+        <div class="truth-room-header">
+          <span class="modal-badge-danger" data-i18n="truthRoomBadge">🚨 LIE DETECTOR FAILED</span>
+          <h2 data-i18n="truthRoomTitle">Teleported to the Truth Room! (진실의 방)</h2>
+        </div>
+        <div class="truth-room-body">
+          <div class="truth-room-npc-art">👮‍♂️</div>
+          <p class="truth-room-msg" data-i18n="truthRoomMsg">
+            "You failed to enter the Lie Detector text within the time limit or accumulated 3 strikes! In MapleStory, this moves your character to the Truth Room prison."
+          </p>
+          <div class="truth-room-tips">
+            <strong data-i18n="truthRoomAdvice">Trainer Advice:</strong>
+            <ul>
+              <li data-i18n="truthRoomTip1">Use the Hangul Academy tab to master tricky letters.</li>
+              <li data-i18n="truthRoomTip2">Consonants are typed with your Left Hand, Vowels with your Right Hand.</li>
+              <li data-i18n="truthRoomTip3">Enable the 🔍 Lens to inspect obscured strokes under noise lines.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="truth-room-actions">
+          <button id="btn-close-truth-room" class="btn btn-primary btn-lg" data-i18n="truthRoomRetry">
+            Try Again (재도전)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <p data-i18n="footerText">MapleCaptcha Academy • Designed for gamers learning Korean Dubeolsik typing & MapleStory Lie Detector captchas.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js"></script>
+  <script src="js/hangul.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/smart.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/learning.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
