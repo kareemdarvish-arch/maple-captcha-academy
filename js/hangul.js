@@ -337,11 +337,12 @@ const Hangul = (() => {
       // Check if it's a QWERTY key that maps to Jamo
       let jamo = KEY_TO_JAMO[char] || char;
 
-      // Handle space
+      // Handle space: commit current composing syllable & advance cleanly to next slot (NO literal space char!)
       if (char === ' ') {
-        this.commit();
-        this.text += ' ';
-        this.keystrokes.push(' ');
+        if (this.getComposing()) {
+          this.commit();
+          this.keystrokes.push(' ');
+        }
         return this.getValue();
       }
 
@@ -476,7 +477,16 @@ const Hangul = (() => {
         return this.getValue();
       }
 
-      this.keystrokes.pop();
+      // Skip trailing syllable-lock space separators so 1 Backspace deletes 1 real stroke
+      while (this.keystrokes.length > 0 && this.keystrokes[this.keystrokes.length - 1] === ' ') {
+        this.keystrokes.pop();
+      }
+      if (this.keystrokes.length > 0) {
+        this.keystrokes.pop();
+      } else if (this.text.length > 0) {
+        this.text = this.text.slice(0, -1);
+        return this.getValue();
+      }
 
       // Replay all keystrokes from scratch to maintain perfect state
       const savedKeys = [...this.keystrokes];
@@ -489,11 +499,11 @@ const Hangul = (() => {
     }
 
     /**
-     * Directly set external text (e.g. from Korean IME or paste)
+     * Directly set external text (e.g. from Korean IME or paste), stripping spaces
      */
     setText(str) {
       this.reset();
-      this.text = str || '';
+      this.text = (str || '').replace(/\s+/g, '');
     }
   }
 

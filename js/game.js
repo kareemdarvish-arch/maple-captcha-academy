@@ -31,6 +31,8 @@ class MapleCaptchaGame {
     this.speedrunCount = 0;
     this.speedrunTotalTime = 0;
     this.prevTypedLen = 0;
+    this.isIMEComposing = false;
+    this.roundTimeout = null;
 
     this.automaton = new Hangul.HangulAutomaton();
     this.elements = {};
@@ -87,30 +89,64 @@ class MapleCaptchaGame {
     this.keyboard.options.onInput = (char) => this.handleKeystroke(char);
     this.keyboard.options.onBackspace = () => this.handleBackspace();
     this.keyboard.options.onEnter = () => this.submitAnswer();
-    this.keyboard.options.onSpace = () => this.handleKeystroke(' ');
+    this.keyboard.options.onSpace = () => this.handleSpace();
     this.keyboard.options.onClear = () => this.clearInput();
     this.keyboard.options.playClickSound = (type) => SoundFX.playKeyClick(type);
 
     if (this.elements.textInput) {
+      this.elements.textInput.addEventListener('compositionstart', () => {
+        this.isIMEComposing = true;
+      });
+
+      this.elements.textInput.addEventListener('compositionend', () => {
+        this.isIMEComposing = false;
+        const raw = this.elements.textInput.value || '';
+        const cleaned = raw.replace(/\s+/g, '');
+        this.automaton.setText(cleaned);
+        if (raw !== cleaned) {
+          this.elements.textInput.value = cleaned;
+        }
+        this.renderInput();
+      });
+
       this.elements.textInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || (e.keyCode === 13 && !e.shiftKey)) {
           e.preventDefault();
           e.stopPropagation();
+          if (this.isIMEComposing && this.elements.textInput) {
+            const raw = (this.elements.textInput.value || '').replace(/\s+/g, '');
+            if (raw) this.automaton.setText(raw);
+            this.isIMEComposing = false;
+          }
           this.submitAnswer();
-        } else if (e.key === 'Backspace') {
+          return;
+        }
+
+        // Let native Windows Korean IME compose naturally
+        if (e.isComposing || this.isIMEComposing || e.key === 'Process' || e.keyCode === 229) {
+          return;
+        }
+
+        if (e.key === 'Backspace') {
           e.preventDefault();
           this.handleBackspace();
+        } else if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          this.handleSpace();
         } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
           e.preventDefault();
           this.handleKeystroke(e.key);
         }
       });
 
-      this.elements.textInput.addEventListener('input', (e) => {
-        if (e.data && Hangul.isSyllable(e.data)) {
-          this.automaton.setText(this.automaton.getValue() + e.data);
-          this.renderInput();
+      this.elements.textInput.addEventListener('input', () => {
+        const raw = this.elements.textInput.value || '';
+        const cleaned = raw.replace(/\s+/g, '');
+        this.automaton.setText(cleaned);
+        if (!this.isIMEComposing && raw !== cleaned) {
+          this.elements.textInput.value = cleaned;
         }
+        this.renderInput();
       });
     }
 
@@ -136,15 +172,23 @@ class MapleCaptchaGame {
     });
   }
 
+  clearPendingRoundTransition() {
+    if (this.roundTimeout) {
+      clearTimeout(this.roundTimeout);
+      this.roundTimeout = null;
+    }
+  }
+
   /**
    * Start or Advance Round
    */
   newRound(category = null) {
+    this.clearPendingRoundTransition();
     if (category) this.category = category;
 
+    this.isIMEComposing = false;
     this.automaton.reset();
     this.prevTypedLen = 0;
-    this.renderInput();
     this.hideFeedback();
     this.hideHint();
 
@@ -159,6 +203,7 @@ class MapleCaptchaGame {
     this.currentRoundData = data;
     this.startTime = Date.now();
 
+    this.renderInput();
     this.renderDeconstructionPreview(data);
 
     if (this.mode === 'test') {
@@ -177,6 +222,8 @@ class MapleCaptchaGame {
     this.updateExamUI();
 
     if (this.elements.textInput) {
+      // Blur & refocus clears any leftover OS Korean IME composition from previous round
+      this.elements.textInput.blur();
       this.elements.textInput.value = '';
       this.elements.textInput.focus();
     }
@@ -285,24 +332,55 @@ class MapleCaptchaGame {
     }
   }
 
+  syncHiddenInputValue() {
+    if (!this.elements.textInput || this.isIMEComposing) return;
+    const clean = this.automaton.getValue();
+    if (this.elements.textInput.value !== clean) {
+      this.elements.textInput.value = clean;
+    }
+  }
+
   handleKeystroke(char) {
+    if (char === ' ') {
+      this.handleSpace();
+      return;
+    }
+    if (typeof SoundFX !== 'undefined') SoundFX.playKeyClick('char');
     this.automaton.input(char);
+    this.syncHiddenInputValue();
+    this.renderInput();
+  }
+
+  handleSpace() {
+    if (typeof SoundFX !== 'undefined') SoundFX.playKeyClick('space');
+    this.automaton.input(' ');
+    this.syncHiddenInputValue();
     this.renderInput();
   }
 
   handleBackspace() {
+    if (typeof SoundFX !== 'undefined') SoundFX.playKeyClick('backspace');
     this.automaton.backspace();
+    this.syncHiddenInputValue();
     this.renderInput();
   }
 
   clearInput() {
+    this.isIMEComposing = false;
     this.automaton.reset();
+    if (this.elements.textInput) {
+      this.elements.textInput.blur();
+      this.elements.textInput.value = '';
+      this.elements.textInput.focus();
+    }
     this.renderInput();
   }
 
   renderInput() {
     const val = this.automaton.getValue();
-    const target = this.generator.currentText;
+    const composingChar = this.automaton.getComposing();
+    const isComposing = Boolean(composingChar) || this.isIMEComposing;
+    const target = this.generator.currentText || '';
 
     if (!this.elements.inputDisplay) return;
 
@@ -320,19 +398,26 @@ class MapleCaptchaGame {
     for (let i = 0; i < maxLen; i++) {
       const char = val[i] || '';
       const targetChar = target[i] || '';
+      const isCurrentComposing = Boolean(char) && isComposing && (i === val.length - 1);
       let statusClass = 'empty';
 
       if (char) {
         if (this.mode === 'practice') {
-          statusClass = (char === targetChar) ? 'match-correct' : 'match-wrong';
+          if (char === targetChar) {
+            statusClass = 'match-correct';
+          } else if (isCurrentComposing) {
+            statusClass = 'filled composing-slot';
+          } else {
+            statusClass = 'match-wrong';
+          }
         } else {
-          statusClass = 'filled';
+          statusClass = isCurrentComposing ? 'filled composing-slot' : 'filled';
         }
       } else if (i === val.length) {
-        statusClass = 'active-cursor';
+        statusClass = isComposing ? 'next-cursor' : 'active-cursor';
       }
 
-      html += `<div class="input-char-slot ${statusClass}">${char || '&nbsp;'}</div>`;
+      html += `<div class="input-char-slot ${statusClass}" dir="ltr">${char || '&nbsp;'}</div>`;
     }
 
     this.elements.inputDisplay.innerHTML = html;
@@ -353,7 +438,7 @@ class MapleCaptchaGame {
   submitAnswer() {
     if (this.isSubmitting) return;
     this.automaton.commit();
-    const typed = this.automaton.getValue().trim();
+    const typed = this.automaton.getValue().replace(/\s+/g, '');
     const target = this.generator.currentText.trim();
     const solveTime = (Date.now() - this.startTime) / 1000;
 
@@ -418,7 +503,8 @@ class MapleCaptchaGame {
       }
     }
 
-    setTimeout(() => this.newRound(), 600);
+    this.clearPendingRoundTransition();
+    this.roundTimeout = setTimeout(() => this.newRound(), 600);
   }
 
   handleFailure(typed, target) {
@@ -482,7 +568,8 @@ class MapleCaptchaGame {
 
     this.examCurrentIndex += 1;
 
-    setTimeout(() => {
+    this.clearPendingRoundTransition();
+    this.roundTimeout = setTimeout(() => {
       if (this.examCurrentIndex >= this.examLength) {
         this.finishExam();
       } else {
@@ -612,11 +699,11 @@ class MapleCaptchaGame {
               <div class="mistake-comparison-row">
                 <div class="mistake-col">
                   <span class="col-label">${I18n.t('examExpected')}</span>
-                  <span class="col-target">${q.targetText}</span>
+                  <span class="col-target" dir="ltr">${q.targetText}</span>
                 </div>
                 <div class="mistake-col">
                   <span class="col-label">${I18n.t('examYouTyped')}</span>
-                  <span class="col-typed ${q.typedText ? 'wrong-text' : 'empty-text'}">${q.typedText || '—'}</span>
+                  <span class="col-typed ${q.typedText ? 'wrong-text' : 'empty-text'}" dir="ltr">${q.typedText || '—'}</span>
                 </div>
               </div>
               ${q.mistakeAnalysis && q.mistakeAnalysis.length > 0 ? `
@@ -764,7 +851,8 @@ class MapleCaptchaGame {
     }
 
     this.showFeedback(I18n.t('diagTimeout', { target }), 'error');
-    setTimeout(() => this.newRound(), 1500);
+    this.clearPendingRoundTransition();
+    this.roundTimeout = setTimeout(() => this.newRound(), 1500);
   }
 
   updateTimerUI() {

@@ -188,7 +188,7 @@
                 <span class="hint-title" data-i18n="hintHeader">💡 تفكيك الحروف ومفاتيح QWERTY الإنجليزية</span>
                 <span class="hint-note" data-i18n="hintSubnote">اضغط على أي بطاقة حرف لفحص أجزائه والاستماع إلى نطقه الكوري الأصلي</span>
               </div>
-              <div id="current-captcha-breakdown" class="hint-cards-row"></div>
+              <div id="current-captcha-breakdown" class="hint-cards-row" dir="ltr"></div>
             </div>
 
             <!-- Feedback Notification Banner -->
@@ -196,12 +196,12 @@
 
             <!-- Input Display & Typing Field -->
             <div class="input-section">
-              <div class="input-display-wrapper">
-                <div id="captcha-input-display" class="captcha-slots-display">
+              <div class="input-display-wrapper" dir="ltr">
+                <div id="captcha-input-display" class="captcha-slots-display" dir="ltr">
                   <!-- Dynamic character slots rendered here -->
                 </div>
                 <!-- Hidden input capturing physical keystrokes / native Korean IME -->
-                <input type="text" id="captcha-hidden-input" class="trainer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
+                <input type="text" id="captcha-hidden-input" class="trainer-input" dir="ltr" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
               </div>
 
               <div class="input-action-buttons">
@@ -455,7 +455,7 @@
             <p data-i18n="deconDesc">اكتب أي مقطع أو حرف كوري لترى تفكيكه بدقة، والمفاتيح الإنجليزية المطلوبة لنطقه:</p>
           </div>
           <div class="widget-search-row">
-            <input type="text" id="inspect-char-input" class="form-input" maxlength="2" placeholder="e.g. 빛, 닭, 엊, 낄, 화" value="빛" data-i18n="deconPlaceholder" />
+            <input type="text" id="inspect-char-input" class="form-input" dir="ltr" maxlength="2" placeholder="e.g. 빛, 닭, 엊, 낄, 화" value="빛" data-i18n="deconPlaceholder" />
             <button id="inspect-char-btn" class="btn btn-primary" data-i18n="deconBtn">فكك الحرف</button>
           </div>
           <div id="deconstructor-output" class="deconstructor-result-box"></div>
@@ -580,7 +580,7 @@
             <div class="sandbox-control-item">
               <label for="sandbox-custom-text" data-i18n="sandboxInputLabel">النص الكوري المخصص (حتى 8 أحرف):</label>
               <div class="input-with-btn">
-                <input type="text" id="sandbox-custom-text" class="form-input" value="메이플스토리" maxlength="8" />
+                <input type="text" id="sandbox-custom-text" class="form-input" dir="ltr" value="메이플스토리" maxlength="8" />
                 <button id="sandbox-generate-btn" class="btn btn-primary" data-i18n="sandboxBtnRender">رسم الكابتشا</button>
                 <button id="sandbox-random-btn" class="btn btn-secondary" data-i18n="sandboxBtnRandom">نص عشوائي</button>
               </div>
