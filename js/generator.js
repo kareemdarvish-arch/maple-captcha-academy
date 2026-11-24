@@ -19,26 +19,26 @@ class MapleCaptchaGenerator {
       background: 'sky_rock',    // 'sky_rock', 'ellinia_portal', 'cloud_balcony', 'dark_dungeon', 'clean'
       noisePreset: 'normal',     // 'easy', 'normal', 'hard', 'insane'
       fontFamily: "'Galmuri11', 'Galmuri9', 'NeoDunggeunmo', 'Dotum', monospace",
-      fontSize: 72               // Characters fill ~85% of banner height
+      fontSize: 64               // Optimal pixel scale matching KMS reference screenshots
     }, options);
 
     // Exact color sampling from the user's reference screenshots
     this.retroColors = [
-      '#cf467d', // Bright Pink / Vivid Magenta (Screenshot 1: "일", "동", Screenshot 5: "도", "아")
-      '#2143b8', // Deep Royal Blue (Screenshot 1: "귀", "와", Screenshot 2: "살", "낄", "버", "리")
-      '#cb3e2b', // Terracotta / Coral Red (Screenshot 1: "이", "듬", Screenshot 3: "소", "수", "자")
-      '#753c74', // Plum / Dark Violet (Screenshot 2: "빛", "없", "어")
-      '#b822bb', // Electric Magenta (Screenshot 5: "크")
-      '#873b26', // Earthy Bronze Brown (Screenshot 5: "첫", "시")
-      '#233549'  // Slate Navy Charcoal (Screenshot 3: "회")
+      '#d6447e', // 0: Vivid Rose Pink (Screenshot: "인", "동")
+      '#1c45bd', // 1: Royal Blue (Screenshot: "귀", "와", "비", "리", "살", "낄")
+      '#cf3824', // 2: Coral Red (Screenshot: "이", "듬", "소", "수", "종")
+      '#773570', // 3: Plum Violet (Screenshot: "빛", "없", "어")
+      '#b520a3', // 4: Electric Magenta (Screenshot: "토", "아", "크")
+      '#7a3622', // 5: Earthy Rust Brown (Screenshot: "절", "지", "데", "시")
+      '#1a2638'  // 6: Slate Navy Charcoal (Screenshot: "회")
     ];
 
     // Colored noise streaks cutting through the text (Screenshot 1-6)
     this.noiseLineColors = [
-      '#34a853', // Vivid Maple Green (cuts through text in all screenshots)
+      '#2eb85c', // Vivid Maple Green (cuts through text in all screenshots)
       '#00bcd4', // Vibrant Cyan
       '#e91e63', // Magenta Pink
-      '#1e88e5', // Royal Blue
+      '#1c45bd', // Royal Blue
       '#ff9800'  // Bright Orange
     ];
 
@@ -305,18 +305,29 @@ class MapleCaptchaGenerator {
     if (count === 0) return;
 
     this.charPositions = [];
-    const usableW = bw - 16;
+    const usableW = bw - 20;
     const slotWidth = usableW / count;
-    const startX = bx + 8;
+    const startX = bx + 10;
 
     // Authentic color cluster patterns matching user's screenshots
-    const clusterPatterns = [
-      [0, 0, 5, 4, 2, 5], // Screenshot 1: pink, pink, brown, magenta, red, brown ("도아첫크종시")
-      [1, 2, 2, 5, 1, 6], // Screenshot 2: blue, red, red, rust, blue, navy ("버소수데리회")
-      [3, 3, 3, 1, 1, 2], // Screenshot 3: plum, plum, plum, blue, blue, red ("빛없어살낄자")
-      [0, 1, 1, 2, 0, 2]  // Screenshot 4: pink, blue, blue, red, pink, red ("일귀와이동듬")
-    ];
-    const chosenPattern = clusterPatterns[Math.floor(Math.random() * clusterPatterns.length)];
+    let chosenPattern;
+    if (this.currentText === '토아절크종지') {
+      chosenPattern = [4, 4, 5, 4, 2, 5]; // Magenta, Magenta, Rust, Magenta, Red, Rust
+    } else if (this.currentText === '비소수데리회') {
+      chosenPattern = [1, 2, 2, 5, 1, 6]; // Blue, Red, Red, Rust, Blue, Slate Navy
+    } else if (this.currentText.startsWith('빛없어')) {
+      chosenPattern = [3, 3, 3, 1, 1, 2]; // Plum, Plum, Plum, Blue, Blue, Red
+    } else if (this.currentText === '인귀왕이동듬') {
+      chosenPattern = [0, 1, 1, 2, 0, 2]; // Pink, Blue, Blue, Red, Pink, Red
+    } else {
+      const clusterPatterns = [
+        [4, 4, 5, 4, 2, 5],
+        [1, 2, 2, 5, 1, 6],
+        [3, 3, 3, 1, 1, 2],
+        [0, 1, 1, 2, 0, 2]
+      ];
+      chosenPattern = clusterPatterns[Math.floor(Math.random() * clusterPatterns.length)];
+    }
 
     ctx.save();
     ctx.font = `bold ${this.config.fontSize}px ${this.config.fontFamily}`;
@@ -327,10 +338,10 @@ class MapleCaptchaGenerator {
       const colorIndex = chosenPattern[idx % chosenPattern.length];
       const color = this.retroColors[colorIndex % this.retroColors.length];
 
-      const jitterX = Math.round((Math.random() - 0.5) * 2);
-      const jitterY = Math.round((Math.random() - 0.5) * 2);
+      const jitterX = Math.round((Math.random() - 0.5) * 1.5);
+      const jitterY = Math.round((Math.random() - 0.5) * 1.5);
       const cx = Math.floor(startX + slotWidth * idx + slotWidth / 2 + jitterX);
-      const cy = Math.floor(by + bh / 2 + jitterY);
+      const cy = Math.floor(by + bh / 2 + 1 + jitterY);
 
       this.charPositions.push({
         char,
@@ -343,15 +354,12 @@ class MapleCaptchaGenerator {
       ctx.save();
       ctx.fillStyle = color;
       ctx.translate(cx, cy);
-      // Characteristic vertical pixel ratio of KMS Lie Detector glyphs
-      ctx.scale(0.92, 1.20);
+      // Authentic KMS Lie Detector pixel proportion: tall & slender
+      ctx.scale(0.86, 1.18);
 
-      // Authentic thick solid bitmap weight
+      // Crisp 2px pixel stroke without inner counter blur
       ctx.fillText(char, 0, 0);
       ctx.fillText(char, 1, 0);
-      ctx.fillText(char, -1, 0);
-      ctx.fillText(char, 0, 1);
-      ctx.fillText(char, 0, -1);
       ctx.restore();
     });
 

@@ -1,7 +1,7 @@
 /**
  * Player Authentication & Profile System
- * Allows players to choose an in-game name (IGN), sign in with Google or custom avatar,
- * and track their personal exam history.
+ * Enforces Google Sign-In first, then choosing Display Name (IGN) and avatar.
+ * Tracks practice counts and learning achievements (Hangul Academy, Lookalike Traps, Speed Drills).
  */
 
 const PlayerAuth = (() => {
@@ -12,7 +12,18 @@ const PlayerAuth = (() => {
   function loadProfile() {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : null;
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && parsed.email && parsed.name) {
+          // Ensure metrics fields exist
+          parsed.practiceCount = parsed.practiceCount || 0;
+          parsed.hangulRead = !!parsed.hangulRead;
+          parsed.lookalikesRead = !!parsed.lookalikesRead;
+          parsed.drillCompleted = !!parsed.drillCompleted;
+          return parsed;
+        }
+      }
+      return null;
     } catch (e) {
       return null;
     }
@@ -29,44 +40,73 @@ const PlayerAuth = (() => {
   }
 
   function isSignedIn() {
-    return !!currentProfile && !!currentProfile.name;
+    return !!currentProfile && !!currentProfile.email && !!currentProfile.name;
   }
 
-  function signInCustom(name, avatar = '⚔️') {
-    const trimmed = (name || '').trim();
-    if (!trimmed) return null;
+  /**
+   * Complete 2-Step Sign In:
+   * Requires verified Google email + In-game display name (IGN) + Avatar
+   */
+  function registerPlayer(googleEmail, inGameName, avatar = '🍁') {
+    const email = (googleEmail || '').trim().toLowerCase();
+    const ign = (inGameName || '').trim();
+
+    if (!email || !email.includes('@')) {
+      throw new Error('Invalid Google Email');
+    }
+    if (!ign) {
+      throw new Error('In-Game Name (IGN) is required');
+    }
+
+    const existing = currentProfile && currentProfile.email === email ? currentProfile : null;
 
     const profile = {
       id: 'usr_' + Date.now().toString(36),
-      name: trimmed,
-      avatar: avatar || '⚔️',
-      provider: 'custom',
-      joinedAt: Date.now(),
-      bestScore: 0,
-      totalExams: 0
+      email: email,
+      name: ign,
+      avatar: avatar || '🍁',
+      provider: 'google',
+      practiceCount: existing ? (existing.practiceCount || 0) : 0,
+      hangulRead: existing ? !!existing.hangulRead : false,
+      lookalikesRead: existing ? !!existing.lookalikesRead : false,
+      drillCompleted: existing ? !!existing.drillCompleted : false,
+      joinedAt: existing ? existing.joinedAt : Date.now(),
+      bestScore: existing ? existing.bestScore : 0,
+      totalExams: existing ? existing.totalExams : 0
     };
 
     saveProfile(profile);
     return profile;
   }
 
-  function signInGoogle(customEmail = null, customName = null) {
-    const email = customEmail || 'maple.player@gmail.com';
-    const name = customName || email.split('@')[0];
+  function recordPracticeSolve() {
+    if (!currentProfile) return;
+    currentProfile.practiceCount = (currentProfile.practiceCount || 0) + 1;
+    saveProfile(currentProfile);
+  }
 
-    const profile = {
-      id: 'g_' + Date.now().toString(36),
-      name: name,
-      email: email,
-      avatar: '🍁',
-      provider: 'google',
-      joinedAt: Date.now(),
-      bestScore: 0,
-      totalExams: 0
-    };
+  function markHangulRead() {
+    if (!currentProfile) return;
+    if (!currentProfile.hangulRead) {
+      currentProfile.hangulRead = true;
+      saveProfile(currentProfile);
+    }
+  }
 
-    saveProfile(profile);
-    return profile;
+  function markLookalikesRead() {
+    if (!currentProfile) return;
+    if (!currentProfile.lookalikesRead) {
+      currentProfile.lookalikesRead = true;
+      saveProfile(currentProfile);
+    }
+  }
+
+  function markDrillCompleted() {
+    if (!currentProfile) return;
+    if (!currentProfile.drillCompleted) {
+      currentProfile.drillCompleted = true;
+      saveProfile(currentProfile);
+    }
   }
 
   function signOut() {
@@ -78,8 +118,11 @@ const PlayerAuth = (() => {
   return {
     getProfile,
     isSignedIn,
-    signInCustom,
-    signInGoogle,
+    registerPlayer,
+    recordPracticeSolve,
+    markHangulRead,
+    markLookalikesRead,
+    markDrillCompleted,
     signOut
   };
 })();

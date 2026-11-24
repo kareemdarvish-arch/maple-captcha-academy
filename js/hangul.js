@@ -502,10 +502,10 @@ const Hangul = (() => {
   // Authentic Lie Detector captchas directly matching real KMS in-game screenshots and lie detector logs
   const AUTHENTIC_SAMPLES = [
     // Real Lie Detector Captchas from User Screenshots
-    '도아첫크종시',
-    '버소수데리회',
-    '빛없어살낄자',
-    '일귀와이동듬',
+    '토아절크종지',
+    '비소수데리회',
+    '빛없어지금',
+    '인귀왕이동듬',
     '서소샤뱌뵤뷰',
     '엊얹얽옭옰옪',
     '밭솥닻돝둩듵',

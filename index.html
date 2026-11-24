@@ -57,6 +57,11 @@
 
       <!-- Global Actions: User Profile, Language & Sound -->
       <div class="header-actions">
+        <!-- Site Tour / Guide Button -->
+        <button id="btn-open-tour-guide" class="btn btn-sm btn-outline" title="دليل وشرح الموقع">
+          💡 شرح الموقع
+        </button>
+
         <!-- Player Profile Chip / Sign In -->
         <div id="user-profile-header-widget" class="user-profile-widget">
           <button id="btn-open-signin-modal" class="btn btn-sm btn-primary">
@@ -607,43 +612,146 @@
 
     </main>
 
-    <!-- Sign In & Player Profile Modal -->
-    <div id="signin-modal" class="modal-overlay">
-      <div class="auth-card">
-        <div class="auth-card-header">
-          <span class="auth-icon">🍁</span>
-          <h2 data-i18n="signInModalTitle">اختر اسمك وسجل لدخول الاختبار الرسمي</h2>
+    <!-- Onboarding Walkthrough Tour Modal (First Visit & On-Demand) -->
+    <div id="onboarding-tour-modal" class="modal-overlay">
+      <div class="onboarding-card">
+        <div class="onboarding-header">
+          <div class="onboarding-badge">🍁 أهلاً بك في أكاديمية مابل كابتشا 🇪🇬</div>
+          <h2>دليل البداية السريع: إزاي تحترف كاشف الكذب في مابل ستوري؟</h2>
+          <p>شرح سريع في دقيقة يوضح لك خطوات التدريب الصحيحة عشان متجيبش حظر وتنافس كريم في المتصدرين!</p>
         </div>
-        <div class="auth-card-body">
-          <button type="button" id="btn-google-signin" class="btn btn-google-auth">
-            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-            <span data-i18n="signInGoogleBtn">الدخول بحساب Google</span>
-          </button>
 
-          <div class="auth-divider">
-            <span>أو اختر اسماً مستعاراً باللعبة</span>
+        <div class="onboarding-steps-list">
+          <!-- Step 1: Sign in with Google (Crucial First Step) -->
+          <div class="tour-step-item step-priority">
+            <div class="tour-step-num">1</div>
+            <div class="tour-step-content">
+              <div class="step-title-row">
+                <h4>التسجيل بحساب Google واسمك في اللعبة (أهم خطوة!)</h4>
+                <span class="badge-required">إلزامي وموصى به أولاً ⭐️</span>
+              </div>
+              <p>سجل دخولك أولاً بحساب Google واكتب اسمك (IGN) عشان كل كابتشا تحلها وتدريباتك تتسجل رسمي، بدل ما كريم يقعد يصيح إنك متعلمتش! 😂</p>
+              <button type="button" id="tour-btn-open-signin" class="btn btn-sm btn-primary">
+                🚀 سجل بحساب Google الآن
+              </button>
+            </div>
           </div>
 
-          <div class="auth-form-group">
-            <label for="input-player-name" data-i18n="labelPlayerName">اسم اللاعب باللعبة (IGN):</label>
-            <input type="text" id="input-player-name" class="form-input" placeholder="مثال: DragonKnight, كريم_مابل" maxlength="20" autofocus />
+          <!-- Step 2: Hangul Academy & Traps -->
+          <div class="tour-step-item">
+            <div class="tour-step-num">2</div>
+            <div class="tour-step-content">
+              <h4>أكاديمية الهانغل وفخاخ الحروف المتشابهة</h4>
+              <p>افهم القاعدة الذهبية: اليد اليسرى للحروف الساكنة (자음) واليد اليمنى لحروف العلة (모음). واطلع على فخاخ الحروف المتشابهة (ㅓ و ㅏ / ㅗ و ㅜ) عشان متقعش فيها.</p>
+            </div>
           </div>
 
-          <div class="auth-form-group">
-            <label data-i18n="chooseAvatar">اختر شكل الشخصية:</label>
-            <div class="avatar-selection-grid">
-              <button type="button" class="avatar-choice selected" data-avatar="⚔️">⚔️</button>
-              <button type="button" class="avatar-choice" data-avatar="🧙">🧙</button>
-              <button type="button" class="avatar-choice" data-avatar="🗡️">🗡️</button>
-              <button type="button" class="avatar-choice" data-avatar="🏹">🏹</button>
-              <button type="button" class="avatar-choice" data-avatar="🏴‍☠️">🏴‍☠️</button>
-              <button type="button" class="avatar-choice" data-avatar="🍁">🍁</button>
-              <button type="button" class="avatar-choice" data-avatar="🍄">🍄</button>
+          <!-- Step 3: Practice Trainer & Windows Keyboard -->
+          <div class="tour-step-item">
+            <div class="tour-step-num">3</div>
+            <div class="tour-step-content">
+              <h4>مدرب الكابتشا (كيبورد جهازك الفعلي)</h4>
+              <p>كابتشا مطابقة للعبة مابل ستوري 100% بنفس التشويش والخطوط. اكتب مباشرة من كيبورد حاسوبك بالإنجليزية وسيتم تجميع الحروف كوري تلقائياً دون برامج إضافية.</p>
+            </div>
+          </div>
+
+          <!-- Step 4: Standalone Exam & Leaderboard -->
+          <div class="tour-step-item">
+            <div class="tour-step-num">4</div>
+            <div class="tour-step-content">
+              <h4>الاختبار الرسمي وتحدي كريم في المتصدرين</h4>
+              <p>ادخل اختبار 10 أو 15 أو 20 كابتشا بمؤقت الـ 30 ثانية لتأخذ تقييمك الرسمي وتنافس كريم على المركز الأول في لوحة الشرف!</p>
             </div>
           </div>
         </div>
+
+        <div class="onboarding-actions">
+          <button type="button" id="btn-start-onboarding-now" class="btn btn-primary btn-lg">
+            ابدأ بتسجيل الدخول بحساب Google 🚀
+          </button>
+          <button type="button" id="btn-close-onboarding-tour" class="btn btn-outline">
+            تخطي وبدء التصفح
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sign In & Player Profile Modal (Enforces Google First, then IGN) -->
+    <div id="signin-modal" class="modal-overlay">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-badge">تسجيل الدخول الإلزامي 🍁</div>
+          <h2>سجل بحساب Google واكتب اسمك</h2>
+          <p>يجب أولاً ربط حساب Google لحفظ نقاطك وتدريباتك، ثم كتابة اسمك في اللعبة (IGN).</p>
+        </div>
+
+        <div class="auth-card-body">
+          <!-- Step 1: Google Authentication -->
+          <div id="auth-step-google" class="auth-step-section">
+            <div class="auth-step-indicator active">
+              <span class="step-num">1</span>
+              <span>الخطوة الأولى: تسجيل الدخول بحساب Google (إلزامي)</span>
+            </div>
+            
+            <button type="button" id="btn-google-signin" class="btn btn-google-auth">
+              <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+              <span>تسجيل الدخول الفوري بـ Google</span>
+            </button>
+
+            <div class="auth-divider">
+              <span>أو اكتب إيميل جوجل الخاص بك</span>
+            </div>
+
+            <div class="auth-form-group">
+              <label for="input-google-email">بريد حساب Google:</label>
+              <div class="input-with-action">
+                <input type="email" id="input-google-email" class="form-input" placeholder="مثال: player@gmail.com" />
+                <button type="button" id="btn-verify-google-email" class="btn btn-secondary">تأكيد الإيميل ✓</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verified Google Chip -->
+          <div id="verified-google-chip" class="verified-chip" style="display: none;">
+            <span class="verified-icon">✓</span>
+            <div class="verified-info">
+              <span class="verified-label">تم التحقق من حساب Google بنجاح:</span>
+              <strong id="verified-email-text" class="verified-email">player@gmail.com</strong>
+            </div>
+            <button type="button" id="btn-change-google-email" class="btn-change-email" title="تغيير الإيميل">تغيير</button>
+          </div>
+
+          <!-- Step 2: In-Game Name & Avatar (Unlocked after Google) -->
+          <div id="auth-step-ign" class="auth-step-section auth-step-locked">
+            <div class="auth-step-indicator">
+              <span class="step-num">2</span>
+              <span>الخطوة الثانية: اسم اللاعب في اللعبة والأفاتار</span>
+            </div>
+
+            <div class="auth-form-group">
+              <label for="input-player-name">اسمك الذي سيظهر في لوحة المتصدرين (IGN):</label>
+              <input type="text" id="input-player-name" class="form-input" placeholder="مثال: DragonKnight, مابل_المحترف" maxlength="20" disabled />
+            </div>
+
+            <div class="auth-form-group">
+              <label>اختر شكل الشخصية (Avatar):</label>
+              <div class="avatar-selection-grid">
+                <button type="button" class="avatar-choice selected" data-avatar="⚔️">⚔️</button>
+                <button type="button" class="avatar-choice" data-avatar="🧙">🧙</button>
+                <button type="button" class="avatar-choice" data-avatar="🗡️">🗡️</button>
+                <button type="button" class="avatar-choice" data-avatar="🏹">🏹</button>
+                <button type="button" class="avatar-choice" data-avatar="🏴‍☠️">🏴‍☠️</button>
+                <button type="button" class="avatar-choice" data-avatar="🍁">🍁</button>
+                <button type="button" class="avatar-choice" data-avatar="🍄">🍄</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="auth-card-actions">
-          <button type="button" id="btn-custom-signin" class="btn btn-primary btn-lg" data-i18n="signInCustomBtn">حفظ الاسم والبدء</button>
+          <button type="button" id="btn-complete-registration" class="btn btn-primary btn-lg" disabled>
+            تأكيد التسجيل وبدء التدريب 🚀
+          </button>
           <button type="button" id="btn-close-signin-modal" class="btn btn-outline">إلغاء</button>
         </div>
       </div>

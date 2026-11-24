@@ -1,18 +1,26 @@
 /**
  * Egyptian Coach & Maple Banter Toast System
  * Displays hilarious Egyptian gaming coach messages on first visit and periodically/on events.
+ * Urges players to sign in with Google so their training counts before Kareem complains!
  */
 
 const EgyptianCoach = (() => {
-  const BANTER_MESSAGES = [
+  const GENERAL_BANTER = [
     { text: "ركز يا وحش بدل ما تجيب للأكونت حظر ونقعد نعيط جمبه! 🚨😂", icon: "👮‍♂️" },
     { text: "وربنا هخصملك من المرتب لو غلطت في الحرف ده تاني! 😂💸", icon: "🍄" },
     { text: "أصحى معايا وبلاش تسريح.. كاشف الكذب مابيهزرش وهيبعتك سجن غرفة الحقيقة! 👮‍♂️", icon: "🚨" },
     { text: "عينك على الحروف المتشابهة! ㅓ مش زي ㅏ و ㅗ مش زي ㅜ، ركز يابني!", icon: "🧐" },
     { text: "الجي ام (GM) واقف في ضهرك وعينه في شاشتك.. حاسب على نفسك! 🍁👀", icon: "🍁" },
     { text: "بلاش فتونة.. مفتاح الـ Shift هو اللي بيجيب الحروف المزدوجة، ركّز يا غالي! ⚔️", icon: "💡" },
-    { text: "أوعى تكسفنا قدام كريم في لوحة المتصدرين.. عايزينك تكسر رقمه! 🏆🔥", icon: "👑" },
+    { text: "أوعى تكسفنا قدام كريم في لوحة المتصدرين.. كريم مقفل 520 تدريب و100%! 🏆🔥", icon: "👑" },
     { text: "صباعك على الـ Enter وقلبك حديد.. كاشف الكذب جاي في ثواني! ⚡", icon: "🎯" }
+  ];
+
+  const SIGNIN_REMINDERS = [
+    { text: "سجل بحساب Google واكتب اسمك عشان تدريبك يتسجل، بدل ما كريم يقعد يصيح إنك متعلمتش الكيبورد الكوري ومبتعرفش تحل! 😂🍁", icon: "📢" },
+    { text: "كل كابتشا بتحلها بتضيع في الهوا عشان مش مسجل بجوجل.. سجل دلوقتي بدل ما كريم يقعد يروش عليك! 💸", icon: "🍄" },
+    { text: "كريم قاعد مستنيك في لوحة المتصدرين.. سجل بجوجل واثبتله إنك بتعرف تكتب كوري أسرع منه! 🏆", icon: "⚔️" },
+    { text: "الحق سجل بجوجل عشان عدد تدريباتك وإنجازاتك في الهانغل تتسجل رسمي في السيرفر! 📝", icon: "🍁" }
   ];
 
   let toastElem = null;
@@ -24,16 +32,22 @@ const EgyptianCoach = (() => {
     
     // Show first humorous coach message shortly after page load
     setTimeout(() => {
-      showRandomBanter(0);
-    }, 1400);
+      if (typeof PlayerAuth !== 'undefined' && !PlayerAuth.isSignedIn()) {
+        showRandomBanter(0, true);
+      } else {
+        showRandomBanter(0, false);
+      }
+    }, 1800);
 
-    // Periodically show a humorous reminder every 50 seconds
+    // Periodically show reminders every 45 seconds
     setInterval(() => {
-      showRandomBanter();
-    }, 50000);
+      const needsSignin = typeof PlayerAuth !== 'undefined' && !PlayerAuth.isSignedIn();
+      showRandomBanter(null, needsSignin && Math.random() < 0.65);
+    }, 45000);
   }
 
   function createToastElement() {
+    if (document.getElementById('egyptian-coach-toast')) return;
     toastElem = document.createElement('div');
     toastElem.id = 'egyptian-coach-toast';
     toastElem.className = 'egyptian-coach-toast';
@@ -51,18 +65,29 @@ const EgyptianCoach = (() => {
     if (closeBtn) {
       closeBtn.addEventListener('click', hideToast);
     }
+
+    // Clicking toast opens sign-in if not signed in
+    toastElem.addEventListener('click', (e) => {
+      if (e.target.closest('.coach-close-btn')) return;
+      if (typeof PlayerAuth !== 'undefined' && !PlayerAuth.isSignedIn()) {
+        const signinModal = document.getElementById('signin-modal');
+        if (signinModal) signinModal.classList.add('active');
+      }
+    });
   }
 
-  function showRandomBanter(forceIndex = null) {
+  function showRandomBanter(forceIndex = null, useSignin = false) {
+    if (!toastElem) createToastElement();
     if (!toastElem) return;
-    
-    let idx = forceIndex !== null ? forceIndex : Math.floor(Math.random() * BANTER_MESSAGES.length);
+
+    const list = useSignin ? SIGNIN_REMINDERS : GENERAL_BANTER;
+    let idx = forceIndex !== null ? forceIndex : Math.floor(Math.random() * list.length);
     if (forceIndex === null && idx === lastIndex) {
-      idx = (idx + 1) % BANTER_MESSAGES.length;
+      idx = (idx + 1) % list.length;
     }
     lastIndex = idx;
 
-    const item = BANTER_MESSAGES[idx];
+    const item = list[idx] || list[0];
     const msgElem = toastElem.querySelector('.coach-message');
     const iconElem = toastElem.querySelector('.coach-icon-bubble');
 
@@ -72,11 +97,11 @@ const EgyptianCoach = (() => {
     toastElem.classList.remove('hiding');
     toastElem.classList.add('active');
 
-    // Auto hide after 8 seconds
+    // Auto hide after 8.5 seconds
     if (timerId) clearTimeout(timerId);
     timerId = setTimeout(() => {
       hideToast();
-    }, 8000);
+    }, 8500);
   }
 
   function hideToast() {
@@ -94,3 +119,7 @@ const EgyptianCoach = (() => {
     hideToast
   };
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = EgyptianCoach;
+}

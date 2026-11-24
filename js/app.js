@@ -40,16 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   I18n.setLang(I18n.getLang());
 
-  // 3. Player Authentication & Header Widget
+  // 3. Player Authentication & Header Widget (2-Step: Google First, then IGN & Avatar)
   const profileWidget = document.getElementById('user-profile-header-widget');
   const signinModal = document.getElementById('signin-modal');
   const btnOpenSignin = document.getElementById('btn-open-signin-modal');
   const btnCloseSignin = document.getElementById('btn-close-signin-modal');
   const btnGoogleSignin = document.getElementById('btn-google-signin');
-  const btnCustomSignin = document.getElementById('btn-custom-signin');
+  const inputGoogleEmail = document.getElementById('input-google-email');
+  const btnVerifyGoogleEmail = document.getElementById('btn-verify-google-email');
+  const verifiedGoogleChip = document.getElementById('verified-google-chip');
+  const verifiedEmailText = document.getElementById('verified-email-text');
+  const btnChangeGoogleEmail = document.getElementById('btn-change-google-email');
+  const authStepGoogle = document.getElementById('auth-step-google');
+  const authStepIgn = document.getElementById('auth-step-ign');
   const inputPlayerName = document.getElementById('input-player-name');
+  const btnCompleteReg = document.getElementById('btn-complete-registration');
   const avatarChoices = document.querySelectorAll('.avatar-choice');
-  let selectedAvatar = '⚔️';
+
+  let verifiedGoogleEmail = null;
+  let selectedAvatar = '🍁';
 
   function updateAuthUI() {
     const profile = PlayerAuth.getProfile();
@@ -58,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="user-chip">
           <span class="user-chip-avatar">${profile.avatar || '🍁'}</span>
           <span class="user-chip-name">${profile.name}</span>
-          <button type="button" id="btn-signout" class="btn-signout" title="Sign Out">✕</button>
+          <span class="user-verified-badge" title="تم التحقق بحساب Google: ${profile.email}">✓ G</span>
+          <button type="button" id="btn-signout" class="btn-signout" title="تسجيل الخروج">✕</button>
         </div>
       `;
       const signoutBtn = document.getElementById('btn-signout');
@@ -66,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       profileWidget.innerHTML = `
         <button id="btn-open-signin-modal" class="btn btn-sm btn-primary">
-          <span data-i18n="btnSignIn">${I18n.t('btnSignIn')}</span>
+          <span data-i18n="btnSignIn">👤 سجل بجوجل واسمك</span>
         </button>
       `;
       const openBtn = document.getElementById('btn-open-signin-modal');
@@ -75,49 +85,135 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openSignInModal() {
-    if (signinModal) signinModal.classList.add('active');
+    if (signinModal) {
+      signinModal.classList.add('active');
+      const profile = PlayerAuth.getProfile();
+      if (profile && profile.email) {
+        setGoogleVerified(profile.email);
+        if (inputPlayerName) inputPlayerName.value = profile.name || '';
+      } else {
+        resetSignInForm();
+      }
+    }
   }
 
   function closeSignInModal() {
     if (signinModal) signinModal.classList.remove('active');
   }
 
+  function setGoogleVerified(email) {
+    verifiedGoogleEmail = email.trim().toLowerCase();
+    if (authStepGoogle) authStepGoogle.style.display = 'none';
+    if (verifiedGoogleChip) {
+      verifiedGoogleChip.style.display = 'flex';
+      if (verifiedEmailText) verifiedEmailText.textContent = verifiedGoogleEmail;
+    }
+    if (authStepIgn) {
+      authStepIgn.classList.remove('auth-step-locked');
+      const indicator = authStepIgn.querySelector('.auth-step-indicator');
+      if (indicator) indicator.classList.add('active');
+    }
+    if (inputPlayerName) {
+      inputPlayerName.disabled = false;
+      inputPlayerName.focus();
+    }
+    if (btnCompleteReg) {
+      btnCompleteReg.disabled = false;
+    }
+  }
+
+  function resetSignInForm() {
+    verifiedGoogleEmail = null;
+    if (authStepGoogle) authStepGoogle.style.display = 'block';
+    if (verifiedGoogleChip) verifiedGoogleChip.style.display = 'none';
+    if (authStepIgn) {
+      authStepIgn.classList.add('auth-step-locked');
+      const indicator = authStepIgn.querySelector('.auth-step-indicator');
+      if (indicator) indicator.classList.remove('active');
+    }
+    if (inputPlayerName) {
+      inputPlayerName.disabled = true;
+      inputPlayerName.value = '';
+    }
+    if (btnCompleteReg) btnCompleteReg.disabled = true;
+    if (inputGoogleEmail) inputGoogleEmail.value = '';
+  }
+
   if (btnOpenSignin) btnOpenSignin.addEventListener('click', openSignInModal);
   if (btnCloseSignin) btnCloseSignin.addEventListener('click', closeSignInModal);
+
+  // 1-Click Fast Google Sign-In Simulation
+  if (btnGoogleSignin) {
+    btnGoogleSignin.addEventListener('click', () => {
+      SoundFX.playKeyClick();
+      const promptEmail = prompt(
+        I18n.getLang() === 'ar'
+          ? 'أدخل بريد حساب Google الخاص بك (مثال: player@gmail.com):'
+          : 'Enter your Google Account email (e.g. player@gmail.com):',
+        'maple.hero@gmail.com'
+      );
+      if (promptEmail && promptEmail.includes('@')) {
+        setGoogleVerified(promptEmail);
+        SoundFX.playCorrect();
+      }
+    });
+  }
+
+  // Google Email Input Verification
+  if (btnVerifyGoogleEmail && inputGoogleEmail) {
+    const doVerify = () => {
+      const email = inputGoogleEmail.value.trim();
+      if (email && email.includes('@')) {
+        SoundFX.playCorrect();
+        setGoogleVerified(email);
+      } else {
+        alert(I18n.getLang() === 'ar' ? 'يُرجى إدخال بريد Google صالح (مثال: name@gmail.com)' : 'Please enter a valid Google email address');
+        inputGoogleEmail.focus();
+      }
+    };
+    btnVerifyGoogleEmail.addEventListener('click', doVerify);
+    inputGoogleEmail.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doVerify();
+    });
+  }
+
+  if (btnChangeGoogleEmail) {
+    btnChangeGoogleEmail.addEventListener('click', () => {
+      resetSignInForm();
+      if (inputGoogleEmail) inputGoogleEmail.focus();
+    });
+  }
 
   avatarChoices.forEach(btn => {
     btn.addEventListener('click', () => {
       avatarChoices.forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      selectedAvatar = btn.dataset.avatar || '⚔️';
+      selectedAvatar = btn.dataset.avatar || '🍁';
     });
   });
 
-  if (btnCustomSignin && inputPlayerName) {
-    btnCustomSignin.addEventListener('click', () => {
-      const name = inputPlayerName.value.trim();
-      if (name) {
-        PlayerAuth.signInCustom(name, selectedAvatar);
-        closeSignInModal();
-        SoundFX.playCorrect();
-      } else {
+  if (btnCompleteReg && inputPlayerName) {
+    btnCompleteReg.addEventListener('click', () => {
+      const ign = inputPlayerName.value.trim();
+      if (!verifiedGoogleEmail) {
+        alert(I18n.getLang() === 'ar' ? 'يجب تسجيل الدخول بحساب Google أولاً!' : 'Please sign in with Google first!');
+        return;
+      }
+      if (!ign) {
+        alert(I18n.getLang() === 'ar' ? 'يُرجى كتابة اسم اللاعب (IGN) الذي سيظهر في لوحة المتصدرين!' : 'Please enter your in-game name (IGN)!');
         inputPlayerName.focus();
+        return;
+      }
+
+      PlayerAuth.registerPlayer(verifiedGoogleEmail, ign, selectedAvatar);
+      closeSignInModal();
+      SoundFX.playFanfare();
+      if (typeof EgyptianCoach !== 'undefined') {
+        EgyptianCoach.showRandomBanter();
       }
     });
     inputPlayerName.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') btnCustomSignin.click();
-    });
-  }
-
-  if (btnGoogleSignin) {
-    btnGoogleSignin.addEventListener('click', () => {
-      // Simulate Google Sign In with realistic profile prompt or mock
-      const mockName = prompt(I18n.getLang() === 'ar' ? 'ادخل بريدك الإلكتروني أو اسمك لحساب Google:' : 'Enter your Google name or email:', 'maple_hero');
-      if (mockName) {
-        PlayerAuth.signInGoogle(mockName.includes('@') ? mockName : `${mockName}@gmail.com`, mockName.replace('@gmail.com', ''));
-        closeSignInModal();
-        SoundFX.playFanfare();
-      }
+      if (e.key === 'Enter') btnCompleteReg.click();
     });
   }
 
@@ -128,7 +224,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateAuthUI();
 
-  // 4. Tab Navigation
+  // 4. Onboarding Tour Modal
+  const onboardingModal = document.getElementById('onboarding-tour-modal');
+  const btnOpenTourGuide = document.getElementById('btn-open-tour-guide');
+  const btnCloseTour = document.getElementById('btn-close-onboarding-tour');
+  const btnStartOnboarding = document.getElementById('btn-start-onboarding-now');
+  const tourBtnOpenSignin = document.getElementById('tour-btn-open-signin');
+
+  function openOnboardingTour() {
+    if (onboardingModal) onboardingModal.classList.add('active');
+  }
+
+  function closeOnboardingTour(markCompleted = true) {
+    if (onboardingModal) onboardingModal.classList.remove('active');
+    if (markCompleted) localStorage.setItem('maple_onboarding_shown', 'true');
+  }
+
+  if (btnOpenTourGuide) btnOpenTourGuide.addEventListener('click', openOnboardingTour);
+  if (btnCloseTour) btnCloseTour.addEventListener('click', () => closeOnboardingTour(true));
+
+  if (btnStartOnboarding) {
+    btnStartOnboarding.addEventListener('click', () => {
+      closeOnboardingTour(true);
+      openSignInModal();
+    });
+  }
+
+  if (tourBtnOpenSignin) {
+    tourBtnOpenSignin.addEventListener('click', () => {
+      closeOnboardingTour(true);
+      openSignInModal();
+    });
+  }
+
+  // Auto-launch tour on first visit
+  if (!localStorage.getItem('maple_onboarding_shown')) {
+    setTimeout(openOnboardingTour, 600);
+  }
+
+  // 5. Tab Navigation & Player Learning Badges Tracking
   const tabButtons = document.querySelectorAll('.nav-tab-btn');
   const tabPanes = document.querySelectorAll('.tab-pane');
 
@@ -145,10 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
       SoundFX.playKeyClick();
 
       if (targetTab === 'academy') {
+        PlayerAuth.markHangulRead();
         academy.renderJamoGrid('jamo-grid-container', 'all');
       } else if (targetTab === 'lookalikes') {
+        PlayerAuth.markLookalikesRead();
         academy.renderLookalikes('lookalikes-container');
       } else if (targetTab === 'drill') {
+        PlayerAuth.markDrillCompleted();
         academy.startDrill('drill-container');
       } else if (targetTab === 'leaderboard') {
         MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');

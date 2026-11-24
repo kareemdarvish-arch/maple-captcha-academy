@@ -344,6 +344,9 @@ class MapleCaptchaGame {
     }
 
     this.saveStats();
+    if (typeof PlayerAuth !== 'undefined') {
+      PlayerAuth.recordPracticeSolve();
+    }
     const msg = I18n.t('diagCorrect', { time: solveTime.toFixed(2), streak: this.currentStreak });
     this.showFeedback(msg, 'success');
 
