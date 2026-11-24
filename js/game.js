@@ -407,11 +407,6 @@ class MapleCaptchaGame {
     const msg = I18n.t('diagCorrect', { time: solveTime.toFixed(2), streak: this.currentStreak });
     this.showFeedback(msg, 'success');
 
-    // Trigger Egyptian Coach praise on correct solve
-    if (typeof EgyptianCoach !== 'undefined') {
-      setTimeout(() => EgyptianCoach.showSuccessBanter(false), 250);
-    }
-
     if (this.mode === 'speedrun') {
       this.speedrunCount += 1;
       this.speedrunTotalTime += solveTime;
@@ -451,11 +446,6 @@ class MapleCaptchaGame {
 
     this.showFeedback(msg, 'error');
 
-    // Trigger Egyptian Coach witty warning on mistake
-    if (typeof EgyptianCoach !== 'undefined') {
-      setTimeout(() => EgyptianCoach.showErrorBanter(false), 300);
-    }
-
     if (this.mode === 'practice') {
       this.showHint();
     }
@@ -480,10 +470,6 @@ class MapleCaptchaGame {
     if (isCorrect) {
       SoundFX.playCorrect();
       this.showFeedback(I18n.t('diagCorrect', { time: solveTime.toFixed(1), streak: this.examCurrentIndex + 1 }), 'success');
-      // Trigger Egyptian Coach praise on exam success
-      if (typeof EgyptianCoach !== 'undefined') {
-        setTimeout(() => EgyptianCoach.showSuccessBanter(true), 250);
-      }
     } else {
       SoundFX.playError();
       const smartTip = (typeof SmartTeacher !== 'undefined') ? SmartTeacher.diagnoseMistake(typed, target) : '';
@@ -492,11 +478,6 @@ class MapleCaptchaGame {
         : I18n.t('diagWrong', { typed: typed || '—', target });
       if (smartTip) msg += `<div class="smart-tip-box">${smartTip}</div>`;
       this.showFeedback(msg, 'error');
-
-      // Trigger Egyptian Coach warning on exam mistake
-      if (typeof EgyptianCoach !== 'undefined') {
-        setTimeout(() => EgyptianCoach.showErrorBanter(true), 300);
-      }
     }
 
     this.examCurrentIndex += 1;
