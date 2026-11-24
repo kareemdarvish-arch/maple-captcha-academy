@@ -106,7 +106,7 @@ const I18n = (() => {
       timeLeft: 'Time Remaining:',
 
       // Hints & Footers
-      canvasHoverHint: 'Hover canvas with <strong>🔍 Lens</strong> enabled to inspect pixel strokes',
+      canvasHoverHint: 'Type characters using your keyboard and press Enter to confirm ↵',
       engineBadge: 'KMS Lie Detector Engine',
       hintHeader: '💡 Stroke Breakdown & QWERTY Keystrokes',
       hintSubnote: 'Click any letter card to inspect parts & hear pronunciation',
@@ -177,7 +177,7 @@ const I18n = (() => {
       truthRoomAdvice: 'Trainer Advice:',
       truthRoomTip1: 'Use the Hangul Academy tab to master tricky letters.',
       truthRoomTip2: 'Consonants are typed with your Left Hand, Vowels with your Right Hand.',
-      truthRoomTip3: 'Enable the 🔍 Lens to inspect obscured strokes under noise lines.',
+      truthRoomTip3: 'Use 💡 Character Hint to inspect stroke composition and keys.',
       truthRoomRetry: 'Try Again (재도전)',
 
       // Smart Diagnostics
@@ -324,7 +324,7 @@ const I18n = (() => {
       timeLeft: 'الوقت المتبقي:',
 
       // Hints & Footers
-      canvasHoverHint: 'مرر الماوس فوق الكابتشا مع تفعيل <strong>🔍 العدسة</strong> لتكبير تفاصيل الحروف المعقدة',
+      canvasHoverHint: 'اكتب الحروف من لوحة مفاتيحك واضغط Enter للتأكيد ↵',
       engineBadge: 'محرك كاشف الكذب الرسمي KMS',
       hintHeader: '💡 تفكيك الحروف ومفاتيح QWERTY الإنجليزية',
       hintSubnote: 'اضغط على أي بطاقة حرف لفحص أجزائه والاستماع إلى نطقه الكوري الأصلي',
@@ -395,7 +395,7 @@ const I18n = (() => {
       truthRoomAdvice: 'نصائح المدرب لاجتياز الاختبار:',
       truthRoomTip1: 'استخدم تبويب "أكاديمية الهانغل" لحفظ الحروف المعقدة.',
       truthRoomTip2: 'تذكر: الحروف الساكنة تُكتب بيدك اليسرى، وحروف العلة بيدك اليمنى.',
-      truthRoomTip3: 'فعّل 🔍 العدسة المكبرة لفحص الحروف المخفية خلف خطوط التشويش.',
+      truthRoomTip3: 'استخدم 💡 تلميح الحروف لفحص تركيبة الحروف والمفاتيح المقابلة.',
       truthRoomRetry: 'إعادة المحاولة (재도전)',
 
       // Smart Diagnostics
