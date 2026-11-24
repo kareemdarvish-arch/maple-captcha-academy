@@ -37,13 +37,13 @@ const I18n = (() => {
       legendRightHand: 'Right Hand: Vowels (모음)',
       legendShift: 'Press Shift for Double Consonants (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㅒ, ㅖ)',
       examKbNoticeTitle: 'Notice during Exam:',
-      examKbNoticeDesc: 'Type answers directly from your computer keyboard (Windows Keyboard). You can type using English QWERTY keys and they will be assembled automatically into Korean.',
+      examKbNoticeDesc: 'Type answers directly from your computer keyboard (Windows Keyboard). Timer is 1 full minute (60s) per question. Press Enter or click Submit to confirm your answer!',
       floatingKbPrompt: '💡 Keyboard Notice: Type directly using your physical Windows keyboard!',
       btnOpenFloatingKb: '⌨️ Physical Windows Keyboard Active',
 
       // Standalone Exam Tab
       examIntroTitle: 'Official Lie Detector Exam Session',
-      examIntroDesc: 'Take a serious in-game timed exam of 10, 15, or 20 captchas. You will receive an official grade (S, A, B, C, F), an error breakdown of what you did wrong, and rank on the live Leaderboard!',
+      examIntroDesc: 'Take an authentic in-game timed exam of 10, 15, or 20 captchas with 1 full minute (60s) per question. Press Enter to confirm each answer. You will receive an official grade (S, A, B, C, F), an error breakdown of what you did wrong, and rank on the live Leaderboard!',
       btnStartExamOfficial: '🚀 Begin Official Exam Now',
 
       // Leaderboard
@@ -215,7 +215,7 @@ const I18n = (() => {
       examYouTyped: 'You typed:',
       examReason: 'What went wrong:',
       examKeyTip: 'Correct keys to press:',
-      examTimedOutBadge: '⏱ Timed Out (30s exceeded)',
+      examTimedOutBadge: '⏱ Timed Out (60s exceeded)',
       examRetakeBtn: '🔄 Retake Full Exam',
       examRetryErrorsBtn: '🎯 Retry Mistakes Only ({count})',
       examStudyWeakBtn: '📚 Review Weak Letters in Academy',
@@ -254,14 +254,14 @@ const I18n = (() => {
       legendLeftHand: 'اليد اليسرى: الحروف الساكنة (자음)',
       legendRightHand: 'اليد اليمنى: حروف العلة (모음)',
       legendShift: 'اضغط Shift للحروف المزدوجة (ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㅒ, ㅖ)',
-      examKbNoticeTitle: 'تنبيه أثناء الاختبار:',
-      examKbNoticeDesc: 'اكتب الإجابات مباشرة من كيبورد حاسوبك (Windows Keyboard). يمكنك الكتابة بمفاتيح QWERTY الإنجليزية وسيتم تجميعها كوري تلقائياً باليد اليسرى (الساكنة) واليمنى (العلة).',
+      examKbNoticeTitle: 'تنبيه وتعليمات الاختبار:',
+      examKbNoticeDesc: 'اكتب الإجابات مباشرة من كيبورد حاسوبك (Windows Keyboard). الوقت دقيقة كاملة (60 ثانية) لكل كابتشا، ولازم تدوس Enter أو زر التأكيد ↵ لاعتماد الإجابة! لن يتم الانتقال تلقائياً.',
       floatingKbPrompt: '💡 تنبيه الكيبورد: اكتب مباشرة باستخدام لوحة مفاتيح حاسوبك (Windows Keyboard)!',
       btnOpenFloatingKb: '⌨️ كيبورد الويندوز مفعل',
 
       // Standalone Exam Tab
       examIntroTitle: 'جلسة الاختبار الرسمي لكاشف الكذب (Lie Detector)',
-      examIntroDesc: 'ادخل اختباراً حقيقياً مكوناً من 10 أو 15 أو 20 كابتشا بمؤقت زمني دقيق. ستحصل في النهاية على تقييم رسمي (S أو A أو B أو C أو F)، وتحليل تفصيلي لما قمت به خطأ، وسيتم تسجيل نتيجتك في لوحة المتصدرين!',
+      examIntroDesc: 'ادخل اختباراً حقيقياً مكوناً من 10 أو 15 أو 20 كابتشا بمؤقت دقيقة كاملة (60 ثانية) لكل كابتشا. اكتب الحروف من الكيبورد واضغط Enter للتأكيد بعد الانتهاء. ستحصل في النهاية على تقييم رسمي (S أو A أو B أو C أو F)، وتحليل تفصيلي لما قمت به خطأ، وسيتم تسجيل نتيجتك في لوحة المتصدرين!',
       btnStartExamOfficial: '🚀 ابدأ الاختبار الرسمي الآن',
 
       // Leaderboard
@@ -433,7 +433,7 @@ const I18n = (() => {
       examYouTyped: 'ما كتبته:',
       examReason: 'تشخيص سبب الخطأ:',
       examKeyTip: 'المفاتيح الصحيحة للضغط:',
-      examTimedOutBadge: '⏱ انتهى الوقت (تجاوزت 30 ثانية)',
+      examTimedOutBadge: '⏱ انتهى الوقت (تجاوزت دقيقة كاملة)',
       examRetakeBtn: '🔄 إعادة الاختبار كاملاً',
       examRetryErrorsBtn: '🎯 إعادة الأسئلة الخاطئة فقط ({count})',
       examStudyWeakBtn: '📚 مراجعة الحروف الضعيفة بالأكاديمية',

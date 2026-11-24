@@ -12,6 +12,7 @@ class MapleCaptchaGame {
     this.category = 'balanced';
     this.timerDuration = 30;
     this.timeLeft = 30;
+    this.examTimerDuration = 60; // 1 minute for official exam
     this.timerInterval = null;
 
     // Exam Mode (10, 15, 20 captchas)
@@ -94,6 +95,7 @@ class MapleCaptchaGame {
       this.elements.textInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          e.stopPropagation();
           this.submitAnswer();
         } else if (e.key === 'Backspace') {
           e.preventDefault();
@@ -111,6 +113,21 @@ class MapleCaptchaGame {
         }
       });
     }
+
+    // Global Enter key listener for frictionless exam & trainer confirmation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (e.target === this.elements.textInput) return; // Already handled by textInput listener
+        const activeModal = document.querySelector('.modal-overlay.active, .onboarding-modal-overlay.active');
+        if (!activeModal && (this.mode === 'exam' || this.mode === 'test' || this.mode === 'practice')) {
+          if (document.activeElement && document.activeElement.tagName === 'INPUT' && document.activeElement.id !== 'captcha-hidden-input') {
+            return;
+          }
+          e.preventDefault();
+          this.submitAnswer();
+        }
+      }
+    });
 
     document.addEventListener('click', (e) => {
       if (this.elements.textInput && !e.target.closest('button, input, select, textarea, a, .kb-drag-handle, .modal-overlay')) {
@@ -144,8 +161,10 @@ class MapleCaptchaGame {
 
     this.renderDeconstructionPreview(data);
 
-    if (this.mode === 'test' || this.mode === 'exam') {
-      this.startTimer(this.timerDuration);
+    if (this.mode === 'test') {
+      this.startTimer(30);
+    } else if (this.mode === 'exam') {
+      this.startTimer(60); // 1 minute (60 seconds) per captcha question in official exam
     } else if (this.mode === 'speedrun') {
       this.startTimer(45);
     } else {
@@ -188,6 +207,11 @@ class MapleCaptchaGame {
       this.stopTimer();
     }
 
+    if (this.mode === 'practice' || this.mode === 'test') {
+      this.timerDuration = 30;
+      this.timeLeft = 30;
+    }
+
     if (this.mode === 'practice' && this.generator) {
       const noiseSelect = document.getElementById('select-noise-level');
       const preset = noiseSelect ? noiseSelect.value : 'hard';
@@ -203,6 +227,8 @@ class MapleCaptchaGame {
   startExam(length = 10, customTargets = null) {
     this.mode = 'exam';
     this.examLength = length;
+    this.timerDuration = 60; // 1 minute (60 seconds) official exam timer
+    this.timeLeft = 60;
     this.examCurrentIndex = 0;
     this.examTotalTime = 0;
     this.examQuestions = [];
@@ -310,18 +336,38 @@ class MapleCaptchaGame {
     }
 
     this.elements.inputDisplay.innerHTML = html;
+
+    // Visual helper on submit button in Exam Mode to emphasize Enter confirmation
+    const btnSubmit = document.getElementById('btn-submit-captcha');
+    if (btnSubmit) {
+      if (this.mode === 'exam' && val.length >= (target ? target.length : 6)) {
+        btnSubmit.classList.add('pulse-ready');
+        btnSubmit.innerHTML = 'تأكيد ↵ (Enter)';
+      } else {
+        btnSubmit.classList.remove('pulse-ready');
+        btnSubmit.innerHTML = 'تأكيد ↵';
+      }
+    }
   }
 
   submitAnswer() {
+    if (this.isSubmitting) return;
     this.automaton.commit();
     const typed = this.automaton.getValue().trim();
     const target = this.generator.currentText.trim();
     const solveTime = (Date.now() - this.startTime) / 1000;
 
-    if (!typed && this.mode !== 'exam') {
-      this.showFeedback(I18n.t('diagWrong', { typed: '...', target: '...' }), 'warning');
+    if (!typed) {
+      if (this.mode === 'exam') {
+        this.showFeedback('اكتب الحروف الأول وبعدين دوس Enter للتأكيد! ✍️😅', 'warning');
+      } else {
+        this.showFeedback(I18n.t('diagWrong', { typed: '...', target: '...' }), 'warning');
+      }
       return;
     }
+
+    this.isSubmitting = true;
+    setTimeout(() => { this.isSubmitting = false; }, 450);
 
     const isCorrect = (typed === target);
 

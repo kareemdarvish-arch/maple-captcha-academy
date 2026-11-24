@@ -311,13 +311,13 @@ class MapleCaptchaGenerator {
 
     // Authentic color cluster patterns matching user's screenshots
     let chosenPattern;
-    if (this.currentText === '토아절크종지') {
+    if (this.currentText === '도아점ㅋ공지' || this.currentText === '토아절크종지') {
       chosenPattern = [4, 4, 5, 4, 2, 5]; // Magenta, Magenta, Rust, Magenta, Red, Rust
-    } else if (this.currentText === '비소수데리회') {
+    } else if (this.currentText === '배송수데리회' || this.currentText === '비소수데리회') {
       chosenPattern = [1, 2, 2, 5, 1, 6]; // Blue, Red, Red, Rust, Blue, Slate Navy
     } else if (this.currentText.startsWith('빛없어')) {
       chosenPattern = [3, 3, 3, 1, 1, 2]; // Plum, Plum, Plum, Blue, Blue, Red
-    } else if (this.currentText === '인귀왕이동듬') {
+    } else if (this.currentText.includes('인귀')) {
       chosenPattern = [0, 1, 1, 2, 0, 2]; // Pink, Blue, Blue, Red, Pink, Red
     } else {
       const clusterPatterns = [
@@ -361,6 +361,26 @@ class MapleCaptchaGenerator {
       ctx.fillText(char, 0, 0);
       ctx.fillText(char, 1, 0);
       ctx.restore();
+
+      // Signature KMS Lie Detector Obstacle: Character-colored underlines and baseline strikes (User Screenshots 1 & 5)
+      // e.g. Screenshot 5 features prominent magenta horizontal bars directly below '도' and 'ㅋ'
+      const isSingleJamo = Hangul.isJamo ? Hangul.isJamo(char) : false;
+      const shouldUnderline = (this.currentText.includes('도아점') && (idx === 0 || idx === 3)) ||
+                              (this.currentText.includes('토아절') && (idx === 0 || idx === 3)) ||
+                              (this.currentText.includes('인귀') && (idx === 0 || idx === 4)) ||
+                              isSingleJamo ||
+                              (Math.random() < 0.35);
+
+      if (shouldUnderline) {
+        ctx.save();
+        ctx.fillStyle = color;
+        const lineW = Math.floor(28 + Math.random() * 16);
+        const lineH = Math.random() < 0.5 ? 2 : 3;
+        const lineX = cx - Math.floor(lineW / 2);
+        const lineY = cy + Math.floor(bh * 0.22 + (Math.random() - 0.5) * 4);
+        ctx.fillRect(lineX, lineY, lineW, lineH);
+        ctx.restore();
+      }
     });
 
     ctx.restore();
