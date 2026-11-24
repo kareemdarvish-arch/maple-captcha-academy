@@ -491,6 +491,21 @@ class MapleCaptchaGame {
     else if (scorePct >= 70) SoundFX.playCorrect();
     else SoundFX.playError();
 
+    // Record score to Live Leaderboard
+    const profile = (typeof PlayerAuth !== 'undefined') ? PlayerAuth.getProfile() : null;
+    const playerName = profile ? profile.name : 'Anonymous Player';
+    const playerAvatar = profile ? profile.avatar : '⚔️';
+
+    if (typeof MapleLeaderboard !== 'undefined') {
+      MapleLeaderboard.addEntry({
+        name: playerName,
+        avatar: playerAvatar,
+        score: correctCount,
+        total: total,
+        avgTime: avgTime
+      });
+    }
+
     this.renderExamResultsModal(correctCount, total, scorePct, avgTime);
   }
 

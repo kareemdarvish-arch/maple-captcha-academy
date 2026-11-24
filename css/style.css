@@ -1797,6 +1797,475 @@ body {
 .truth-room-tips li { margin-bottom: 0.3rem; }
 
 /* ==========================================================================
+   User Profile Header Widget & Auth Modal
+   ========================================================================== */
+
+.user-profile-widget {
+  display: flex;
+  align-items: center;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid var(--accent-gold);
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  box-shadow: 0 0 10px rgba(245, 166, 35, 0.2);
+}
+
+.user-chip-avatar {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.user-chip-name {
+  color: var(--accent-gold);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-signout {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 0.2rem;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.btn-signout:hover {
+  color: var(--accent-red);
+}
+
+/* Auth Modal Card */
+.auth-card {
+  background: var(--bg-card);
+  border: 2px solid var(--accent-gold);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 0 35px rgba(245, 166, 35, 0.35);
+  animation: slideUp 0.3s ease;
+}
+
+.auth-card-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(245, 166, 35, 0.15);
+  border: 1px solid var(--accent-gold);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+}
+
+.auth-card-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.35rem;
+}
+
+.auth-card-header p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.auth-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.btn-google-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  color: #1f1f1f;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.btn-google-auth:hover {
+  background: #f1f3f4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.auth-divider span {
+  padding: 0 0.75rem;
+}
+
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.auth-form-group label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.avatar-selection-grid {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.avatar-choice {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.avatar-choice:hover {
+  border-color: var(--accent-gold);
+  transform: scale(1.1);
+}
+
+.avatar-choice.selected {
+  border-color: var(--accent-gold);
+  background: rgba(245, 166, 35, 0.2);
+  box-shadow: 0 0 12px rgba(245, 166, 35, 0.5);
+  transform: scale(1.12);
+}
+
+.auth-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.auth-card-actions .btn {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Floating Keyboard Prompt Card
+   ========================================================================== */
+
+.floating-kb-prompt-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.12), rgba(15, 17, 23, 0.95));
+  border: 1px solid rgba(74, 144, 226, 0.35);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.floating-kb-prompt-card .prompt-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.floating-kb-prompt-card .prompt-text {
+  flex: 1;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   Standalone Exam Tab
+   ========================================================================== */
+
+.exam-intro-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 1.5rem;
+}
+
+.exam-intro-header {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.exam-trophy-icon {
+  font-size: 3rem;
+  line-height: 1;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid var(--accent-gold);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  flex-shrink: 0;
+}
+
+.exam-intro-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.exam-intro-header p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.exam-setup-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.exam-setup-row .setup-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 220px;
+}
+
+.exam-setup-row .setup-group label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.exam-setup-row .setup-actions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   Leaderboard Tab & Table
+   ========================================================================== */
+
+.leaderboard-hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lb-header-text h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+
+.lb-header-text p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.lb-filter-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lb-filter-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.lb-filter-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.lb-filter-btn.active {
+  background: rgba(245, 166, 35, 0.18);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 10px rgba(245, 166, 35, 0.3);
+}
+
+.leaderboard-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.lb-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: inherit;
+  font-size: 0.9rem;
+}
+
+.lb-table thead {
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.lb-table th {
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lb-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.lb-row {
+  transition: var(--transition);
+}
+
+.lb-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lb-row.rank-gold {
+  background: linear-gradient(90deg, rgba(245, 166, 35, 0.1), transparent);
+}
+
+.lb-row.rank-silver {
+  background: linear-gradient(90deg, rgba(180, 190, 205, 0.08), transparent);
+}
+
+.lb-row.rank-bronze {
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.08), transparent);
+}
+
+.lb-rank {
+  font-size: 1.25rem;
+  font-weight: 900;
+  width: 60px;
+}
+
+.lb-player {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lb-avatar {
+  font-size: 1.35rem;
+}
+
+.score-pct {
+  color: var(--accent-gold);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.score-fraction {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-inline-start: 0.35rem;
+}
+
+.lb-speed {
+  font-family: var(--font-mono);
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.lb-type {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.lb-date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ==========================================================================
    Footer
    ========================================================================== */
 

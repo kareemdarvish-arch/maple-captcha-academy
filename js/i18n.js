@@ -10,13 +10,42 @@ const I18n = (() => {
       appBadge: 'Academy',
       appSubtitle: 'Korean Lie Detector (거짓말탐지기) Simulator, Keyboard & Hangul Trainer',
       
-      // Tabs
-      tabTrainer: 'Captcha Trainer',
+      // Navigation Tabs
+      tabTrainer: 'Practice Trainer',
+      tabExamStandalone: 'Official Exam (10/15/20)',
+      tabLeaderboard: 'Leaderboard 🏆',
       tabAcademy: 'Hangul Academy',
       tabLookalikes: 'Lookalike Traps',
       tabDrill: 'Letter Drills',
       tabGuide: 'Keyboard Setup Guide',
       tabSandbox: 'Custom Sandbox',
+
+      // Player Profile & Sign-In
+      btnSignIn: '👤 Sign In / Choose Name',
+      btnSignOut: 'Sign Out ✕',
+      signInModalTitle: 'Enter Player Name & Sign In for the Exam',
+      signInGoogleBtn: 'Sign In with Google',
+      signInCustomBtn: 'Save Name & Continue',
+      labelPlayerName: 'In-Game Name (IGN):',
+      chooseAvatar: 'Choose Character Avatar:',
+      signInPromptBeforeExam: 'Sign in to record your score on the live Leaderboard!',
+
+      // Floating Keyboard Prompt
+      floatingKbPrompt: '💡 Keyboard Notice: Use your physical keyboard or click below to open the Floating Korean Keyboard just like in MapleStory!',
+      btnOpenFloatingKb: '🪟 Open Floating Korean Keyboard',
+
+      // Standalone Exam Tab
+      examIntroTitle: 'Official Lie Detector Exam Session',
+      examIntroDesc: 'Take a serious in-game timed exam of 10, 15, or 20 captchas. You will receive an official grade (S, A, B, C, F), an error breakdown of what you did wrong, and rank on the live Leaderboard!',
+      btnStartExamOfficial: '🚀 Begin Official Exam Now',
+
+      // Leaderboard
+      leaderboardTitle: '🏆 Lie Detector Leaderboard & Hall of Fame',
+      leaderboardDesc: 'Top MapleStory players with highest accuracy and fastest solve speeds in 10, 15, and 20 captcha exams.',
+      filterAll: 'All Exams',
+      filter20: '20 Captchas',
+      filter15: '15 Captchas',
+      filter10: '10 Captchas',
 
       // Sound
       soundOn: '🔊 Sound On',
@@ -191,13 +220,42 @@ const I18n = (() => {
       appBadge: 'أكاديمية',
       appSubtitle: 'محاكي كاشف الكذب (거짓말탐지기) بمابل ستوري، تدريب لوحة المفاتيح وإتقان الهانغل الكوري',
 
-      // Tabs
+      // Navigation Tabs
       tabTrainer: 'مدرب الكابتشا',
+      tabExamStandalone: 'الاختبار الرسمي (10/15/20) 📝',
+      tabLeaderboard: 'لوحة المتصدرين 🏆',
       tabAcademy: 'أكاديمية الهانغل',
       tabLookalikes: 'فخاخ الحروف المتشابهة',
       tabDrill: 'تدريب السرعة',
       tabGuide: 'دليل الكيبورد الكوري',
       tabSandbox: 'المختبر والتصدير',
+
+      // Player Profile & Sign-In
+      btnSignIn: '👤 ادخل اسمك / تسجيل الدخول',
+      btnSignOut: 'خروج ✕',
+      signInModalTitle: 'اختر اسمك وسجل لدخول الاختبار الرسمي',
+      signInGoogleBtn: 'الدخول بحساب Google',
+      signInCustomBtn: 'حفظ الاسم والبدء',
+      labelPlayerName: 'اسم اللاعب باللعبة (IGN):',
+      chooseAvatar: 'اختر شكل الشخصية:',
+      signInPromptBeforeExam: 'سجل اسمك ليتم حفظ نتيجتك في لوحة المتصدرين وقائمة الشرف!',
+
+      // Floating Keyboard Prompt
+      floatingKbPrompt: '💡 تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!',
+      btnOpenFloatingKb: '🪟 افتح الكيبورد الكوري العائم',
+
+      // Standalone Exam Tab
+      examIntroTitle: 'جلسة الاختبار الرسمي لكاشف الكذب (Lie Detector)',
+      examIntroDesc: 'ادخل اختباراً حقيقياً مكوناً من 10 أو 15 أو 20 كابتشا بمؤقت زمني دقيق. ستحصل في النهاية على تقييم رسمي (S أو A أو B أو C أو F)، وتحليل تفصيلي لما قمت به خطأ، وسيتم تسجيل نتيجتك في لوحة المتصدرين!',
+      btnStartExamOfficial: '🚀 ابدأ الاختبار الرسمي الآن',
+
+      // Leaderboard
+      leaderboardTitle: '🏆 لوحة المتصدرين وقائمة شرف كاشف الكذب',
+      leaderboardDesc: 'أفضل لاعبي مابل ستوري بأعلى دقة وأسرع وقت حل في اختبارات الـ 10 و 15 و 20 كابتشا.',
+      filterAll: 'جميع الاختبارات',
+      filter20: 'اختبار 20 كابتشا',
+      filter15: 'اختبار 15 كابتشا',
+      filter10: 'اختبار 10 كابتشا',
 
       // Sound
       soundOn: '🔊 الصوت مفعل',

@@ -53,6 +53,13 @@ class MapleCaptchaGenerator {
 
     this.initCanvas();
     this.initMagnifierEvents();
+
+    // Auto re-render when Galmuri11 webfont finishes loading
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        if (this.currentText) this.render();
+      });
+    }
   }
 
   initCanvas() {
@@ -309,7 +316,7 @@ class MapleCaptchaGenerator {
       const color = this.retroColors[idx % this.retroColors.length];
 
       const jitterX = Math.round((Math.random() - 0.5) * 3);
-      const jitterY = Math.round((Math.random() - 0.5) * 3);
+      const jitterY = Math.round((Math.random() - 0.5) * 2);
       const cx = Math.floor(startX + slotWidth * idx + slotWidth / 2 + jitterX);
       const cy = Math.floor(by + bh / 2 + jitterY);
 
@@ -321,14 +328,19 @@ class MapleCaptchaGenerator {
         color
       });
 
+      ctx.save();
       ctx.fillStyle = color;
+      ctx.translate(cx, cy);
+      // Characteristic vertical pixel ratio of KMS Lie Detector glyphs
+      ctx.scale(0.92, 1.18);
 
       // Authentic thick solid bitmap weight
-      ctx.fillText(char, cx, cy);
-      ctx.fillText(char, cx + 1, cy);
-      ctx.fillText(char, cx - 1, cy);
-      ctx.fillText(char, cx, cy + 1);
-      ctx.fillText(char, cx, cy - 1);
+      ctx.fillText(char, 0, 0);
+      ctx.fillText(char, 1, 0);
+      ctx.fillText(char, -1, 0);
+      ctx.fillText(char, 0, 1);
+      ctx.fillText(char, 0, -1);
+      ctx.restore();
     });
 
     ctx.restore();

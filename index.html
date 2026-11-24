@@ -22,43 +22,59 @@
       <div class="header-branding">
         <div class="logo-leaf">🍁</div>
         <div>
-          <h1 class="logo-title"><span data-i18n="appName">MapleCaptcha</span> <span class="badge-accent" data-i18n="appBadge">Academy</span></h1>
-          <p class="logo-subtitle" data-i18n="appSubtitle">Korean Lie Detector (거짓말탐지기) Simulator, Keyboard & Hangul Trainer</p>
+          <h1 class="logo-title"><span data-i18n="appName">أكاديمية مابل كابتشا</span> <span class="badge-accent" data-i18n="appBadge">MapleCaptcha</span></h1>
+          <p class="logo-subtitle" data-i18n="appSubtitle">محاكي كاشف الكذب (Lie Detector) بمابل ستوري • تدريب الكيبورد الكوري وإتقان قراءة الهانغل</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <nav class="nav-tabs" role="tablist">
         <button class="nav-tab-btn active" data-tab="trainer" role="tab" aria-selected="true">
-          <span class="tab-icon">🎯</span> <span data-i18n="tabTrainer">Captcha Trainer</span>
+          <span class="tab-icon">🎯</span> <span data-i18n="tabTrainer">مدرب الكابتشا</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="exam" role="tab" aria-selected="false">
+          <span class="tab-icon">📝</span> <span data-i18n="tabExamStandalone">الاختبار الرسمي (10/15/20)</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="leaderboard" role="tab" aria-selected="false">
+          <span class="tab-icon">🏆</span> <span data-i18n="tabLeaderboard">لوحة المتصدرين</span>
         </button>
         <button class="nav-tab-btn" data-tab="academy" role="tab" aria-selected="false">
-          <span class="tab-icon">📚</span> <span data-i18n="tabAcademy">Hangul Academy</span>
+          <span class="tab-icon">📚</span> <span data-i18n="tabAcademy">أكاديمية الهانغل</span>
         </button>
         <button class="nav-tab-btn" data-tab="lookalikes" role="tab" aria-selected="false">
-          <span class="tab-icon">👁️</span> <span data-i18n="tabLookalikes">Lookalike Traps</span>
+          <span class="tab-icon">👁️</span> <span data-i18n="tabLookalikes">فخاخ الحروف المتشابهة</span>
         </button>
         <button class="nav-tab-btn" data-tab="drill" role="tab" aria-selected="false">
-          <span class="tab-icon">⚡</span> <span data-i18n="tabDrill">Letter Drills</span>
+          <span class="tab-icon">⚡</span> <span data-i18n="tabDrill">تدريب السرعة</span>
         </button>
         <button class="nav-tab-btn" data-tab="guide" role="tab" aria-selected="false">
-          <span class="tab-icon">🪟</span> <span data-i18n="tabGuide">Keyboard Setup Guide</span>
+          <span class="tab-icon">🪟</span> <span data-i18n="tabGuide">دليل الكيبورد الكوري</span>
         </button>
         <button class="nav-tab-btn" data-tab="sandbox" role="tab" aria-selected="false">
-          <span class="tab-icon">🎨</span> <span data-i18n="tabSandbox">Custom Sandbox</span>
+          <span class="tab-icon">🎨</span> <span data-i18n="tabSandbox">المختبر والتصدير</span>
         </button>
       </nav>
 
-      <!-- Global Actions: Language & Sound -->
+      <!-- Global Actions: User Profile, Language & Sound -->
       <div class="header-actions">
+        <!-- Player Profile Chip / Sign In -->
+        <div id="user-profile-header-widget" class="user-profile-widget">
+          <button id="btn-open-signin-modal" class="btn btn-sm btn-primary">
+            <span data-i18n="btnSignIn">👤 ادخل اسمك / تسجيل</span>
+          </button>
+        </div>
+
+        <!-- Language Selector with Egyptian Flag 🇪🇬 -->
         <div class="lang-selector-wrapper">
           <select id="select-language" class="form-select lang-select" title="تغيير اللغة / Switch Language">
-            <option value="ar" selected>العربية 🇸🇦</option>
+            <option value="ar" selected>العربية 🇪🇬</option>
             <option value="en">English 🇺🇸</option>
           </select>
         </div>
+
+        <!-- Sound Button -->
         <button id="btn-toggle-sound" class="btn btn-sm btn-outline" title="Toggle Sound FX" data-i18n="soundOn">
-          🔊 Sound On
+          🔊 الصوت مفعل
         </button>
       </div>
     </header>
@@ -66,76 +82,57 @@
     <!-- Main Content Panes -->
     <main class="main-content">
 
-      <!-- ================= TAB 1: CAPTCHA TRAINER ================= -->
+      <!-- ================= TAB 1: PRACTICE TRAINER ================= -->
       <section id="tab-trainer" class="tab-pane active" role="tabpanel">
         
         <!-- Controls & Configuration Toolbar -->
         <div class="trainer-toolbar">
           <div class="toolbar-group">
-            <label for="select-game-mode" data-i18n="labelMode">Mode:</label>
-            <select id="select-game-mode" class="form-select">
-              <option value="practice" data-i18n-option="modePractice">Endless Practice (No Timer)</option>
-              <option value="exam" data-i18n-option="modeExam">Official Exam (10, 15, or 20 Captchas)</option>
-              <option value="test" data-i18n-option="modeTest">Timed Exam (30s & Strikes)</option>
-              <option value="speedrun" data-i18n-option="modeSpeedrun">Speedrun (10-Streak Race)</option>
-            </select>
-          </div>
-
-          <div class="toolbar-group" id="exam-length-group" style="display: none;">
-            <label for="select-exam-length" data-i18n="labelExamLength">Exam Questions:</label>
-            <select id="select-exam-length" class="form-select">
-              <option value="10" selected data-i18n-option="exam10">10 Captchas</option>
-              <option value="15" data-i18n-option="exam15">15 Captchas</option>
-              <option value="20" data-i18n-option="exam20">20 Captchas</option>
-            </select>
-          </div>
-
-          <div class="toolbar-group">
-            <label for="select-syllable-set" data-i18n="labelSyllables">Syllables:</label>
+            <label for="select-syllable-set" data-i18n="labelSyllables">مجموعة الكلمات:</label>
             <select id="select-syllable-set" class="form-select">
-              <option value="balanced" selected data-i18n-option="setBalanced">Balanced In-Game Mix</option>
-              <option value="authentic" data-i18n-option="setAuthentic">Authentic Maple Words</option>
-              <option value="adaptive" data-i18n-option="setAdaptive">🧠 Smart Adaptive (Your Weak Letters)</option>
-              <option value="difficult_batchim" data-i18n-option="setBatchim">Difficult Batchim (겹받침)</option>
-              <option value="complex_vowels" data-i18n-option="setVowels">Compound Vowels (이중모음)</option>
-              <option value="lookalikes" data-i18n-option="setLookalikes">Lookalike Traps (ㅓ/ㅏ, ㅗ/ㅜ)</option>
-              <option value="all_hangul" data-i18n-option="setAll">All 11,172 Hangul Syllables</option>
+              <option value="balanced" selected data-i18n-option="setBalanced">مزيج اللعبة المتوازن</option>
+              <option value="authentic" data-i18n-option="setAuthentic">كلمات مابل ستوري الأصلية</option>
+              <option value="adaptive" data-i18n-option="setAdaptive">🧠 تدريب ذكي (الحروف التي تخطئ بها)</option>
+              <option value="difficult_batchim" data-i18n-option="setBatchim">باتشيم مركب معقد (겹받침)</option>
+              <option value="complex_vowels" data-i18n-option="setVowels">حروف علة مركبة (이중모음)</option>
+              <option value="lookalikes" data-i18n-option="setLookalikes">فخاخ الحروف المتشابهة (ㅓ/ㅏ, ㅗ/ㅜ)</option>
+              <option value="all_hangul" data-i18n-option="setAll">جميع مقاطع الهانغل (11,172 مقطع)</option>
             </select>
           </div>
 
           <div class="toolbar-group">
-            <label for="select-noise-level" data-i18n="labelNoise">Noise:</label>
+            <label for="select-noise-level" data-i18n="labelNoise">مستوى التشويش:</label>
             <select id="select-noise-level" class="form-select">
-              <option value="easy" data-i18n-option="noiseEasy">Easy (Low Noise)</option>
-              <option value="normal" selected data-i18n-option="noiseNormal">Normal (Game Accurate)</option>
-              <option value="hard" data-i18n-option="noiseHard">Hard (Dense Noise & Lines)</option>
-              <option value="insane" data-i18n-option="noiseInsane">Insane (Nightmare)</option>
+              <option value="easy" data-i18n-option="noiseEasy">سهل (تشويش خفيف)</option>
+              <option value="normal" selected data-i18n-option="noiseNormal">عادي (مطابق للعبة تماماً)</option>
+              <option value="hard" data-i18n-option="noiseHard">صعب (تشويش وخطوط كثيفة)</option>
+              <option value="insane" data-i18n-option="noiseInsane">كابوس (صعوبة قصوى)</option>
             </select>
           </div>
 
           <div class="toolbar-group">
-            <label for="select-background" data-i18n="labelScene">Scene:</label>
+            <label for="select-background" data-i18n="labelScene">مشهد الخلفية:</label>
             <select id="select-background" class="form-select">
-              <option value="sky_rock" selected data-i18n-option="sceneSky">Sky & Rock (Screenshot 4)</option>
-              <option value="cloud_balcony" data-i18n-option="sceneCloud">Cloud Balcony (Screenshot 1)</option>
-              <option value="ellinia_portal" data-i18n-option="scenePortal">Ellinia Portal (Screenshot 2)</option>
-              <option value="dark_dungeon" data-i18n-option="sceneDungeon">Dark Dungeon (Screenshot 3)</option>
-              <option value="clean" data-i18n-option="sceneClean">Clean Dark (Focus Mode)</option>
+              <option value="sky_rock" selected data-i18n-option="sceneSky">السماء والصخور (اللقطة الرسمية 1)</option>
+              <option value="cloud_balcony" data-i18n-option="sceneCloud">شرفة الغيوم (اللقطة 5)</option>
+              <option value="ellinia_portal" data-i18n-option="scenePortal">بوابة إلينيا والسحرة (اللقطة 3)</option>
+              <option value="dark_dungeon" data-i18n-option="sceneDungeon">الزنزانة الزرقاء (اللقطة 2)</option>
+              <option value="clean" data-i18n-option="sceneClean">وضع التركيز الداكن</option>
             </select>
           </div>
 
           <div class="toolbar-actions">
             <button id="btn-toggle-magnifier" class="btn btn-icon" title="Toggle 3x Magnifier Lens" data-i18n="btnLens">
-              🔍 Lens
+              🔍 عدسة مكبرة
             </button>
             <button id="btn-toggle-hint" class="btn btn-icon" title="Deconstruct Characters / Keystrokes Hint" data-i18n="btnHint">
-              💡 Hint
+              💡 تلميح الحروف
             </button>
             <button id="btn-toggle-float-keyboard" class="btn btn-secondary" title="Detach Floating Keyboard" data-i18n="btnFloatingKb">
-              🪟 Float Keyboard
+              🪟 كيبورد عائم
             </button>
             <button id="btn-next-captcha" class="btn btn-primary" title="Generate New Captcha" data-i18n="btnNew">
-              🔄 New (Skip)
+              🔄 كابتشا جديدة
             </button>
           </div>
         </div>
@@ -143,131 +140,194 @@
         <!-- Stats Bar -->
         <div class="stats-bar">
           <div class="stat-item">
-            <span class="stat-label" data-i18n="statStreak">Streak:</span>
+            <span class="stat-label" data-i18n="statStreak">سلسلة النجاح:</span>
             <span id="stat-streak" class="stat-value highlight-streak">0</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label" data-i18n="statBest">Best Streak:</span>
+            <span class="stat-label" data-i18n="statBest">أفضل نتيجة:</span>
             <span id="stat-best-streak" class="stat-value">0</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label" data-i18n="statSolved">Solved:</span>
+            <span class="stat-label" data-i18n="statSolved">تم حلها:</span>
             <span id="stat-solved" class="stat-value">0</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label" data-i18n="statAccuracy">Accuracy:</span>
+            <span class="stat-label" data-i18n="statAccuracy">نسبة الدقة:</span>
             <span id="stat-rate" class="stat-value">100%</span>
           </div>
-          <div class="stat-item strikes-item">
-            <span class="stat-label" data-i18n="statStrikes">Strikes:</span>
-            <div id="strikes-container" class="strikes-box">
-              <span class="strike-marker">✕</span>
-              <span class="strike-marker">✕</span>
-              <span class="strike-marker">✕</span>
-            </div>
-          </div>
         </div>
 
-        <!-- Exam Progress Banner (Active during Official Exam Mode) -->
-        <div id="exam-progress-banner" class="exam-progress-banner" style="display: none;">
-          <div class="exam-progress-info">
-            <span id="exam-progress-text" class="exam-progress-text">Exam Progress: Question 1 of 10</span>
-            <span id="exam-score-text" class="exam-score-text">Score: 0 / 10</span>
-          </div>
-          <div class="exam-bar-container">
-            <div id="exam-progress-bar-fill" class="exam-bar-fill" style="width: 0%;"></div>
-          </div>
-        </div>
-
-        <!-- Captcha Stage Container -->
-        <div class="captcha-stage-card">
-          <!-- Timer Bar (Visible in Test and Speedrun modes) -->
-          <div id="timer-container" class="timer-wrapper" style="display: none;">
-            <div class="timer-label" data-i18n="timeLeft">Time Remaining:</div>
-            <div class="timer-bar-bg">
-              <div id="timer-progress-fill" class="timer-bar-fill" style="width: 100%;"></div>
+        <!-- Captcha Stage Holder (Can move between Practice and Standalone Exam) -->
+        <div id="trainer-stage-holder">
+          <div id="captcha-main-stage-card" class="captcha-stage-card">
+            <!-- Timer Bar -->
+            <div id="timer-container" class="timer-wrapper" style="display: none;">
+              <div class="timer-label" data-i18n="timeLeft">الوقت المتبقي:</div>
+              <div class="timer-bar-bg">
+                <div id="timer-progress-fill" class="timer-bar-fill" style="width: 100%;"></div>
+              </div>
+              <div id="timer-time-left" class="timer-digits">30.0s</div>
             </div>
-            <div id="timer-time-left" class="timer-digits">30.0s</div>
-          </div>
 
-          <!-- Maple Captcha Canvas with Frame -->
-          <div class="canvas-viewport-wrapper">
-            <div class="canvas-pixel-frame">
-              <canvas id="captcha-canvas" width="520" height="115"></canvas>
+            <!-- Authentic Maple Captcha Canvas with Sharp Borders -->
+            <div class="canvas-viewport-wrapper">
+              <div class="canvas-pixel-frame">
+                <canvas id="captcha-canvas" width="520" height="115"></canvas>
+              </div>
+              <div class="canvas-bottom-hint">
+                <span data-i18n="canvasHoverHint">مرر الفأرة فوق الكابتشا مع تفعيل <strong>🔍 العدسة</strong> لفحص تفاصيل الحروف بدقة عالية</span>
+                <span class="game-badge" data-i18n="engineBadge">محرك كاشف الكذب الرسمي KMS</span>
+              </div>
             </div>
-            <div class="canvas-bottom-hint">
-              <span data-i18n="canvasHoverHint">Hover canvas with <strong>🔍 Lens</strong> enabled to inspect pixel strokes</span>
-              <span class="game-badge" data-i18n="engineBadge">KMS Lie Detector Engine</span>
+
+            <!-- Character Breakdown Drawer (Hints) -->
+            <div id="captcha-hint-drawer" class="hint-drawer">
+              <div class="hint-drawer-header">
+                <span class="hint-title" data-i18n="hintHeader">💡 تفكيك الحروف ومفاتيح QWERTY الإنجليزية</span>
+                <span class="hint-note" data-i18n="hintSubnote">اضغط على أي بطاقة حرف لفحص أجزائه والاستماع إلى نطقه الكوري الأصلي</span>
+              </div>
+              <div id="current-captcha-breakdown" class="hint-cards-row"></div>
             </div>
-          </div>
 
-          <!-- Character Breakdown Drawer (Hints) -->
-          <div id="captcha-hint-drawer" class="hint-drawer">
-            <div class="hint-drawer-header">
-              <span class="hint-title" data-i18n="hintHeader">💡 Stroke Breakdown & QWERTY Keystrokes</span>
-              <span class="hint-note" data-i18n="hintSubnote">Click any letter card to inspect parts & hear pronunciation</span>
-            </div>
-            <div id="current-captcha-breakdown" class="hint-cards-row"></div>
-          </div>
+            <!-- Feedback Notification Banner -->
+            <div id="feedback-banner" class="feedback-banner" style="display: none;"></div>
 
-          <!-- Feedback Notification Banner -->
-          <div id="feedback-banner" class="feedback-banner" style="display: none;"></div>
-
-          <!-- Input Display & Typing Field -->
-          <div class="input-section">
-            <div class="input-display-wrapper">
-              <div id="captcha-input-display" class="captcha-slots-display">
-                <!-- Dynamic character slots rendered here -->
+            <!-- Input Display & Typing Field -->
+            <div class="input-section">
+              <div class="input-display-wrapper">
+                <div id="captcha-input-display" class="captcha-slots-display">
+                  <!-- Dynamic character slots rendered here -->
+                </div>
+                <!-- Hidden input capturing physical keystrokes / native Korean IME -->
+                <input type="text" id="captcha-hidden-input" class="trainer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
               </div>
 
-              <!-- Hidden input capturing physical keystrokes / native Korean IME -->
-              <input type="text" id="captcha-hidden-input" class="trainer-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="" />
-            </div>
-
-            <div class="input-action-buttons">
-              <button id="btn-clear-input" class="btn btn-secondary" title="Clear typed text" data-i18n="btnClear">Clear</button>
-              <button id="btn-submit-captcha" class="btn btn-success btn-submit" title="Submit Captcha (or press Enter)" data-i18n="btnSubmit">Submit ↵</button>
+              <div class="input-action-buttons">
+                <button id="btn-clear-input" class="btn btn-secondary" title="Clear typed text" data-i18n="btnClear">مسح</button>
+                <button id="btn-submit-captcha" class="btn btn-success btn-submit" title="Submit Captcha (or press Enter)" data-i18n="btnSubmit">تأكيد ↵</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Interactive Virtual Dubeolsik (2-Set) Keyboard -->
-        <div class="keyboard-section">
-          <div class="keyboard-section-header">
-            <h3 data-i18n="kbTitle">Interactive Dubeolsik (두벌식) Keyboard</h3>
-            <span class="keyboard-tip" data-i18n="kbSubnote">
-              Type on your English keyboard (auto-converted to Hangul!) or click keys below.
-            </span>
+        <!-- Floating Keyboard Prompt (Replaces static docked Dubeolsik keyboard) -->
+        <div class="floating-kb-prompt-card">
+          <div class="prompt-icon">💡</div>
+          <div class="prompt-text">
+            <span data-i18n="floatingKbPrompt">تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!</span>
           </div>
-          <div id="virtual-keyboard-container" class="virtual-keyboard-box"></div>
+          <button type="button" class="btn btn-secondary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
+            🪟 افتح الكيبورد الكوري العائم
+          </button>
         </div>
 
       </section>
 
 
-      <!-- ================= TAB 2: HANGUL ACADEMY ================= -->
+      <!-- ================= TAB 2: STANDALONE OFFICIAL EXAM ================= -->
+      <section id="tab-exam" class="tab-pane" role="tabpanel">
+        
+        <!-- Pre-Exam Setup Card -->
+        <div id="exam-intro-card" class="exam-intro-card">
+          <div class="exam-intro-header">
+            <div class="exam-trophy-icon">📝</div>
+            <div>
+              <h2 data-i18n="examIntroTitle">جلسة الاختبار الرسمي لكاشف الكذب (Lie Detector)</h2>
+              <p data-i18n="examIntroDesc">ادخل اختباراً حقيقياً مكوناً من 10 أو 15 أو 20 كابتشا بمؤقت زمني دقيق. ستحصل في النهاية على تقييم رسمي (S أو A أو B أو C أو F)، وتحليل تفصيلي لما قمت به خطأ، وسيتم تسجيل نتيجتك في لوحة المتصدرين!</p>
+            </div>
+          </div>
+
+          <div class="exam-setup-row">
+            <div class="setup-group">
+              <label for="select-standalone-exam-length" data-i18n="labelExamLength">عدد أسئلة الاختبار:</label>
+              <select id="select-standalone-exam-length" class="form-select">
+                <option value="10" data-i18n-option="exam10">10 كابتشا</option>
+                <option value="15" selected data-i18n-option="exam15">15 كابتشا</option>
+                <option value="20" data-i18n-option="exam20">20 كابتشا</option>
+              </select>
+            </div>
+
+            <div class="setup-actions">
+              <button id="btn-start-exam-standalone" class="btn btn-primary btn-lg" data-i18n="btnStartExamOfficial">
+                🚀 ابدأ الاختبار الرسمي الآن
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Exam Stage Container -->
+        <div id="exam-stage-container" style="display: none;">
+          <!-- Progress Banner -->
+          <div id="exam-progress-banner" class="exam-progress-banner">
+            <div class="exam-progress-info">
+              <span id="exam-progress-text" class="exam-progress-text">تقدم الاختبار: السؤال 1 من 15</span>
+              <span id="exam-score-text" class="exam-score-text">النتيجة: 0 / 15</span>
+            </div>
+            <div class="exam-bar-container">
+              <div id="exam-progress-bar-fill" class="exam-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Captcha Stage is dynamically moved here during exam -->
+
+          <!-- Floating Keyboard Prompt inside Exam -->
+          <div class="floating-kb-prompt-card" style="margin-top: 1rem;">
+            <div class="prompt-icon">💡</div>
+            <div class="prompt-text">
+              <span data-i18n="floatingKbPrompt">تنبيه الكيبورد: يُرجى استخدام كيبورد جهازك الفعلي أو فتح الكيبورد الكوري العائم لتجربة واقعية مطابقة للعبة مابل ستوري!</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
+              🪟 افتح الكيبورد الكوري العائم
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ================= TAB 3: LEADERBOARD ================= -->
+      <section id="tab-leaderboard" class="tab-pane" role="tabpanel">
+        <div class="leaderboard-hero-card">
+          <div class="lb-header-text">
+            <h2 data-i18n="leaderboardTitle">🏆 لوحة المتصدرين وقائمة شرف كاشف الكذب</h2>
+            <p data-i18n="leaderboardDesc">أفضل لاعبي مابل ستوري بأعلى دقة وأسرع وقت حل في اختبارات الـ 10 و 15 و 20 كابتشا.</p>
+          </div>
+
+          <div class="lb-filter-pills">
+            <button class="lb-filter-btn active" data-filter="all" data-i18n="filterAll">جميع الاختبارات</button>
+            <button class="lb-filter-btn" data-filter="20" data-i18n="filter20">اختبار 20 كابتشا</button>
+            <button class="lb-filter-btn" data-filter="15" data-i18n="filter15">اختبار 15 كابتشا</button>
+            <button class="lb-filter-btn" data-filter="10" data-i18n="filter10">اختبار 10 كابتشا</button>
+          </div>
+        </div>
+
+        <div id="leaderboard-table-container" class="leaderboard-table-card"></div>
+      </section>
+
+
+      <!-- ================= TAB 4: HANGUL ACADEMY ================= -->
       <section id="tab-academy" class="tab-pane" role="tabpanel">
         
         <div class="academy-hero-card">
-          <h2 data-i18n="academyTitle">Hangul Structure 101 for Gamers</h2>
+          <h2 data-i18n="academyTitle">أساسيات لغة الهانغل 101 للاعبين</h2>
           <p data-i18n="academyDesc">
-            Korean is an alphabet assembled into blocks. Every block consists of an Initial Consonant (Left Hand) + Medial Vowel (Right Hand) + optional Final Batchim (Left Hand).
+            اللغة الكورية هي لغة أبجدية تُجمع في كتل ومقاطع. يتكون كل مقطع من: حرف ساكن أولي (باليد اليسرى) + حرف علة وسطي (باليد اليمنى) + باتشيم ختامي اختياري (باليد اليسرى).
           </p>
           <div class="structure-visual-row">
             <div class="structure-box">
-              <div class="struct-title" data-i18n="blockTwoPart">Two-Part Block (Initial + Vowel)</div>
+              <div class="struct-title" data-i18n="blockTwoPart">مقطع ثنائي (ساكن + حرف علة)</div>
               <div class="struct-example">
                 <span class="part-c">ㄱ (r)</span> + <span class="part-v">ㅏ (k)</span> = <span class="part-result">가 (ga)</span>
               </div>
             </div>
             <div class="structure-box">
-              <div class="struct-title" data-i18n="blockThreePart">Three-Part Block (Initial + Vowel + Batchim)</div>
+              <div class="struct-title" data-i18n="blockThreePart">مقطع ثلاثي (ساكن + علة + باتشيم)</div>
               <div class="struct-example">
                 <span class="part-c">ㄱ (r)</span> + <span class="part-v">ㅏ (k)</span> + <span class="part-b">ㄴ (s)</span> = <span class="part-result">간 (gan)</span>
               </div>
             </div>
             <div class="structure-box">
-              <div class="struct-title" data-i18n="blockCompound">Compound Batchim Block</div>
+              <div class="struct-title" data-i18n="blockCompound">مقطع بباتشيم مزدوج معقد</div>
               <div class="struct-example">
                 <span class="part-c">ㄷ (e)</span> + <span class="part-v">ㅏ (k)</span> + <span class="part-b">ㄺ (f+r)</span> = <span class="part-result">닭 (dak)</span>
               </div>
@@ -278,12 +338,12 @@
         <!-- Interactive Syllable Deconstructor & Search -->
         <div class="deconstructor-widget-card">
           <div class="widget-header">
-            <h3 data-i18n="deconTitle">🔬 Interactive Syllable Deconstructor & Speech</h3>
-            <p data-i18n="deconDesc">Type ANY Korean syllable or letter to see its stroke breakdown, English keys, and hear native pronunciation:</p>
+            <h3 data-i18n="deconTitle">🔬 جهاز التفكيك التفاعلي والنطق الصوتي</h3>
+            <p data-i18n="deconDesc">اكتب أي مقطع أو حرف كوري لترى تفكيكه بدقة، والمفاتيح الإنجليزية المطلوبة لنطقه:</p>
           </div>
           <div class="widget-search-row">
             <input type="text" id="inspect-char-input" class="form-input" maxlength="2" placeholder="e.g. 빛, 닭, 엊, 낄, 화" value="빛" data-i18n="deconPlaceholder" />
-            <button id="inspect-char-btn" class="btn btn-primary" data-i18n="deconBtn">Deconstruct</button>
+            <button id="inspect-char-btn" class="btn btn-primary" data-i18n="deconBtn">فكك الحرف</button>
           </div>
           <div id="deconstructor-output" class="deconstructor-result-box"></div>
         </div>
@@ -293,11 +353,11 @@
           <div class="jamo-filter-bar">
             <h3>Complete Letter Reference (Click card to highlight on keyboard, click 🔊 to listen):</h3>
             <div class="filter-btn-group">
-              <button class="jamo-filter-btn active" data-filter="all" data-i18n="allLetters">All Letters</button>
-              <button class="jamo-filter-btn" data-filter="consonant" data-i18n="consonants">Consonants (자음)</button>
-              <button class="jamo-filter-btn" data-filter="vowel" data-i18n="vowels">Vowels (모음)</button>
-              <button class="jamo-filter-btn" data-filter="compound_vowel" data-i18n="compoundVowels">Compound Vowels</button>
-              <button class="jamo-filter-btn" data-filter="batchim" data-i18n="batchim">Tricky Batchim (받침)</button>
+              <button class="jamo-filter-btn active" data-filter="all" data-i18n="allLetters">جميع الحروف</button>
+              <button class="jamo-filter-btn" data-filter="consonant" data-i18n="consonants">الحروف الساكنة (자음)</button>
+              <button class="jamo-filter-btn" data-filter="vowel" data-i18n="vowels">حروف العلة (모음)</button>
+              <button class="jamo-filter-btn" data-filter="compound_vowel" data-i18n="compoundVowels">حروف العلة المركبة</button>
+              <button class="jamo-filter-btn" data-filter="batchim" data-i18n="batchim">الباتشيم المعقد (받침)</button>
             </div>
           </div>
           <div id="jamo-grid-container" class="jamo-grid-container"></div>
@@ -306,36 +366,36 @@
       </section>
 
 
-      <!-- ================= TAB 3: LOOKALIKE TRAPS ================= -->
+      <!-- ================= TAB 5: LOOKALIKE TRAPS ================= -->
       <section id="tab-lookalikes" class="tab-pane" role="tabpanel">
         <div class="lookalikes-hero-card">
-          <h2 data-i18n="lookalikeTitle">👁️ "Lookalike Traps" Spotter Guide</h2>
+          <h2 data-i18n="lookalikeTitle">👁️ دليل كشف "فخاخ الحروف المتشابهة"</h2>
           <p data-i18n="lookalikeDesc">
-            Under heavy pixel noise lines and confetti dots in MapleStory, certain characters look virtually identical. Memorize these key geometric differences to never fail a lie detector again!
+            تحت خطوط التشويش الكثيفة ونقاط الألوان في لعبة مابل ستوري، تبدو بعض الحروف متطابقة تماماً لغير الكوريين. احفظ هذه الفروق الهندسية البسيطة ولن ترسب في كاشف الكذب أبداً!
           </p>
         </div>
         <div id="lookalikes-container" class="lookalikes-container"></div>
       </section>
 
 
-      <!-- ================= TAB 4: LETTER DRILLS ================= -->
+      <!-- ================= TAB 6: LETTER DRILLS ================= -->
       <section id="tab-drill" class="tab-pane" role="tabpanel">
         <div class="drill-hero-card">
-          <h2 data-i18n="drillTitle">⚡ Speed Letter Recognition Drill</h2>
+          <h2 data-i18n="drillTitle">⚡ تدريب سرعة رد الفعل للحروف الفردية</h2>
           <p data-i18n="drillDesc">
-            Train your brain to instantly identify noisy Korean letters and tap their QWERTY keys with muscle memory.
+            درّب عقلك على التعرف الفوري على الحروف الكورية المشوشة وضغط مفتاحها بسرعة وبذاكرة عضلية خالصة.
           </p>
         </div>
         <div id="drill-container" class="drill-container"></div>
       </section>
 
 
-      <!-- ================= TAB 5: KEYBOARD SETUP GUIDE ================= -->
+      <!-- ================= TAB 7: KEYBOARD SETUP GUIDE ================= -->
       <section id="tab-guide" class="tab-pane" role="tabpanel">
         <div class="guide-hero-card">
-          <h2 data-i18n="guideTitle">🪟 Korean Keyboard Setup & Floating Screen Guide</h2>
+          <h2 data-i18n="guideTitle">🪟 دليل تثبيت الكيبورد الكوري وجعله عائماً على شاشتك</h2>
           <p data-i18n="guideDesc">
-            How to install the Korean IME in Windows and how to make the on-screen keyboard float over your game window.
+            شرح مفصل لكيفية تثبيت لوحة المفاتيح الكورية على Windows 10/11 وكيفية جعل لوحة المفاتيح تطفو فوق شاشة اللعبة.
           </p>
         </div>
 
@@ -344,14 +404,14 @@
           <div class="guide-step-card">
             <div class="guide-step-header">
               <span class="step-badge">1</span>
-              <h3 data-i18n="guideStep1Title">Step 1: Install Korean Language in Windows 10/11</h3>
+              <h3 data-i18n="guideStep1Title">الخطوة 1: تثبيت اللغة الكورية في ويندوز 10/11</h3>
             </div>
             <div class="guide-step-body">
               <p data-i18n="guideStep1Desc">
-                1. Open Windows Settings (Press Win + I).<br>
-                2. Go to "Time & Language" → "Language & Region".<br>
-                3. Click "Add a language" and search for "Korean (한국어)".<br>
-                4. Install the Basic Typing package.
+                1. افتح إعدادات ويندوز (اضغط على Win + I).<br>
+                2. توجه إلى "الوقت واللغة (Time & Language)" ثم "اللغة والمنطقة (Language & Region)".<br>
+                3. انقر على "إضافة لغة (Add a language)" وابحث عن "الكورية (한국어)".<br>
+                4. ثبّت حزمة الكتابة الأساسية (Basic Typing).
               </p>
               <div class="guide-code-box">
                 <code>Win + I &gt; Time &amp; Language &gt; Add Language &gt; Korean</code>
@@ -363,12 +423,12 @@
           <div class="guide-step-card">
             <div class="guide-step-header">
               <span class="step-badge">2</span>
-              <h3 data-i18n="guideStep2Title">Step 2: Switching Between English/Arabic & Korean</h3>
+              <h3 data-i18n="guideStep2Title">الخطوة 2: التبديل بين العربية/الإنجليزية والكورية</h3>
             </div>
             <div class="guide-step-body">
               <p data-i18n="guideStep2Desc">
-                • Press Win + Space or Left Alt + Shift to toggle between your languages.<br>
-                • When Korean is active, press the Right Alt key (한/영) to switch between English typing and Hangul typing (or click the "A" icon in the taskbar so it turns into "가").
+                • اضغط على Win + Space أو Left Alt + Shift للتبديل بين لغاتك المثبتة.<br>
+                • عند اختيار اللغة الكورية، اضغط على زر Right Alt (زر 한/영 في الكيبورد الكوري) للتبديل بين كتابة الإنجليزية والكتابة الكورية (أو انقر على حرف A بجوار الساعة ليتحول إلى 가).
               </p>
               <div class="guide-code-box">
                 <code>Toggle Language: Win + Space | Toggle Hangul: Right Alt</code>
@@ -380,20 +440,20 @@
           <div class="guide-step-card">
             <div class="guide-step-header">
               <span class="step-badge">3</span>
-              <h3 data-i18n="guideStep3Title">Step 3: Make the Keyboard Float On-Screen</h3>
+              <h3 data-i18n="guideStep3Title">الخطوة 3: جعل لوحة المفاتيح تطفو فوق شاشة اللعبة</h3>
             </div>
             <div class="guide-step-body">
               <p data-i18n="guideStep3Desc">
-                • Press Win + Ctrl + O to launch the Windows On-Screen Keyboard (OSK).<br>
-                • You can drag it, resize it, and position it directly over or next to your MapleStory game window!<br>
-                • Alternatively, click "🪟 Float Keyboard" on this website to test using a floating keyboard right now.
+                • اضغط على Win + Ctrl + O لفتح لوحة المفاتيح المعروضة على الشاشة (On-Screen Keyboard).<br>
+                • يمكنك سحبها وتغيير حجمها ووضعها في أي مكان فوق أو بجوار نافذة لعبة مابل ستوري أثناء اللعب!<br>
+                • كما يمكنك أيضاً النقر على زر "🪟 كيبورد عائم" هنا في الموقع لتجربة الكيبورد العائم القابل للسحب فوراً!
               </p>
               <div class="guide-code-box">
                 <code>Launch Floating On-Screen Keyboard: Win + Ctrl + O</code>
               </div>
               <div class="guide-action-row">
-                <button type="button" class="btn btn-primary" onclick="document.querySelector('[data-tab=trainer]').click(); document.getElementById('btn-toggle-float-keyboard').click();">
-                  🪟 Test Floating Keyboard in Trainer Now
+                <button type="button" class="btn btn-primary btn-trigger-floating-kb" data-i18n="btnOpenFloatingKb">
+                  🪟 افتح الكيبورد الكوري العائم لتجربته الآن
                 </button>
               </div>
             </div>
@@ -402,45 +462,45 @@
       </section>
 
 
-      <!-- ================= TAB 6: CUSTOM SANDBOX ================= -->
+      <!-- ================= TAB 8: CUSTOM SANDBOX ================= -->
       <section id="tab-sandbox" class="tab-pane" role="tabpanel">
         <div class="sandbox-card">
-          <h2 data-i18n="sandboxTitle">🎨 Custom Captcha Generator & Image Exporter</h2>
-          <p data-i18n="sandboxDesc">Generate authentic MapleStory captchas with your own words, test guild members, or export PNG images.</p>
+          <h2 data-i18n="sandboxTitle">🎨 مختبر الكابتشا وتصدير الصور المخصصة</h2>
+          <p data-i18n="sandboxDesc">أنشئ كابتشا مابل ستوري حقيقية بأي نص أو كلمات تريدها، واختبر أعضاء نقابتك (Guild) أو صدّر الصورة كـ PNG.</p>
 
           <div class="sandbox-controls-grid">
             <div class="sandbox-control-item">
-              <label for="sandbox-custom-text" data-i18n="sandboxInputLabel">Custom Korean Text (Up to 8 chars):</label>
+              <label for="sandbox-custom-text" data-i18n="sandboxInputLabel">النص الكوري المخصص (حتى 8 أحرف):</label>
               <div class="input-with-btn">
                 <input type="text" id="sandbox-custom-text" class="form-input" value="메이플스토리" maxlength="8" />
-                <button id="sandbox-generate-btn" class="btn btn-primary" data-i18n="sandboxBtnRender">Render</button>
-                <button id="sandbox-random-btn" class="btn btn-secondary" data-i18n="sandboxBtnRandom">Random</button>
+                <button id="sandbox-generate-btn" class="btn btn-primary" data-i18n="sandboxBtnRender">رسم الكابتشا</button>
+                <button id="sandbox-random-btn" class="btn btn-secondary" data-i18n="sandboxBtnRandom">نص عشوائي</button>
               </div>
             </div>
 
             <div class="sandbox-control-item">
-              <label for="sandbox-tilt-slider"><span data-i18n="sandboxTiltLabel">Banner Tilt Angle:</span> <span id="sandbox-tilt-val">-4.5°</span></label>
+              <label for="sandbox-tilt-slider"><span data-i18n="sandboxTiltLabel">زاوية ميلان اللافتة:</span> <span id="sandbox-tilt-val">-4.5°</span></label>
               <input type="range" id="sandbox-tilt-slider" min="-12" max="12" step="0.5" value="-4.5" class="form-range" />
             </div>
 
             <div class="sandbox-control-item">
-              <label for="sandbox-noise-preset" data-i18n="sandboxNoiseLabel">Noise Intensity:</label>
+              <label for="sandbox-noise-preset" data-i18n="sandboxNoiseLabel">كثافة التشويش:</label>
               <select id="sandbox-noise-preset" class="form-select">
-                <option value="easy" data-i18n-option="noiseEasy">Easy (Low Noise)</option>
-                <option value="normal" selected data-i18n-option="noiseNormal">Normal (Game Accurate)</option>
-                <option value="hard" data-i18n-option="noiseHard">Hard (Dense Noise)</option>
-                <option value="insane" data-i18n-option="noiseInsane">Insane (Nightmare)</option>
+                <option value="easy" data-i18n-option="noiseEasy">سهل (تشويش خفيف)</option>
+                <option value="normal" selected data-i18n-option="noiseNormal">عادي (مطابق للعبة تماماً)</option>
+                <option value="hard" data-i18n-option="noiseHard">صعب (تشويش وخطوط كثيفة)</option>
+                <option value="insane" data-i18n-option="noiseInsane">كابوس (صعوبة قصوى)</option>
               </select>
             </div>
 
             <div class="sandbox-control-item">
-              <label for="sandbox-bg" data-i18n="sandboxBgLabel">Background Scene:</label>
+              <label for="sandbox-bg" data-i18n="sandboxBgLabel">مشهد الخلفية:</label>
               <select id="sandbox-bg" class="form-select">
-                <option value="sky_rock" selected data-i18n-option="sceneSky">Sky & Rock (Screenshot 4)</option>
-                <option value="cloud_balcony" data-i18n-option="sceneCloud">Cloud Balcony (Screenshot 1)</option>
-                <option value="ellinia_portal" data-i18n-option="scenePortal">Ellinia Portal (Screenshot 2)</option>
-                <option value="dark_dungeon" data-i18n-option="sceneDungeon">Dark Dungeon (Screenshot 3)</option>
-                <option value="clean" data-i18n-option="sceneClean">Clean Dark</option>
+                <option value="sky_rock" selected data-i18n-option="sceneSky">السماء والصخور (اللقطة الرسمية 1)</option>
+                <option value="cloud_balcony" data-i18n-option="sceneCloud">شرفة الغيوم (اللقطة 5)</option>
+                <option value="ellinia_portal" data-i18n-option="scenePortal">بوابة إلينيا والسحرة (اللقطة 3)</option>
+                <option value="dark_dungeon" data-i18n-option="sceneDungeon">الزنزانة الزرقاء (اللقطة 2)</option>
+                <option value="clean" data-i18n-option="sceneClean">وضع التركيز الداكن</option>
               </select>
             </div>
           </div>
@@ -451,7 +511,7 @@
             </div>
             <div class="sandbox-export-row">
               <button id="sandbox-export-btn" class="btn btn-success btn-lg" data-i18n="sandboxBtnExport">
-                💾 Export Image as PNG
+                💾 تصدير الكابتشا كصورة PNG
               </button>
             </div>
           </div>
@@ -460,6 +520,51 @@
 
     </main>
 
+    <!-- Floating Draggable Keyboard Window (Detached / On-Demand) -->
+    <div id="virtual-keyboard-container" class="virtual-keyboard-box"></div>
+
+    <!-- Sign In & Player Profile Modal -->
+    <div id="signin-modal" class="modal-overlay">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <span class="auth-icon">🍁</span>
+          <h2 data-i18n="signInModalTitle">اختر اسمك وسجل لدخول الاختبار الرسمي</h2>
+        </div>
+        <div class="auth-card-body">
+          <button type="button" id="btn-google-signin" class="btn btn-google-auth">
+            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+            <span data-i18n="signInGoogleBtn">الدخول بحساب Google</span>
+          </button>
+
+          <div class="auth-divider">
+            <span>أو اختر اسماً مستعاراً باللعبة</span>
+          </div>
+
+          <div class="auth-form-group">
+            <label for="input-player-name" data-i18n="labelPlayerName">اسم اللاعب باللعبة (IGN):</label>
+            <input type="text" id="input-player-name" class="form-input" placeholder="مثال: DragonKnight, كريم_مابل" maxlength="20" autofocus />
+          </div>
+
+          <div class="auth-form-group">
+            <label data-i18n="chooseAvatar">اختر شكل الشخصية:</label>
+            <div class="avatar-selection-grid">
+              <button type="button" class="avatar-choice selected" data-avatar="⚔️">⚔️</button>
+              <button type="button" class="avatar-choice" data-avatar="🧙">🧙</button>
+              <button type="button" class="avatar-choice" data-avatar="🗡️">🗡️</button>
+              <button type="button" class="avatar-choice" data-avatar="🏹">🏹</button>
+              <button type="button" class="avatar-choice" data-avatar="🏴‍☠️">🏴‍☠️</button>
+              <button type="button" class="avatar-choice" data-avatar="🍁">🍁</button>
+              <button type="button" class="avatar-choice" data-avatar="🍄">🍄</button>
+            </div>
+          </div>
+        </div>
+        <div class="auth-card-actions">
+          <button type="button" id="btn-custom-signin" class="btn btn-primary btn-lg" data-i18n="signInCustomBtn">حفظ الاسم والبدء</button>
+          <button type="button" id="btn-close-signin-modal" class="btn btn-outline">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Exam Results & Error Breakdown Report Modal -->
     <div id="exam-results-modal" class="modal-overlay"></div>
 
@@ -467,26 +572,26 @@
     <div id="truth-room-modal" class="modal-overlay">
       <div class="truth-room-card">
         <div class="truth-room-header">
-          <span class="modal-badge-danger" data-i18n="truthRoomBadge">🚨 LIE DETECTOR FAILED</span>
-          <h2 data-i18n="truthRoomTitle">Teleported to the Truth Room! (진실의 방)</h2>
+          <span class="modal-badge-danger" data-i18n="truthRoomBadge">🚨 فشل كاشف الكذب!</span>
+          <h2 data-i18n="truthRoomTitle">تم نقلك إلى "غرفة الحقيقة" وسجن اللعبة! (진실의 방)</h2>
         </div>
         <div class="truth-room-body">
           <div class="truth-room-npc-art">👮‍♂️</div>
           <p class="truth-room-msg" data-i18n="truthRoomMsg">
-            "You failed to enter the Lie Detector text within the time limit or accumulated 3 strikes! In MapleStory, this moves your character to the Truth Room prison."
+            "لقد فشلت في إدخال نص كاشف الكذب في الوقت المحدد أو جمعت 3 إنذارات خاطئة! في مابل ستوري، ينقل هذا المشرف الأمني شخصيتك إلى سجن غرفة الحقيقة."
           </p>
           <div class="truth-room-tips">
-            <strong data-i18n="truthRoomAdvice">Trainer Advice:</strong>
+            <strong data-i18n="truthRoomAdvice">نصائح المدرب لاجتياز الاختبار:</strong>
             <ul>
-              <li data-i18n="truthRoomTip1">Use the Hangul Academy tab to master tricky letters.</li>
-              <li data-i18n="truthRoomTip2">Consonants are typed with your Left Hand, Vowels with your Right Hand.</li>
-              <li data-i18n="truthRoomTip3">Enable the 🔍 Lens to inspect obscured strokes under noise lines.</li>
+              <li data-i18n="truthRoomTip1">استخدم تبويب "أكاديمية الهانغل" لحفظ الحروف المعقدة.</li>
+              <li data-i18n="truthRoomTip2">تذكر: الحروف الساكنة تُكتب بيدك اليسرى، وحروف العلة بيدك اليمنى.</li>
+              <li data-i18n="truthRoomTip3">فعّل 🔍 العدسة المكبرة لفحص الحروف المخفية خلف خطوط التشويش.</li>
             </ul>
           </div>
         </div>
         <div class="truth-room-actions">
           <button id="btn-close-truth-room" class="btn btn-primary btn-lg" data-i18n="truthRoomRetry">
-            Try Again (재도전)
+            إعادة المحاولة (재도전)
           </button>
         </div>
       </div>
@@ -494,11 +599,13 @@
 
     <!-- App Footer -->
     <footer class="app-footer">
-      <p data-i18n="footerText">MapleCaptcha Academy • Designed for gamers learning Korean Dubeolsik typing & MapleStory Lie Detector captchas.</p>
+      <p data-i18n="footerText">أكاديمية مابل كابتشا • مصممة للاعبين لتعلم الكتابة الكورية Dubeolsik واحتراف كاشف الكذب في مابل ستوري.</p>
     </footer>
   </div>
 
   <!-- Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/leaderboard.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/hangul.js"></script>
   <script src="js/audio.js"></script>

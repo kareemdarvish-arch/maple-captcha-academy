@@ -1,6 +1,7 @@
 /**
  * MapleCaptcha Academy - Application Orchestrator
- * Connects UI tabs, controls, settings, i18n, generator, keyboard, smart diagnostics, and academy.
+ * Connects UI tabs, Standalone Exam Mode, Leaderboard, Player Authentication,
+ * Floating Keyboard, and Smart Diagnostics.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Language Selector
+  // 2. Language Selector (Default: Arabic 🇪🇬)
   const langSelect = document.getElementById('select-language');
   if (langSelect) {
     langSelect.value = I18n.getLang();
@@ -33,10 +34,97 @@ document.addEventListener('DOMContentLoaded', () => {
       I18n.setLang(e.target.value);
     });
   }
-  // Initial translations
   I18n.setLang(I18n.getLang());
 
-  // 3. Tab Navigation
+  // 3. Player Authentication & Header Widget
+  const profileWidget = document.getElementById('user-profile-header-widget');
+  const signinModal = document.getElementById('signin-modal');
+  const btnOpenSignin = document.getElementById('btn-open-signin-modal');
+  const btnCloseSignin = document.getElementById('btn-close-signin-modal');
+  const btnGoogleSignin = document.getElementById('btn-google-signin');
+  const btnCustomSignin = document.getElementById('btn-custom-signin');
+  const inputPlayerName = document.getElementById('input-player-name');
+  const avatarChoices = document.querySelectorAll('.avatar-choice');
+  let selectedAvatar = '⚔️';
+
+  function updateAuthUI() {
+    const profile = PlayerAuth.getProfile();
+    if (profile && profile.name) {
+      profileWidget.innerHTML = `
+        <div class="user-chip">
+          <span class="user-chip-avatar">${profile.avatar || '🍁'}</span>
+          <span class="user-chip-name">${profile.name}</span>
+          <button type="button" id="btn-signout" class="btn-signout" title="Sign Out">✕</button>
+        </div>
+      `;
+      const signoutBtn = document.getElementById('btn-signout');
+      if (signoutBtn) signoutBtn.addEventListener('click', () => PlayerAuth.signOut());
+    } else {
+      profileWidget.innerHTML = `
+        <button id="btn-open-signin-modal" class="btn btn-sm btn-primary">
+          <span data-i18n="btnSignIn">${I18n.t('btnSignIn')}</span>
+        </button>
+      `;
+      const openBtn = document.getElementById('btn-open-signin-modal');
+      if (openBtn) openBtn.addEventListener('click', openSignInModal);
+    }
+  }
+
+  function openSignInModal() {
+    if (signinModal) signinModal.classList.add('active');
+  }
+
+  function closeSignInModal() {
+    if (signinModal) signinModal.classList.remove('active');
+  }
+
+  if (btnOpenSignin) btnOpenSignin.addEventListener('click', openSignInModal);
+  if (btnCloseSignin) btnCloseSignin.addEventListener('click', closeSignInModal);
+
+  avatarChoices.forEach(btn => {
+    btn.addEventListener('click', () => {
+      avatarChoices.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedAvatar = btn.dataset.avatar || '⚔️';
+    });
+  });
+
+  if (btnCustomSignin && inputPlayerName) {
+    btnCustomSignin.addEventListener('click', () => {
+      const name = inputPlayerName.value.trim();
+      if (name) {
+        PlayerAuth.signInCustom(name, selectedAvatar);
+        closeSignInModal();
+        SoundFX.playCorrect();
+      } else {
+        inputPlayerName.focus();
+      }
+    });
+    inputPlayerName.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') btnCustomSignin.click();
+    });
+  }
+
+  if (btnGoogleSignin) {
+    btnGoogleSignin.addEventListener('click', () => {
+      // Simulate Google Sign In with realistic profile prompt or mock
+      const mockName = prompt(I18n.getLang() === 'ar' ? 'ادخل بريدك الإلكتروني أو اسمك لحساب Google:' : 'Enter your Google name or email:', 'maple_hero');
+      if (mockName) {
+        PlayerAuth.signInGoogle(mockName.includes('@') ? mockName : `${mockName}@gmail.com`, mockName.replace('@gmail.com', ''));
+        closeSignInModal();
+        SoundFX.playFanfare();
+      }
+    });
+  }
+
+  window.addEventListener('playerAuthChanged', () => {
+    updateAuthUI();
+    MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
+  });
+
+  updateAuthUI();
+
+  // 4. Tab Navigation
   const tabButtons = document.querySelectorAll('.nav-tab-btn');
   const tabPanes = document.querySelectorAll('.tab-pane');
 
@@ -58,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
         academy.renderLookalikes('lookalikes-container');
       } else if (targetTab === 'drill') {
         academy.startDrill('drill-container');
+      } else if (targetTab === 'leaderboard') {
+        MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
       } else if (targetTab === 'trainer') {
         const input = document.getElementById('captcha-hidden-input');
         if (input) input.focus();
@@ -65,30 +155,92 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 4. Trainer Controls
-  const modeSelect = document.getElementById('select-game-mode');
-  const examLengthGroup = document.getElementById('exam-length-group');
-  const examLengthSelect = document.getElementById('select-exam-length');
+  // 5. Standalone Exam Tab Setup
+  const btnStartExam = document.getElementById('btn-start-exam-standalone');
+  const selectStandaloneLength = document.getElementById('select-standalone-exam-length');
+  const examIntroCard = document.getElementById('exam-intro-card');
+  const examStageContainer = document.getElementById('exam-stage-container');
 
-  if (modeSelect) {
-    modeSelect.addEventListener('change', (e) => {
-      const mode = e.target.value;
-      if (examLengthGroup) {
-        examLengthGroup.style.display = (mode === 'exam') ? 'flex' : 'none';
+  if (btnStartExam && selectStandaloneLength) {
+    btnStartExam.addEventListener('click', () => {
+      // If player not signed in, prompt them nicely
+      if (!PlayerAuth.isSignedIn()) {
+        const wantsSignin = confirm(I18n.t('signInPromptBeforeExam'));
+        if (wantsSignin) {
+          openSignInModal();
+          return;
+        }
       }
-      game.setMode(mode);
+
+      SoundFX.playKeyClick();
+      const length = parseInt(selectStandaloneLength.value, 10) || 10;
+      game.examLength = length;
+
+      if (examIntroCard) examIntroCard.style.display = 'none';
+      if (examStageContainer) {
+        examStageContainer.style.display = 'block';
+        // Move the canvas and input into exam container cleanly before the prompt
+        const stageCard = document.getElementById('captcha-main-stage-card');
+        if (stageCard) {
+          const promptCard = examStageContainer.querySelector('.floating-kb-prompt-card');
+          if (promptCard) {
+            examStageContainer.insertBefore(stageCard, promptCard);
+          } else {
+            examStageContainer.appendChild(stageCard);
+          }
+        }
+      }
+
+      game.startExam(length);
     });
   }
 
-  if (examLengthSelect) {
-    examLengthSelect.addEventListener('change', (e) => {
-      game.examLength = parseInt(e.target.value, 10);
-      if (game.mode === 'exam') {
-        game.startExam(game.examLength);
+  // When switching back to Trainer tab, move stage card back if needed
+  const trainerTabBtn = document.querySelector('[data-tab="trainer"]');
+  if (trainerTabBtn) {
+    trainerTabBtn.addEventListener('click', () => {
+      const stageCard = document.getElementById('captcha-main-stage-card');
+      const trainerHolder = document.getElementById('trainer-stage-holder');
+      if (stageCard && trainerHolder && !trainerHolder.contains(stageCard)) {
+        trainerHolder.appendChild(stageCard);
       }
+      if (examIntroCard) examIntroCard.style.display = 'block';
+      if (examStageContainer) examStageContainer.style.display = 'none';
+      game.setMode('practice');
     });
   }
 
+  // 6. Leaderboard Filters
+  const lbFilterBtns = document.querySelectorAll('.lb-filter-btn');
+  lbFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      lbFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      SoundFX.playKeyClick();
+      MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', btn.dataset.filter);
+    });
+  });
+
+  // 7. Floating Keyboard Prompts
+  const openFloatingKbButtons = document.querySelectorAll('.btn-trigger-floating-kb');
+  openFloatingKbButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      SoundFX.playKeyClick();
+      keyboard.toggleFloating(true);
+    });
+  });
+
+  const btnFloatToggle = document.getElementById('btn-toggle-float-keyboard');
+  if (btnFloatToggle) {
+    btnFloatToggle.addEventListener('click', () => {
+      SoundFX.playKeyClick();
+      const isFloating = keyboard.toggleFloating();
+      btnFloatToggle.innerHTML = isFloating ? I18n.t('btnDockKb') : I18n.t('btnFloatingKb');
+      btnFloatToggle.classList.toggle('btn-active', isFloating);
+    });
+  }
+
+  // 8. Trainer Controls
   const categorySelect = document.getElementById('select-syllable-set');
   if (categorySelect) {
     categorySelect.addEventListener('change', (e) => {
@@ -112,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Buttons
   const btnNext = document.getElementById('btn-next-captcha');
   if (btnNext) {
     btnNext.addEventListener('click', () => {
@@ -154,37 +305,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Floating Keyboard Toggle Button
-  const btnFloatKb = document.getElementById('btn-toggle-float-keyboard');
-  if (btnFloatKb) {
-    btnFloatKb.addEventListener('click', () => {
-      SoundFX.playKeyClick();
-      const isFloating = keyboard.toggleFloating();
-      btnFloatKb.innerHTML = isFloating ? I18n.t('btnDockKb') : I18n.t('btnFloatingKb');
-      btnFloatKb.classList.toggle('btn-active', isFloating);
-    });
-  }
-
   const btnMute = document.getElementById('btn-toggle-sound');
   if (btnMute) {
     let muted = SoundFX.getMuted();
-    updateMuteButtonUI(muted);
+    btnMute.innerHTML = muted ? I18n.t('soundOff') : I18n.t('soundOn');
+    btnMute.classList.toggle('muted', muted);
 
     btnMute.addEventListener('click', () => {
       muted = !muted;
       SoundFX.setMuted(muted);
-      updateMuteButtonUI(muted);
+      btnMute.innerHTML = muted ? I18n.t('soundOff') : I18n.t('soundOn');
+      btnMute.classList.toggle('muted', muted);
       if (!muted) SoundFX.playKeyClick();
     });
   }
 
-  function updateMuteButtonUI(isMuted) {
-    if (!btnMute) return;
-    btnMute.innerHTML = isMuted ? I18n.t('soundOff') : I18n.t('soundOn');
-    btnMute.classList.toggle('muted', isMuted);
-  }
-
-  // Truth Room Modal Close
   const btnCloseTruthRoom = document.getElementById('btn-close-truth-room');
   if (btnCloseTruthRoom) {
     btnCloseTruthRoom.addEventListener('click', () => {
@@ -192,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Academy Filters & Syllable Deconstructor
+  // 9. Academy Filters & Syllable Deconstructor
   const jamoFilterBtns = document.querySelectorAll('.jamo-filter-btn');
   jamoFilterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -219,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Custom Captcha Sandbox
+  // 10. Custom Captcha Sandbox
   const sandboxInput = document.getElementById('sandbox-custom-text');
   const sandboxGenerateBtn = document.getElementById('sandbox-generate-btn');
   const sandboxRandomBtn = document.getElementById('sandbox-random-btn');
@@ -291,10 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Start Initial Round
+  // 11. Initial Startup
   game.newRound();
   game.updateStatsUI();
 
   academy.renderLookalikes('lookalikes-container');
   academy.inspectCharacter('빛');
+  MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
 });
