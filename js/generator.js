@@ -1,8 +1,8 @@
 /**
  * Procedural MapleStory Lie Detector Captcha Generator
- * 100% Game-Identical Reproduction of KMS / MapleStory Lie Detector Captchas.
- * Features exact banner proportions, tall raw bitmap characters, localized scanline glitch dashes,
- * authentic color palettes, and heavy confetti noise matching reference screenshots.
+ * High-legibility 2x Bitmap-Quantized KMS Reproduction of MapleStory Lie Detector Captchas.
+ * Uses a 0.5x virtual glyph canvas upscaled 2x with alpha quantization for crisp stepped KMS pixel edges,
+ * generous batchim (bottom consonant) spacing & clarity, balanced split noise, and authentic color clusters.
  */
 
 class MapleCaptchaGenerator {
@@ -10,19 +10,20 @@ class MapleCaptchaGenerator {
     this.canvas = typeof canvasId === 'string' ? document.getElementById(canvasId) : canvasId;
     this.ctx = this.canvas.getContext('2d');
 
-    // Default configuration matching in-game proportions (4.5 : 1 aspect ratio)
+    // Default configuration matching KMS Lie Detector proportions (4 : 1 aspect ratio)
     this.config = Object.assign({
-      width: 520,
-      height: 115,
+      width: 600,
+      height: 150,
       charCount: 6,
-      tiltAngle: -4.5,           // Authentic slant angle from screenshots
+      tiltAngle: -3.0,           // Authentic subtle slant matching KMS screenshots without edge clipping
       background: 'sky_rock',    // 'sky_rock', 'ellinia_portal', 'cloud_balcony', 'dark_dungeon', 'clean'
       noisePreset: 'hard',       // Default matching authentic KMS game noise (صعب - مطابق للعبة)
-      fontFamily: "'Galmuri11', 'Galmuri9', 'NeoDunggeunmo', 'Dotum', monospace",
-      fontSize: 64               // Optimal pixel scale matching KMS reference screenshots
+      fontFamily: "'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Dotum', sans-serif",
+      fontWeight: 700,
+      alphaThreshold: 112        // Crisp KMS bitmap pixel edge threshold without blurred anti-aliasing
     }, options);
 
-    // Exact color sampling from the user's reference screenshots
+    // Exact color sampling from the user's KMS reference screenshots
     this.retroColors = [
       '#d6447e', // 0: Vivid Rose Pink (Screenshot: "인", "동")
       '#1c45bd', // 1: Royal Blue (Screenshot: "귀", "와", "비", "리", "살", "낄")
@@ -33,13 +34,19 @@ class MapleCaptchaGenerator {
       '#1a2638'  // 6: Slate Navy Charcoal (Screenshot: "회")
     ];
 
-    // Colored noise streaks cutting through the text (Screenshot 1-6)
+    // Colored noise streaks cutting through the banner (KMS Screenshots 1-6)
     this.noiseLineColors = [
-      '#2eb85c', // Vivid Maple Green (cuts through text in all screenshots)
-      '#00bcd4', // Vibrant Cyan
-      '#e91e63', // Magenta Pink
-      '#1c45bd', // Royal Blue
-      '#ff9800'  // Bright Orange
+      '#2eb85c', // Vivid Maple Green
+      '#00acc1', // Vibrant Cyan
+      '#d81b60', // Magenta Pink
+      '#1e88e5', // Royal Blue
+      '#8e24aa'  // Violet Purple
+    ];
+
+    // Non-white KMS confetti ink colors (never pure white so strokes/batchims aren't eaten out)
+    this.noiseDotColors = [
+      '#d32f2f', '#388e3c', '#1976d2', '#7b1fa2',
+      '#0097a7', '#c2185b', '#455a64', '#e64a19'
     ];
 
     // Current state
@@ -47,16 +54,18 @@ class MapleCaptchaGenerator {
     this.currentData = null;
     this.charPositions = [];
 
-    // Magnifier state
-    this.magnifierActive = false;
-    this.mousePos = { x: 0, y: 0 };
+    // Reusable offscreen buffer for 2x crisp pixel quantization
+    this.glyphCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+    this.glyphCtx = this.glyphCanvas ? this.glyphCanvas.getContext('2d', { willReadFrequently: true }) : null;
 
     this.initCanvas();
-    this.initMagnifierEvents();
 
-    // Auto re-render when Galmuri11 webfont finishes loading
-    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
+    // Ensure Noto Sans KR bold weight loads cleanly and re-render immediately when ready
+    if (typeof document !== 'undefined' && document.fonts) {
+      Promise.all([
+        document.fonts.ready,
+        document.fonts.load(`${this.config.fontWeight} 36px "Noto Sans KR"`).catch(() => {})
+      ]).then(() => {
         if (this.currentText) this.render();
       });
     }
@@ -92,19 +101,51 @@ class MapleCaptchaGenerator {
     return this.currentData;
   }
 
+  getNoiseParams() {
+    const preset = this.config.noisePreset;
+    if (preset === 'easy') {
+      return {
+        bgDots: 180, bgAlpha: 0.35, bgLines: 0, bgDashes: 6,
+        fgDots: 90, fgDotsAlpha: 0.25,
+        fgLines: 1, fgDashes: 4, fgLineAlpha: 0.35
+      };
+    }
+    if (preset === 'normal') {
+      return {
+        bgDots: 520, bgAlpha: 0.48, bgLines: 2, bgDashes: 14,
+        fgDots: 260, fgDotsAlpha: 0.44,
+        fgLines: 4, fgDashes: 12, fgLineAlpha: 0.52
+      };
+    }
+    if (preset === 'insane') {
+      return {
+        bgDots: 1400, bgAlpha: 0.65, bgLines: 4, bgDashes: 28,
+        fgDots: 850, fgDotsAlpha: 0.66,
+        fgLines: 9, fgDashes: 28, fgLineAlpha: 0.74
+      };
+    }
+    // 'hard' (Default: Authentic KMS Game-Accurate / مطابق للعبة تماماً)
+    return {
+      bgDots: 950, bgAlpha: 0.54, bgLines: 3, bgDashes: 20,
+      fgDots: 520, fgDotsAlpha: 0.56,
+      fgLines: 6, fgDashes: 20, fgLineAlpha: 0.66
+    };
+  }
+
   render() {
     const { width, height } = this.canvas;
     const ctx = this.ctx;
 
     ctx.save();
+    ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, width, height);
 
     // Layer 1: Game Environment Background (behind banner)
     this.drawBackground(ctx, width, height);
 
-    // Layer 2: Transform canvas for tilted banner
-    const bannerW = Math.floor(width * 0.94);
-    const bannerH = 92;
+    // Layer 2: Transform canvas for tilted frosted paper banner (0.90 x 0.74 gives crisp frame on all corners)
+    const bannerW = Math.floor(width * 0.90);
+    const bannerH = Math.floor(height * 0.74);
     const centerX = width / 2;
     const centerY = height / 2;
     const rad = (this.config.tiltAngle * Math.PI) / 180;
@@ -115,21 +156,23 @@ class MapleCaptchaGenerator {
 
     const bx = -bannerW / 2;
     const by = -bannerH / 2;
+    const noise = this.getNoiseParams();
 
     // Layer 3: Paper Banner Surface
     this.drawBanner(ctx, bx, by, bannerW, bannerH);
 
-    // Layer 4: Tall Korean Characters (raw pixel strokes)
+    // Layer 4: Background Speckle & Dash Texture (behind characters so batchims stay legible)
+    this.drawNoiseDots(ctx, bx, by, bannerW, bannerH, noise.bgDots, noise.bgAlpha);
+    this.drawNoiseLines(ctx, bx, by, bannerW, bannerH, noise.bgLines, noise.bgDashes, noise.bgAlpha);
+
+    // Layer 5: High-Clarity 2x Bitmap-Quantized Korean Characters (clear upper + large bottom batchim)
     this.drawCharacters(ctx, bx, by, bannerW, bannerH);
 
-    // Layer 5: Localized Scanline Glitch Dashes & Scratches (NO continuous ruled lines!)
-    this.drawNoiseLines(ctx, bx, by, bannerW, bannerH);
-
-    // Layer 6: Heavy Confetti Pixel Noise Dots
-    this.drawNoiseDots(ctx, bx, by, bannerW, bannerH);
+    // Layer 6: Foreground Authentic KMS Scanlines & Subtle Confetti Dots
+    this.drawNoiseLines(ctx, bx, by, bannerW, bannerH, noise.fgLines, noise.fgDashes, noise.fgLineAlpha);
+    this.drawNoiseDots(ctx, bx, by, bannerW, bannerH, noise.fgDots, noise.fgDotsAlpha);
 
     ctx.restore(); // Restore banner rotation
-
     ctx.restore();
   }
 
@@ -202,16 +245,16 @@ class MapleCaptchaGenerator {
   drawBanner(ctx, bx, by, bw, bh) {
     ctx.save();
 
-    // Authentic translucent frosted paper matching KMS screenshots (background slightly visible)
+    // High-contrast frosted white-lavender KMS paper strip (keeps bottom batchim sharp over all scenes)
     const paperGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-    paperGrad.addColorStop(0, 'rgba(215, 222, 245, 0.86)');
-    paperGrad.addColorStop(0.5, 'rgba(202, 210, 238, 0.82)');
-    paperGrad.addColorStop(1, 'rgba(188, 198, 228, 0.80)');
+    paperGrad.addColorStop(0, 'rgba(220, 226, 248, 0.90)');
+    paperGrad.addColorStop(0.5, 'rgba(208, 216, 242, 0.88)');
+    paperGrad.addColorStop(1, 'rgba(194, 204, 236, 0.86)');
 
     ctx.fillStyle = paperGrad;
     ctx.fillRect(bx, by, bw, bh);
 
-    // Subtle faint jagged border
+    // Subtle crisp paper border
     ctx.strokeStyle = 'rgba(145, 155, 185, 0.6)';
     ctx.lineWidth = 1;
     ctx.strokeRect(bx, by, bw, bh);
@@ -225,280 +268,174 @@ class MapleCaptchaGenerator {
     ctx.restore();
   }
 
+  getChosenColorPattern() {
+    if (this.currentText === '도아점ㅋ공지' || this.currentText === '토아절크종지') {
+      return [4, 4, 5, 4, 2, 5]; // Magenta, Magenta, Rust, Magenta, Red, Rust
+    }
+    if (this.currentText === '배송수데리회' || this.currentText === '비소수데리회') {
+      return [1, 2, 2, 5, 1, 6]; // Blue, Red, Red, Rust, Blue, Slate Navy
+    }
+    if (this.currentText.startsWith('빛없어')) {
+      return [3, 3, 3, 1, 1, 2]; // Plum, Plum, Plum, Blue, Blue, Red
+    }
+    if (this.currentText.includes('인귀')) {
+      return [0, 1, 1, 2, 0, 2]; // Pink, Blue, Blue, Red, Pink, Red
+    }
+    const clusterPatterns = [
+      [4, 4, 5, 4, 2, 5],
+      [1, 2, 2, 5, 1, 6],
+      [3, 3, 3, 1, 1, 2],
+      [0, 1, 1, 2, 0, 2]
+    ];
+    return clusterPatterns[Math.floor(Math.random() * clusterPatterns.length)];
+  }
+
   drawCharacters(ctx, bx, by, bw, bh) {
     const chars = this.currentText.split('');
     const count = chars.length;
     if (count === 0) return;
 
     this.charPositions = [];
-    const usableW = bw - 20;
-    const slotWidth = usableW / count;
-    const startX = bx + 10;
+    const chosenPattern = this.getChosenColorPattern();
 
-    // Authentic color cluster patterns matching user's screenshots
-    let chosenPattern;
-    if (this.currentText === '도아점ㅋ공지' || this.currentText === '토아절크종지') {
-      chosenPattern = [4, 4, 5, 4, 2, 5]; // Magenta, Magenta, Rust, Magenta, Red, Rust
-    } else if (this.currentText === '배송수데리회' || this.currentText === '비소수데리회') {
-      chosenPattern = [1, 2, 2, 5, 1, 6]; // Blue, Red, Red, Rust, Blue, Slate Navy
-    } else if (this.currentText.startsWith('빛없어')) {
-      chosenPattern = [3, 3, 3, 1, 1, 2]; // Plum, Plum, Plum, Blue, Blue, Red
-    } else if (this.currentText.includes('인귀')) {
-      chosenPattern = [0, 1, 1, 2, 0, 2]; // Pink, Blue, Blue, Red, Pink, Red
-    } else {
-      const clusterPatterns = [
-        [4, 4, 5, 4, 2, 5],
-        [1, 2, 2, 5, 1, 6],
-        [3, 3, 3, 1, 1, 2],
-        [0, 1, 1, 2, 0, 2]
-      ];
-      chosenPattern = clusterPatterns[Math.floor(Math.random() * clusterPatterns.length)];
-    }
+    // Render onto 0.72x virtual glyph canvas, threshold alpha, then upscale ~1.39x for crisp KMS bitmap pixels
+    // Gives 50% higher resolution inside batchim (bottom consonants) so stacked strokes stay crystal clear
+    if (this.glyphCanvas && this.glyphCtx) {
+      const scaleRatio = 0.72;
+      const vw = Math.max(80, Math.floor(bw * scaleRatio));
+      const vh = Math.max(30, Math.floor(bh * scaleRatio));
+      this.glyphCanvas.width = vw;
+      this.glyphCanvas.height = vh;
 
-    ctx.save();
-    ctx.font = `bold ${this.config.fontSize}px ${this.config.fontFamily}`;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
+      const gctx = this.glyphCtx;
+      gctx.clearRect(0, 0, vw, vh);
 
-    chars.forEach((char, idx) => {
-      const colorIndex = chosenPattern[idx % chosenPattern.length];
-      const color = this.retroColors[colorIndex % this.retroColors.length];
+      const vFontSize = Math.round(vh * 0.65); // ~52px virtual => ~72px display glyph height
+      gctx.font = `${this.config.fontWeight} ${vFontSize}px ${this.config.fontFamily}`;
+      gctx.textBaseline = 'middle';
+      gctx.textAlign = 'center';
 
-      const jitterX = Math.round((Math.random() - 0.5) * 1.5);
-      const jitterY = Math.round((Math.random() - 0.5) * 1.5);
-      const cx = Math.floor(startX + slotWidth * idx + slotWidth / 2 + jitterX);
-      const cy = Math.floor(by + bh / 2 + 1 + jitterY);
+      const padX = 14;
+      const slotW = (vw - padX * 2) / count;
+      const displayPadX = padX / scaleRatio;
+      const displaySlotW = (bw - displayPadX * 2) / count;
 
-      this.charPositions.push({
-        char,
-        index: idx,
-        x: cx,
-        y: cy,
-        color
+      chars.forEach((char, idx) => {
+        const colorIndex = chosenPattern[idx % chosenPattern.length];
+        const color = this.retroColors[colorIndex % this.retroColors.length];
+
+        const jitterX = (Math.random() - 0.5) * 2.0;
+        const jitterY = (Math.random() - 0.5) * 2.2;
+        const microRot = ((Math.random() - 0.5) * 4.2 * Math.PI) / 180;
+
+        const vcx = padX + slotW * idx + slotW / 2 + jitterX;
+        const vcy = vh / 2 + 1 + jitterY;
+
+        this.charPositions.push({
+          char,
+          index: idx,
+          x: Math.floor(bx + displayPadX + displaySlotW * idx + displaySlotW / 2),
+          y: Math.floor(by + bh / 2),
+          color
+        });
+
+        gctx.save();
+        gctx.fillStyle = color;
+        gctx.translate(vcx, vcy);
+        gctx.rotate(microRot);
+        // Balanced KMS proportion (0.95 horizontal keeps batchim open & legible, 1.06 tall)
+        gctx.scale(0.95, 1.06);
+        gctx.fillText(char, 0, 0);
+        gctx.restore();
       });
 
-      ctx.save();
-      ctx.fillStyle = color;
-      ctx.translate(cx, cy);
-      // Authentic KMS Lie Detector pixel proportion: tall & slender
-      ctx.scale(0.86, 1.18);
-
-      // Crisp 2px pixel stroke without inner counter blur
-      ctx.fillText(char, 0, 0);
-      ctx.fillText(char, 1, 0);
-      ctx.restore();
-
-      // Signature KMS Lie Detector Obstacle: Character-colored underlines and baseline strikes (User Screenshots 1 & 5)
-      // e.g. Screenshot 5 features prominent magenta horizontal bars directly below '도' and 'ㅋ'
-      const isSingleJamo = Hangul.isJamo ? Hangul.isJamo(char) : false;
-      const shouldUnderline = (this.currentText.includes('도아점') && (idx === 0 || idx === 3)) ||
-                              (this.currentText.includes('토아절') && (idx === 0 || idx === 3)) ||
-                              (this.currentText.includes('인귀') && (idx === 0 || idx === 4)) ||
-                              isSingleJamo ||
-                              (Math.random() < 0.35);
-
-      if (shouldUnderline) {
-        ctx.save();
-        ctx.fillStyle = color;
-        const lineW = Math.floor(28 + Math.random() * 16);
-        const lineH = Math.random() < 0.5 ? 2 : 3;
-        const lineX = cx - Math.floor(lineW / 2);
-        const lineY = cy + Math.floor(bh * 0.22 + (Math.random() - 0.5) * 4);
-        ctx.fillRect(lineX, lineY, lineW, lineH);
-        ctx.restore();
+      // Quantize alpha channel: crisp KMS bitmap edges with ZERO grey anti-alias blur
+      const imgData = gctx.getImageData(0, 0, vw, vh);
+      const data = imgData.data;
+      const threshold = this.config.alphaThreshold;
+      for (let i = 0; i < data.length; i += 4) {
+        data[i + 3] = data[i + 3] >= threshold ? 255 : 0;
       }
-    });
+      gctx.putImageData(imgData, 0, 0);
 
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(this.glyphCanvas, bx, by, bw, bh);
+      ctx.restore();
+      return;
+    }
+
+    // Fallback direct draw (non-DOM environments)
+    const usableW = bw - 24;
+    const slotWidth = usableW / count;
+    const startX = bx + 12;
+    ctx.save();
+    ctx.font = `${this.config.fontWeight} ${Math.round(bh * 0.65)}px ${this.config.fontFamily}`;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    chars.forEach((char, idx) => {
+      const color = this.retroColors[chosenPattern[idx % chosenPattern.length] % this.retroColors.length];
+      ctx.fillStyle = color;
+      ctx.fillText(char, startX + slotWidth * idx + slotWidth / 2, by + bh / 2 + 1);
+    });
     ctx.restore();
   }
 
   /**
-   * Draw Authentic KMS Scanline Glitch Dashes & Pixel Scratches (NO continuous ruled lines!)
+   * Draw Organic Crisscrossing KMS Scratches & Localized Pixel Glitch Dashes
+   * Avoids uniform horizontal bars across the bottom batchim row.
    */
-  drawNoiseLines(ctx, bx, by, bw, bh) {
-    const preset = this.config.noisePreset;
-    let dashCount = 28;
-    let streakCount = 6;
-    if (preset === 'easy') { dashCount = 10; streakCount = 2; }
-    else if (preset === 'normal') { dashCount = 28; streakCount = 6; }
-    else if (preset === 'hard') { dashCount = 50; streakCount = 12; }
-    else if (preset === 'insane') { dashCount = 80; streakCount = 20; }
+  drawNoiseLines(ctx, bx, by, bw, bh, lineCount, dashCount, alpha = 0.66) {
+    if (lineCount <= 0 && dashCount <= 0) return;
 
     ctx.save();
+    ctx.globalAlpha = alpha;
 
-    // 1. Localized horizontal scanline dashes (length 8px to 30px)
+    // 1. Slanted crisscrossing stepped pixel scratches
+    for (let p = 0; p < lineCount; p++) {
+      ctx.strokeStyle = this.noiseLineColors[p % this.noiseLineColors.length];
+      ctx.lineWidth = 1.3;
+
+      const x0 = bx + 10 + Math.random() * (bw * 0.62);
+      const y0 = by + 12 + Math.random() * (bh - 24);
+      const len = 75 + Math.random() * 165;
+      const angle = ((Math.random() - 0.5) * 20 * Math.PI) / 180;
+      const steps = 6;
+
+      ctx.beginPath();
+      ctx.moveTo(Math.round(x0), Math.round(y0));
+      for (let s = 1; s <= steps; s++) {
+        const cx = x0 + (len * s / steps) * Math.cos(angle);
+        const cy = y0 + (len * s / steps) * Math.sin(angle) + (Math.random() - 0.5) * 3;
+        ctx.lineTo(Math.min(bx + bw - 6, Math.round(cx)), Math.max(by + 4, Math.min(by + bh - 4, Math.round(cy))));
+      }
+      ctx.stroke();
+    }
+
+    // 2. Broken horizontal pixel glitch dashes
     for (let i = 0; i < dashCount; i++) {
-      const color = this.noiseLineColors[i % this.noiseLineColors.length];
-      ctx.fillStyle = color;
-
-      const px = Math.floor(bx + 10 + Math.random() * (bw - 45));
-      const py = Math.floor(by + 12 + Math.random() * (bh - 24));
-      const len = Math.floor(8 + Math.random() * 22);
-
-      // Draw 1px pixel dash
-      ctx.fillRect(px, py, len, 1);
-
-      // 35% chance for a 1px staggered continuation
-      if (Math.random() < 0.35) {
-        ctx.fillRect(px + len + 2, py + (Math.random() < 0.5 ? 1 : -1), Math.floor(5 + Math.random() * 10), 1);
-      }
-    }
-
-    // 2. Continuous green & blue piercing scanlines cutting straight across multiple characters (Signature KMS Lie Detector feature)
-    const piercingLines = 3;
-    for (let p = 0; p < piercingLines; p++) {
-      ctx.strokeStyle = p === 0 ? '#34a853' : (p === 1 ? '#00bcd4' : '#1e88e5');
-      ctx.lineWidth = 1;
-      const lineY = Math.floor(by + 28 + p * 20 + (Math.random() - 0.5) * 8);
-      const startX = Math.floor(bx + 15 + Math.random() * 30);
-      const endX = Math.floor(bx + bw - 20 - Math.random() * 40);
-
-      ctx.beginPath();
-      ctx.moveTo(startX, lineY);
-      let cx = startX;
-      let cy = lineY;
-      while (cx < endX) {
-        cx += Math.floor(8 + Math.random() * 16);
-        if (Math.random() < 0.25) cy += (Math.random() < 0.5 ? 1 : -1);
-        ctx.lineTo(cx, cy);
-      }
-      ctx.stroke();
-    }
-
-    // 3. Medium scratch streaks (length 35px to 70px) with stepped pixel jitter
-    for (let i = 0; i < streakCount; i++) {
-      const color = this.noiseLineColors[(i + 2) % this.noiseLineColors.length];
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-
-      let startX = Math.floor(bx + 15 + Math.random() * (bw - 90));
-      let startY = Math.floor(by + 16 + Math.random() * (bh - 32));
-      const totalLen = Math.floor(35 + Math.random() * 35);
-
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-
-      let currX = startX;
-      let currY = startY;
-
-      while (currX < startX + totalLen && currX < bx + bw - 10) {
-        const seg = Math.floor(6 + Math.random() * 12);
-        currX += seg;
-        if (Math.random() < 0.4) {
-          currY += (Math.random() < 0.5 ? 1 : -1);
-        }
-        ctx.lineTo(currX, currY);
-      }
-
-      ctx.stroke();
-    }
-
-    // 3. Diagonal 45-degree micro-scratches (3 to 5 px)
-    for (let i = 0; i < 12; i++) {
-      const color = this.noiseLineColors[i % this.noiseLineColors.length];
-      ctx.fillStyle = color;
-      const sx = Math.floor(bx + 15 + Math.random() * (bw - 30));
-      const sy = Math.floor(by + 15 + Math.random() * (bh - 30));
-      for (let d = 0; d < 4; d++) {
-        ctx.fillRect(sx + d, sy + d, 1, 1);
-      }
+      ctx.fillStyle = this.noiseLineColors[(i + 1) % this.noiseLineColors.length];
+      const px = Math.floor(bx + 10 + Math.random() * (bw - 36));
+      const py = Math.floor(by + 10 + Math.random() * (bh - 20));
+      const len = Math.floor(8 + Math.random() * 18);
+      ctx.fillRect(px, py, len, 1.4);
     }
 
     ctx.restore();
   }
 
-  drawNoiseDots(ctx, bx, by, bw, bh) {
-    const preset = this.config.noisePreset;
-    let dotCount = 2800;
-    if (preset === 'easy') dotCount = 800;
-    else if (preset === 'normal') dotCount = 2800;
-    else if (preset === 'hard') dotCount = 4200;
-    else if (preset === 'insane') dotCount = 6000;
-
-    const dotColors = [
-      '#e53935', '#43a047', '#1e88e5', '#fdd835',
-      '#d81b60', '#00bcd4', '#8e24aa', '#ffffff', '#37474f'
-    ];
+  drawNoiseDots(ctx, bx, by, bw, bh, dotCount, alpha = 0.58) {
+    if (dotCount <= 0) return;
 
     ctx.save();
+    ctx.globalAlpha = alpha;
 
     for (let i = 0; i < dotCount; i++) {
       const px = Math.floor(bx + 2 + Math.random() * (bw - 4));
       const py = Math.floor(by + 2 + Math.random() * (bh - 4));
-      const size = Math.random() < 0.12 ? 2 : 1;
-      const color = dotColors[Math.floor(Math.random() * dotColors.length)];
-
-      ctx.fillStyle = color;
-      ctx.fillRect(px, py, size, size);
+      ctx.fillStyle = this.noiseDotColors[i % this.noiseDotColors.length];
+      ctx.fillRect(px, py, 2, 2);
     }
-
-    ctx.restore();
-  }
-
-  initMagnifierEvents() {
-    this.canvas.addEventListener('mousemove', (e) => {
-      const rect = this.canvas.getBoundingClientRect();
-      const scaleX = this.canvas.width / rect.width;
-      const scaleY = this.canvas.height / rect.height;
-
-      this.mousePos = {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY
-      };
-
-      if (this.magnifierActive) {
-        this.render();
-      }
-    });
-
-    this.canvas.addEventListener('mouseleave', () => {
-      if (this.magnifierActive) {
-        this.render();
-      }
-    });
-  }
-
-  setMagnifierActive(active) {
-    this.magnifierActive = !!active;
-    this.render();
-  }
-
-  toggleMagnifier() {
-    this.setMagnifierActive(!this.magnifierActive);
-    return this.magnifierActive;
-  }
-
-  renderMagnifier(ctx) {
-    const mx = this.mousePos.x;
-    const my = this.mousePos.y;
-    const lensRadius = 45;
-    const zoom = 2.8;
-
-    if (mx <= 0 || mx >= this.canvas.width || my <= 0 || my >= this.canvas.height) {
-      return;
-    }
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(mx, my, lensRadius, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.save();
-    ctx.clip();
-
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(
-      this.canvas,
-      mx - lensRadius / zoom, my - lensRadius / zoom, (lensRadius * 2) / zoom, (lensRadius * 2) / zoom,
-      mx - lensRadius, my - lensRadius, lensRadius * 2, lensRadius * 2
-    );
-
-    ctx.restore();
-
-    ctx.strokeStyle = '#ffd54f';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(mx, my, lensRadius, 0, Math.PI * 2);
-    ctx.stroke();
 
     ctx.restore();
   }

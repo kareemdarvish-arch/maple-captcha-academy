@@ -493,10 +493,10 @@ body {
 
 #captcha-canvas, #sandbox-canvas {
   display: block;
-  width: 520px;
+  width: 600px;
   max-width: 100%;
   height: auto;
-  aspect-ratio: 520 / 115;
+  aspect-ratio: 600 / 150;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;

@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Components
   const canvas = document.getElementById('captcha-canvas');
   const generator = new MapleCaptchaGenerator(canvas, {
-    width: 520,
-    height: 115,
+    width: 600,
+    height: 150,
     background: 'sky_rock',
     noisePreset: 'hard',
-    tiltAngle: -4.5
+    tiltAngle: -3.0
   });
 
   // Use keyboard stub for physical Windows keyboard
@@ -407,16 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const btnMagnifier = document.getElementById('btn-toggle-magnifier');
-  if (btnMagnifier) {
-    btnMagnifier.addEventListener('click', () => {
-      SoundFX.playKeyClick();
-      const isActive = generator.toggleMagnifier();
-      btnMagnifier.classList.toggle('btn-active', isActive);
-      btnMagnifier.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-  }
-
   const btnHint = document.getElementById('btn-toggle-hint');
   if (btnHint) {
     btnHint.addEventListener('click', () => {
@@ -503,11 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let sandboxGen = null;
   if (sandboxCanvas) {
     sandboxGen = new MapleCaptchaGenerator(sandboxCanvas, {
-      width: 520,
-      height: 115,
+      width: 600,
+      height: 150,
       background: 'sky_rock',
       noisePreset: 'hard',
-      tiltAngle: -4.5
+      tiltAngle: -3.0
     });
     sandboxGen.generate('메이플스토리');
   }
