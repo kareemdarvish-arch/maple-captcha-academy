@@ -75,8 +75,18 @@
             <label for="select-game-mode" data-i18n="labelMode">Mode:</label>
             <select id="select-game-mode" class="form-select">
               <option value="practice" data-i18n-option="modePractice">Endless Practice (No Timer)</option>
+              <option value="exam" data-i18n-option="modeExam">Official Exam (10, 15, or 20 Captchas)</option>
               <option value="test" data-i18n-option="modeTest">Timed Exam (30s & Strikes)</option>
               <option value="speedrun" data-i18n-option="modeSpeedrun">Speedrun (10-Streak Race)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-group" id="exam-length-group" style="display: none;">
+            <label for="select-exam-length" data-i18n="labelExamLength">Exam Questions:</label>
+            <select id="select-exam-length" class="form-select">
+              <option value="10" selected data-i18n-option="exam10">10 Captchas</option>
+              <option value="15" data-i18n-option="exam15">15 Captchas</option>
+              <option value="20" data-i18n-option="exam20">20 Captchas</option>
             </select>
           </div>
 
@@ -155,6 +165,17 @@
               <span class="strike-marker">✕</span>
               <span class="strike-marker">✕</span>
             </div>
+          </div>
+        </div>
+
+        <!-- Exam Progress Banner (Active during Official Exam Mode) -->
+        <div id="exam-progress-banner" class="exam-progress-banner" style="display: none;">
+          <div class="exam-progress-info">
+            <span id="exam-progress-text" class="exam-progress-text">Exam Progress: Question 1 of 10</span>
+            <span id="exam-score-text" class="exam-score-text">Score: 0 / 10</span>
+          </div>
+          <div class="exam-bar-container">
+            <div id="exam-progress-bar-fill" class="exam-bar-fill" style="width: 0%;"></div>
           </div>
         </div>
 
@@ -438,6 +459,9 @@
       </section>
 
     </main>
+
+    <!-- Exam Results & Error Breakdown Report Modal -->
+    <div id="exam-results-modal" class="modal-overlay"></div>
 
     <!-- Truth Room Modal (MapleStory Prison Simulation on 3 Strikes) -->
     <div id="truth-room-modal" class="modal-overlay">

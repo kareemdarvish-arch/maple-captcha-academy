@@ -67,9 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Trainer Controls
   const modeSelect = document.getElementById('select-game-mode');
+  const examLengthGroup = document.getElementById('exam-length-group');
+  const examLengthSelect = document.getElementById('select-exam-length');
+
   if (modeSelect) {
     modeSelect.addEventListener('change', (e) => {
-      game.setMode(e.target.value);
+      const mode = e.target.value;
+      if (examLengthGroup) {
+        examLengthGroup.style.display = (mode === 'exam') ? 'flex' : 'none';
+      }
+      game.setMode(mode);
+    });
+  }
+
+  if (examLengthSelect) {
+    examLengthSelect.addEventListener('change', (e) => {
+      game.examLength = parseInt(e.target.value, 10);
+      if (game.mode === 'exam') {
+        game.startExam(game.examLength);
+      }
     });
   }
 

@@ -1433,6 +1433,281 @@ body {
 .sandbox-export-row { display: flex; justify-content: center; }
 
 /* ==========================================================================
+   Exam Progress Banner & Results Report Modal
+   ========================================================================== */
+
+.exam-progress-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-orange);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+}
+
+.exam-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.exam-progress-text { color: var(--accent-gold); }
+.exam-score-text { color: var(--text-main); font-family: var(--font-mono); }
+
+.exam-bar-container {
+  height: 8px;
+  background: #0f121d;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.exam-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold));
+  transition: width 0.3s ease;
+  border-radius: 9999px;
+}
+
+/* Exam Results Card */
+.exam-results-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 760px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.exam-results-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exam-grade-badge {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 900;
+  padding: 0.35rem 1.25rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.badge-grade-s {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  color: #000;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.badge-grade-a {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.badge-grade-b {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+}
+
+.badge-grade-c {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+}
+
+.badge-grade-f {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+}
+
+.exam-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.metric-box {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.metric-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+.metric-val.highlight-score {
+  color: var(--accent-gold);
+}
+
+/* Error Review Section */
+.exam-review-section h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.exam-flawless-box {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid var(--accent-green);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.flawless-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+.exam-mistakes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.exam-mistake-card {
+  background: var(--bg-card-alt);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.mistake-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.mistake-q-num { color: var(--accent-gold); }
+.badge-timeout {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--accent-red);
+  color: #f87171;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.btn-listen-exam-word {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  color: var(--accent-gold);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+[dir="rtl"] .btn-listen-exam-word {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.mistake-comparison-row {
+  display: flex;
+  gap: 1.5rem;
+  background: #0f121d;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.mistake-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.col-label { font-size: 0.75rem; color: var(--text-dim); }
+.col-target {
+  font-size: 1.45rem;
+  font-weight: 900;
+  font-family: var(--font-pixel), sans-serif;
+  color: #34d399;
+}
+
+.col-typed {
+  font-size: 1.45rem;
+  font-weight: 900;
+  font-family: var(--font-pixel), sans-serif;
+}
+
+.col-typed.wrong-text { color: #f87171; text-decoration: line-through; }
+.col-typed.empty-text { color: var(--text-dim); font-style: italic; }
+
+.mistake-diff-breakdown {
+  font-size: 0.85rem;
+  background: rgba(249, 115, 22, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  color: var(--text-main);
+}
+
+.mistake-diff-breakdown ul {
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+}
+
+[dir="rtl"] .mistake-diff-breakdown ul {
+  padding-left: 0;
+  padding-right: 1.25rem;
+}
+
+.mistake-diff-breakdown li {
+  margin-bottom: 0.3rem;
+  color: var(--text-muted);
+}
+
+.diff-keys kbd {
+  background: #000;
+  color: var(--accent-cyan);
+}
+
+.exam-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+/* ==========================================================================
    Truth Room Modal (Penalty)
    ========================================================================== */
 

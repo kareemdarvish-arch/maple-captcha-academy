@@ -1,5 +1,5 @@
 /**
- * Game Modes, Timers, Scoring, Smart Diagnostics, and Truth Room Simulation
+ * Game Modes, Timers, Scoring, Smart Diagnostics, Official Exam Mode (10/15/20) & Detailed Error Report
  */
 
 class MapleCaptchaGame {
@@ -8,12 +8,20 @@ class MapleCaptchaGame {
     this.keyboard = keyboard;
     this.options = options;
 
-    this.mode = 'practice';
+    this.mode = 'practice'; // 'practice', 'test', 'speedrun', 'exam'
     this.category = 'balanced';
     this.timerDuration = 30;
     this.timeLeft = 30;
     this.timerInterval = null;
 
+    // Exam Mode (10, 15, 20 captchas)
+    this.examLength = 10;
+    this.examCurrentIndex = 0;
+    this.examQuestions = [];
+    this.examTotalTime = 0;
+    this.examFailedQueue = [];
+
+    // General Stats
     this.stats = this.loadStats();
     this.strikes = 0;
     this.maxStrikes = 3;
@@ -27,12 +35,12 @@ class MapleCaptchaGame {
     this.elements = {};
     this.bindDOM();
 
-    // Listen for language changes to update feedback text
     window.addEventListener('languageChanged', () => {
       this.updateStatsUI();
       if (this.currentRoundData) {
         this.renderDeconstructionPreview(this.currentRoundData);
       }
+      this.updateExamUI();
     });
   }
 
@@ -67,7 +75,12 @@ class MapleCaptchaGame {
       feedbackBox: document.getElementById('feedback-banner'),
       hintDrawer: document.getElementById('captcha-hint-drawer'),
       truthRoomModal: document.getElementById('truth-room-modal'),
-      deconstructedPreview: document.getElementById('current-captcha-breakdown')
+      examResultsModal: document.getElementById('exam-results-modal'),
+      deconstructedPreview: document.getElementById('current-captcha-breakdown'),
+      examProgressBanner: document.getElementById('exam-progress-banner'),
+      examProgressText: document.getElementById('exam-progress-text'),
+      examScoreText: document.getElementById('exam-score-text'),
+      examProgressBarFill: document.getElementById('exam-progress-bar-fill')
     };
 
     this.keyboard.options.onInput = (char) => this.handleKeystroke(char);
@@ -100,12 +113,15 @@ class MapleCaptchaGame {
     }
 
     document.addEventListener('click', (e) => {
-      if (this.elements.textInput && !e.target.closest('button, input, select, textarea, a, .kb-drag-handle')) {
+      if (this.elements.textInput && !e.target.closest('button, input, select, textarea, a, .kb-drag-handle, .modal-overlay')) {
         this.elements.textInput.focus();
       }
     });
   }
 
+  /**
+   * Start or Advance Round
+   */
   newRound(category = null) {
     if (category) this.category = category;
 
@@ -115,13 +131,20 @@ class MapleCaptchaGame {
     this.hideFeedback();
     this.hideHint();
 
-    const data = this.generator.generate(null, this.category);
+    let targetWord = null;
+
+    // Check if we are in Exam Mode with predefined questions
+    if (this.mode === 'exam' && this.examQuestions[this.examCurrentIndex]) {
+      targetWord = this.examQuestions[this.examCurrentIndex].targetText;
+    }
+
+    const data = this.generator.generate(targetWord, this.category);
     this.currentRoundData = data;
     this.startTime = Date.now();
 
     this.renderDeconstructionPreview(data);
 
-    if (this.mode === 'test') {
+    if (this.mode === 'test' || this.mode === 'exam') {
       this.startTimer(this.timerDuration);
     } else if (this.mode === 'speedrun') {
       this.startTimer(45);
@@ -131,6 +154,8 @@ class MapleCaptchaGame {
         this.elements.timerContainer.style.display = 'none';
       }
     }
+
+    this.updateExamUI();
 
     if (this.elements.textInput) {
       this.elements.textInput.value = '';
@@ -143,6 +168,15 @@ class MapleCaptchaGame {
     this.strikes = 0;
     this.updateStrikesUI();
 
+    if (this.mode === 'exam') {
+      this.startExam(this.examLength);
+      return;
+    }
+
+    if (this.elements.examProgressBanner) {
+      this.elements.examProgressBanner.style.display = 'none';
+    }
+
     if (this.mode === 'test' || this.mode === 'speedrun') {
       if (this.elements.timerContainer) this.elements.timerContainer.style.display = 'flex';
       if (this.mode === 'speedrun') {
@@ -153,7 +187,65 @@ class MapleCaptchaGame {
       if (this.elements.timerContainer) this.elements.timerContainer.style.display = 'none';
       this.stopTimer();
     }
+
     this.newRound();
+  }
+
+  /**
+   * Official Exam Mode (10, 15, or 20 questions)
+   */
+  startExam(length = 10, customTargets = null) {
+    this.mode = 'exam';
+    this.examLength = length;
+    this.examCurrentIndex = 0;
+    this.examTotalTime = 0;
+    this.examQuestions = [];
+    this.examFailedQueue = [];
+
+    // Pre-generate authentic questions
+    for (let i = 0; i < length; i++) {
+      const target = customTargets && customTargets[i] 
+        ? customTargets[i] 
+        : Hangul.generateCaptchaText({ length: 6, category: this.category, includeJamo: true });
+
+      this.examQuestions.push({
+        index: i + 1,
+        targetText: target,
+        typedText: '',
+        isCorrect: false,
+        solveTime: 0,
+        timedOut: false,
+        mistakeAnalysis: null
+      });
+    }
+
+    if (this.elements.timerContainer) this.elements.timerContainer.style.display = 'flex';
+    if (this.elements.examProgressBanner) this.elements.examProgressBanner.style.display = 'flex';
+
+    this.updateExamUI();
+    this.newRound();
+  }
+
+  updateExamUI() {
+    if (this.mode !== 'exam' || !this.elements.examProgressBanner) return;
+
+    this.elements.examProgressBanner.style.display = 'flex';
+    const current = this.examCurrentIndex + 1;
+    const total = this.examLength;
+    const correctCount = this.examQuestions.filter(q => q.isCorrect).length;
+
+    if (this.elements.examProgressText) {
+      this.elements.examProgressText.textContent = I18n.t('examProgress', { current: Math.min(current, total), total });
+    }
+
+    if (this.elements.examScoreText) {
+      this.elements.examScoreText.textContent = I18n.t('examScoreSoFar', { correct: correctCount, total });
+    }
+
+    if (this.elements.examProgressBarFill) {
+      const pct = (this.examCurrentIndex / total) * 100;
+      this.elements.examProgressBarFill.style.width = `${pct}%`;
+    }
   }
 
   handleKeystroke(char) {
@@ -177,7 +269,6 @@ class MapleCaptchaGame {
 
     if (!this.elements.inputDisplay) return;
 
-    // Check if new character matched
     if (val.length > this.prevTypedLen) {
       const idx = val.length - 1;
       if (val[idx] === target[idx]) {
@@ -216,12 +307,17 @@ class MapleCaptchaGame {
     const target = this.generator.currentText.trim();
     const solveTime = (Date.now() - this.startTime) / 1000;
 
-    if (!typed) {
+    if (!typed && this.mode !== 'exam') {
       this.showFeedback(I18n.t('diagWrong', { typed: '...', target: '...' }), 'warning');
       return;
     }
 
     const isCorrect = (typed === target);
+
+    if (this.mode === 'exam') {
+      this.handleExamStep(typed, target, isCorrect, solveTime, false);
+      return;
+    }
 
     if (isCorrect) {
       this.handleSuccess(solveTime);
@@ -243,7 +339,6 @@ class MapleCaptchaGame {
       this.stats.fastestTime = solveTime;
     }
 
-    // Milestone fanfare for 5, 10, 20 streaks
     if (this.currentStreak === 5 || this.currentStreak === 10 || this.currentStreak === 20) {
       SoundFX.playFanfare();
     }
@@ -272,7 +367,6 @@ class MapleCaptchaGame {
     this.stats.totalFailed += 1;
     this.saveStats();
 
-    // Run Smart Teacher Diagnostic on the mistake
     const smartTip = (typeof SmartTeacher !== 'undefined') ? SmartTeacher.diagnoseMistake(typed, target) : '';
     let msg = I18n.t('diagWrong', { typed, target });
 
@@ -295,6 +389,245 @@ class MapleCaptchaGame {
     if (this.mode === 'practice') {
       this.showHint();
     }
+  }
+
+  handleExamStep(typed, target, isCorrect, solveTime, isTimeout) {
+    this.examTotalTime += solveTime;
+
+    const q = this.examQuestions[this.examCurrentIndex];
+    if (q) {
+      q.typedText = typed;
+      q.isCorrect = isCorrect;
+      q.solveTime = solveTime;
+      q.timedOut = isTimeout;
+
+      if (!isCorrect) {
+        q.mistakeAnalysis = this.analyzeMistakeDetails(typed, target);
+        this.examFailedQueue.push(target);
+      }
+    }
+
+    if (isCorrect) {
+      SoundFX.playCorrect();
+      this.showFeedback(I18n.t('diagCorrect', { time: solveTime.toFixed(1), streak: this.examCurrentIndex + 1 }), 'success');
+    } else {
+      SoundFX.playError();
+      const smartTip = (typeof SmartTeacher !== 'undefined') ? SmartTeacher.diagnoseMistake(typed, target) : '';
+      let msg = isTimeout 
+        ? I18n.t('diagTimeout', { target }) 
+        : I18n.t('diagWrong', { typed: typed || '—', target });
+      if (smartTip) msg += `<div class="smart-tip-box">${smartTip}</div>`;
+      this.showFeedback(msg, 'error');
+    }
+
+    this.examCurrentIndex += 1;
+
+    setTimeout(() => {
+      if (this.examCurrentIndex >= this.examLength) {
+        this.finishExam();
+      } else {
+        this.newRound();
+      }
+    }, 550);
+  }
+
+  /**
+   * Detailed breakdown of what went wrong for exam error review
+   */
+  analyzeMistakeDetails(typed, target) {
+    const details = [];
+    const maxLen = Math.max(typed.length, target.length);
+
+    for (let i = 0; i < maxLen; i++) {
+      const t = typed[i] || '';
+      const exp = target[i] || '';
+
+      if (t !== exp) {
+        const expDec = Hangul.decompose(exp);
+        const tDec = t ? Hangul.decompose(t) : null;
+
+        let reason = '';
+        if (!t) {
+          reason = 'Character omitted (Missing)';
+        } else if (expDec && tDec) {
+          if (expDec.medial !== tDec.medial) {
+            if ((expDec.medial === 'ㅓ' && tDec.medial === 'ㅏ') || (expDec.medial === 'ㅏ' && tDec.medial === 'ㅓ')) {
+              reason = 'Confused vowel ㅓ vs ㅏ (Notch direction: ㅏ points right, ㅓ points left)';
+            } else if ((expDec.medial === 'ㅗ' && tDec.medial === 'ㅜ') || (expDec.medial === 'ㅜ' && tDec.medial === 'ㅗ')) {
+              reason = 'Confused vowel ㅗ vs ㅜ (Stem direction: ㅗ stands up, ㅜ hangs down)';
+            } else {
+              reason = `Wrong vowel: typed '${tDec.medial}' instead of '${expDec.medial}'`;
+            }
+          } else if (expDec.initial !== tDec.initial) {
+            reason = `Wrong initial consonant: typed '${tDec.initial}' instead of '${expDec.initial}'`;
+          } else if (expDec.final !== tDec.final) {
+            reason = expDec.final 
+              ? `Missing or wrong batchim: expected '${expDec.final}'` 
+              : `Added unnecessary batchim: '${tDec.final}'`;
+          }
+        }
+
+        details.push({
+          pos: i + 1,
+          expectedChar: exp,
+          typedChar: t || '∅',
+          expectedKeys: expDec ? expDec.keysDisplay : '',
+          reason
+        });
+      }
+    }
+
+    return details;
+  }
+
+  finishExam() {
+    this.stopTimer();
+    const correctCount = this.examQuestions.filter(q => q.isCorrect).length;
+    const total = this.examLength;
+    const scorePct = Math.round((correctCount / total) * 100);
+    const avgTime = (this.examTotalTime / total).toFixed(1);
+
+    if (scorePct >= 85) SoundFX.playFanfare();
+    else if (scorePct >= 70) SoundFX.playCorrect();
+    else SoundFX.playError();
+
+    this.renderExamResultsModal(correctCount, total, scorePct, avgTime);
+  }
+
+  renderExamResultsModal(correct, total, pct, avgTime) {
+    if (!this.elements.examResultsModal) return;
+
+    let gradeKey = 'examGradeF';
+    let gradeBadgeClass = 'badge-grade-f';
+
+    if (pct === 100) {
+      gradeKey = 'examGradeS';
+      gradeBadgeClass = 'badge-grade-s';
+    } else if (pct >= 85) {
+      gradeKey = 'examGradeA';
+      gradeBadgeClass = 'badge-grade-a';
+    } else if (pct >= 70) {
+      gradeKey = 'examGradeB';
+      gradeBadgeClass = 'badge-grade-b';
+    } else if (pct >= 50) {
+      gradeKey = 'examGradeC';
+      gradeBadgeClass = 'badge-grade-c';
+    }
+
+    const failedQuestions = this.examQuestions.filter(q => !q.isCorrect);
+
+    let mistakesHtml = '';
+    if (failedQuestions.length === 0) {
+      mistakesHtml = `
+        <div class="exam-flawless-box">
+          <div class="flawless-icon">🏆</div>
+          <p>${I18n.t('examAllCorrectMsg')}</p>
+        </div>
+      `;
+    } else {
+      mistakesHtml = `
+        <div class="exam-mistakes-list">
+          ${failedQuestions.map(q => `
+            <div class="exam-mistake-card">
+              <div class="mistake-card-head">
+                <span class="mistake-q-num">${I18n.t('examQuestionNum', { num: q.index })}</span>
+                ${q.timedOut ? `<span class="badge-timeout">${I18n.t('examTimedOutBadge')}</span>` : ''}
+                <button type="button" class="btn-listen-exam-word" data-word="${q.targetText}">🔊 ${I18n.t('btnPronounce')}</button>
+              </div>
+              <div class="mistake-comparison-row">
+                <div class="mistake-col">
+                  <span class="col-label">${I18n.t('examExpected')}</span>
+                  <span class="col-target">${q.targetText}</span>
+                </div>
+                <div class="mistake-col">
+                  <span class="col-label">${I18n.t('examYouTyped')}</span>
+                  <span class="col-typed ${q.typedText ? 'wrong-text' : 'empty-text'}">${q.typedText || '—'}</span>
+                </div>
+              </div>
+              ${q.mistakeAnalysis && q.mistakeAnalysis.length > 0 ? `
+                <div class="mistake-diff-breakdown">
+                  <strong>${I18n.t('examReason')}</strong>
+                  <ul>
+                    ${q.mistakeAnalysis.map(d => `
+                      <li>
+                        Character #${d.pos} (<strong>${d.expectedChar}</strong>): ${d.reason} 
+                        — <span class="diff-keys">${I18n.t('examKeyTip')} <kbd>${d.expectedKeys}</kbd></span>
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    this.elements.examResultsModal.innerHTML = `
+      <div class="exam-results-card">
+        <div class="exam-results-header">
+          <span class="exam-grade-badge ${gradeBadgeClass}">${I18n.t(gradeKey)}</span>
+          <h2>${I18n.t('examResultsTitle')}</h2>
+        </div>
+        <div class="exam-metrics-row">
+          <div class="metric-box">
+            <span class="metric-label">${I18n.t('examSummaryTotal')}</span>
+            <span class="metric-val highlight-score">${correct} / ${total} (${pct}%)</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">${I18n.t('examSummaryAvgTime')}</span>
+            <span class="metric-val">${avgTime}s</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">${I18n.t('examSummaryTotalTime')}</span>
+            <span class="metric-val">${this.examTotalTime.toFixed(1)}s</span>
+          </div>
+        </div>
+
+        <div class="exam-review-section">
+          <h3>${I18n.t('examWhatYouDidWrongTitle')}</h3>
+          ${mistakesHtml}
+        </div>
+
+        <div class="exam-actions-row">
+          <button id="btn-retake-exam" class="btn btn-primary btn-lg">${I18n.t('examRetakeBtn')}</button>
+          ${failedQuestions.length > 0 ? `
+            <button id="btn-retry-mistakes" class="btn btn-secondary btn-lg">${I18n.t('examRetryErrorsBtn', { count: failedQuestions.length })}</button>
+          ` : ''}
+          <button id="btn-close-exam-modal" class="btn btn-outline btn-lg">Close ✕</button>
+        </div>
+      </div>
+    `;
+
+    this.elements.examResultsModal.classList.add('active');
+
+    // Bind results modal buttons
+    const retakeBtn = document.getElementById('btn-retake-exam');
+    if (retakeBtn) retakeBtn.addEventListener('click', () => {
+      this.elements.examResultsModal.classList.remove('active');
+      this.startExam(this.examLength);
+    });
+
+    const retryMistakesBtn = document.getElementById('btn-retry-mistakes');
+    if (retryMistakesBtn) retryMistakesBtn.addEventListener('click', () => {
+      this.elements.examResultsModal.classList.remove('active');
+      this.startExam(this.examFailedQueue.length, [...this.examFailedQueue]);
+    });
+
+    const closeBtn = document.getElementById('btn-close-exam-modal');
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      this.elements.examResultsModal.classList.remove('active');
+      this.setMode('practice');
+    });
+
+    this.elements.examResultsModal.querySelectorAll('.btn-listen-exam-word').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const word = btn.dataset.word;
+        if (word && typeof SmartTeacher !== 'undefined') {
+          SmartTeacher.speakHangul(word);
+        }
+      });
+    });
   }
 
   startTimer(duration) {
@@ -334,6 +667,13 @@ class MapleCaptchaGame {
 
   handleTimeout() {
     SoundFX.playError();
+    const target = this.generator.currentText;
+
+    if (this.mode === 'exam') {
+      this.handleExamStep('', target, false, this.timerDuration, true);
+      return;
+    }
+
     this.currentStreak = 0;
     this.stats.totalFailed += 1;
     this.saveStats();
@@ -348,7 +688,7 @@ class MapleCaptchaGame {
       }
     }
 
-    this.showFeedback(I18n.t('diagTimeout', { target: this.generator.currentText }), 'error');
+    this.showFeedback(I18n.t('diagTimeout', { target }), 'error');
     setTimeout(() => this.newRound(), 1500);
   }
 
@@ -452,7 +792,6 @@ class MapleCaptchaGame {
 
     this.elements.deconstructedPreview.innerHTML = html;
 
-    // Connect speech buttons
     this.elements.deconstructedPreview.querySelectorAll('.btn-audio-speak').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
