@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Components
   const canvas = document.getElementById('captcha-canvas');
   const generator = new MapleCaptchaGenerator(canvas, {
-    width: 720,
-    height: 210,
+    width: 520,
+    height: 115,
     background: 'sky_rock',
     noisePreset: 'normal',
     tiltAngle: -4.5
@@ -233,8 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let sandboxGen = null;
   if (sandboxCanvas) {
     sandboxGen = new MapleCaptchaGenerator(sandboxCanvas, {
-      width: 720,
-      height: 210,
+      width: 520,
+      height: 115,
       background: 'sky_rock',
       noisePreset: 'normal',
       tiltAngle: -4.5

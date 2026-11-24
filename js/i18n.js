@@ -368,7 +368,7 @@ const I18n = (() => {
     }
   };
 
-  let currentLang = localStorage.getItem('maple_captcha_lang') || 'en';
+  let currentLang = localStorage.getItem('maple_captcha_lang') || 'ar';
 
   function getLang() {
     return currentLang;
@@ -384,6 +384,9 @@ const I18n = (() => {
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
     document.body.classList.toggle('rtl-mode', isRTL);
+
+    const sel = document.getElementById('select-language');
+    if (sel && sel.value !== lang) sel.value = lang;
 
     // Apply translations
     applyTranslations();

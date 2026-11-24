@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MapleCaptcha Academy - Korean Lie Detector Trainer & Keyboard Master</title>
-  <meta name="description" content="Master MapleStory Korean Lie Detector captchas. Bilingual English/Arabic, interactive Dubeolsik keyboard, procedural noisy pixel captchas, Hangul letter academy, and test simulator.">
+  <title>أكاديمية مابل كابتشا - MapleCaptcha Academy</title>
+  <meta name="description" content="محاكي كاشف الكذب الرسمي في مابل ستوري، تدريب لوحة المفاتيح الكورية Dubeolsik وإتقان قراءة حروف الهانغل.">
 
   <!-- Korean Pixel, English & Arabic Modern Fonts -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -52,9 +52,9 @@
       <!-- Global Actions: Language & Sound -->
       <div class="header-actions">
         <div class="lang-selector-wrapper">
-          <select id="select-language" class="form-select lang-select" title="Switch Language / تغيير اللغة">
+          <select id="select-language" class="form-select lang-select" title="تغيير اللغة / Switch Language">
+            <option value="ar" selected>العربية 🇸🇦</option>
             <option value="en">English 🇺🇸</option>
-            <option value="ar">العربية 🇸🇦</option>
           </select>
         </div>
         <button id="btn-toggle-sound" class="btn btn-sm btn-outline" title="Toggle Sound FX" data-i18n="soundOn">
@@ -193,7 +193,7 @@
           <!-- Maple Captcha Canvas with Frame -->
           <div class="canvas-viewport-wrapper">
             <div class="canvas-pixel-frame">
-              <canvas id="captcha-canvas" width="720" height="210"></canvas>
+              <canvas id="captcha-canvas" width="520" height="115"></canvas>
             </div>
             <div class="canvas-bottom-hint">
               <span data-i18n="canvasHoverHint">Hover canvas with <strong>🔍 Lens</strong> enabled to inspect pixel strokes</span>
@@ -447,7 +447,7 @@
 
           <div class="sandbox-canvas-wrapper">
             <div class="canvas-pixel-frame">
-              <canvas id="sandbox-canvas" width="720" height="210"></canvas>
+              <canvas id="sandbox-canvas" width="520" height="115"></canvas>
             </div>
             <div class="sandbox-export-row">
               <button id="sandbox-export-btn" class="btn btn-success btn-lg" data-i18n="sandboxBtnExport">
