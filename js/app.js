@@ -217,9 +217,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  let activeLbFilter = 'all';
+  let activeExamLbFilter = 'all';
+
+  function renderAllLeaderboards(highlightEntryId = null) {
+    MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', activeLbFilter, highlightEntryId);
+    MapleLeaderboard.renderLeaderboardTable('exam-leaderboard-container', activeExamLbFilter, highlightEntryId);
+  }
+
   window.addEventListener('playerAuthChanged', () => {
     updateAuthUI();
-    MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
+    renderAllLeaderboards();
+  });
+
+  window.addEventListener('leaderboardUpdated', (e) => {
+    renderAllLeaderboards(e && e.detail && e.detail.latestEntry ? e.detail.latestEntry.id : null);
   });
 
   updateAuthUI();
@@ -288,7 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
         PlayerAuth.markDrillCompleted();
         academy.startDrill('drill-container');
       } else if (targetTab === 'leaderboard') {
-        MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
+        MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', activeLbFilter);
+      } else if (targetTab === 'exam') {
+        MapleLeaderboard.renderLeaderboardTable('exam-leaderboard-container', activeExamLbFilter);
       } else if (targetTab === 'trainer') {
         const input = document.getElementById('captcha-hidden-input');
         if (input) input.focus();
@@ -313,7 +327,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnStartExam = document.getElementById('btn-start-exam-standalone');
   const selectStandaloneLength = document.getElementById('select-standalone-exam-length');
   const examIntroCard = document.getElementById('exam-intro-card');
+  const examBoardSection = document.getElementById('exam-board-section');
   const examStageContainer = document.getElementById('exam-stage-container');
+
+  function restoreStageAndExamCards() {
+    const stageCard = document.getElementById('captcha-main-stage-card');
+    const trainerHolder = document.getElementById('trainer-stage-holder');
+    if (stageCard && trainerHolder && !trainerHolder.contains(stageCard)) {
+      trainerHolder.appendChild(stageCard);
+    }
+    if (examIntroCard) examIntroCard.style.display = 'block';
+    if (examBoardSection) examBoardSection.style.display = 'flex';
+    if (examStageContainer) examStageContainer.style.display = 'none';
+  }
+
+  window.exitExamUI = (destTab = 'exam', highlightEntryId = null) => {
+    restoreStageAndExamCards();
+    game.setMode('practice');
+    renderAllLeaderboards(highlightEntryId);
+    const targetBtn = document.querySelector(`.nav-tab-btn[data-tab="${destTab}"]`);
+    if (targetBtn) {
+      targetBtn.click();
+    }
+    if (highlightEntryId) {
+      renderAllLeaderboards(highlightEntryId);
+    }
+  };
 
   if (btnStartExam && selectStandaloneLength) {
     btnStartExam.addEventListener('click', () => {
@@ -331,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
       game.examLength = length;
 
       if (examIntroCard) examIntroCard.style.display = 'none';
+      if (examBoardSection) examBoardSection.style.display = 'none';
       if (examStageContainer) {
         examStageContainer.style.display = 'block';
         // Move the canvas and input into exam container cleanly before the notice
@@ -353,25 +393,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const trainerTabBtn = document.querySelector('[data-tab="trainer"]');
   if (trainerTabBtn) {
     trainerTabBtn.addEventListener('click', () => {
-      const stageCard = document.getElementById('captcha-main-stage-card');
-      const trainerHolder = document.getElementById('trainer-stage-holder');
-      if (stageCard && trainerHolder && !trainerHolder.contains(stageCard)) {
-        trainerHolder.appendChild(stageCard);
-      }
-      if (examIntroCard) examIntroCard.style.display = 'block';
-      if (examStageContainer) examStageContainer.style.display = 'none';
+      restoreStageAndExamCards();
       game.setMode('practice');
     });
   }
 
-  // 6. Leaderboard Filters
+  // 6. Leaderboard & Exam Board Filters
   const lbFilterBtns = document.querySelectorAll('.lb-filter-btn');
   lbFilterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       lbFilterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      activeLbFilter = btn.dataset.filter || 'all';
       SoundFX.playKeyClick();
-      MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', btn.dataset.filter);
+      MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', activeLbFilter);
+    });
+  });
+
+  const examLbFilterBtns = document.querySelectorAll('.exam-lb-filter-btn');
+  examLbFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      examLbFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeExamLbFilter = btn.dataset.filter || 'all';
+      SoundFX.playKeyClick();
+      MapleLeaderboard.renderLeaderboardTable('exam-leaderboard-container', activeExamLbFilter);
     });
   });
 
@@ -565,5 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   academy.renderLookalikes('lookalikes-container');
   academy.inspectCharacter('빛');
-  MapleLeaderboard.renderLeaderboardTable('leaderboard-table-container', 'all');
+  renderAllLeaderboards();
+  if (MapleLeaderboard.syncFromCloud) {
+    MapleLeaderboard.syncFromCloud();
+  }
 });

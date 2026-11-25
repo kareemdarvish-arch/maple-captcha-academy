@@ -638,25 +638,34 @@ class MapleCaptchaGame {
     else if (scorePct >= 70) SoundFX.playCorrect();
     else SoundFX.playError();
 
-    // Record score to Live Leaderboard
+    // Update signed-in player exam metrics
+    if (typeof PlayerAuth !== 'undefined' && PlayerAuth.recordExamResult) {
+      PlayerAuth.recordExamResult(correctCount, total);
+    }
+
+    // Record score to Live Leaderboard & Official Exam Board
     const profile = (typeof PlayerAuth !== 'undefined') ? PlayerAuth.getProfile() : null;
-    const playerName = profile ? profile.name : 'Anonymous Player';
+    const isSignedIn = (typeof PlayerAuth !== 'undefined') && PlayerAuth.isSignedIn();
+    const playerName = profile ? profile.name : 'لاعب زائر (بدون تسجيل)';
     const playerAvatar = profile ? profile.avatar : '⚔️';
 
+    let savedEntry = null;
+    let currentRank = null;
     if (typeof MapleLeaderboard !== 'undefined') {
-      MapleLeaderboard.addEntry({
+      savedEntry = MapleLeaderboard.addEntry({
         name: playerName,
         avatar: playerAvatar,
         score: correctCount,
         total: total,
         avgTime: avgTime
       });
+      currentRank = MapleLeaderboard.getRankOf(savedEntry.id, 'all');
     }
 
-    this.renderExamResultsModal(correctCount, total, scorePct, avgTime);
+    this.renderExamResultsModal(correctCount, total, scorePct, avgTime, savedEntry, currentRank, isSignedIn);
   }
 
-  renderExamResultsModal(correct, total, pct, avgTime) {
+  renderExamResultsModal(correct, total, pct, avgTime, savedEntry = null, currentRank = null, isSignedIn = false) {
     if (!this.elements.examResultsModal) return;
 
     let gradeKey = 'examGradeF';
@@ -746,22 +755,62 @@ class MapleCaptchaGame {
           </div>
         </div>
 
+        ${savedEntry ? `
+          <div class="exam-rank-banner" id="exam-rank-banner">
+            <div>🏅 تم تسجيل نتيجتك في لوحة الاختبارات والمتصدرين! ترتيبك الحالي: <strong>المركز #${currentRank || '-'}</strong></div>
+            ${!isSignedIn ? `
+              <div class="inline-name-claim-box">
+                <input type="text" id="input-claim-exam-name" class="form-input" placeholder="اكتب اسمك ليظهر بدلاً من زائر..." maxlength="20" />
+                <button type="button" id="btn-claim-exam-name" class="btn btn-primary btn-sm">حفظ باسمي ✓</button>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
         <div class="exam-review-section">
           <h3>${I18n.t('examWhatYouDidWrongTitle')}</h3>
           ${mistakesHtml}
         </div>
 
         <div class="exam-actions-row">
+          <button id="btn-view-exam-leaderboard" class="btn btn-success btn-lg">🏆 عرض في لوحة الاختبارات والمتصدرين</button>
           <button id="btn-retake-exam" class="btn btn-primary btn-lg">${I18n.t('examRetakeBtn')}</button>
           ${failedQuestions.length > 0 ? `
             <button id="btn-retry-mistakes" class="btn btn-secondary btn-lg">${I18n.t('examRetryErrorsBtn', { count: failedQuestions.length })}</button>
           ` : ''}
-          <button id="btn-close-exam-modal" class="btn btn-outline btn-lg">Close ✕</button>
+          <button id="btn-close-exam-modal" class="btn btn-outline btn-lg">العودة للوحة الاختبارات ✕</button>
         </div>
       </div>
     `;
 
     this.elements.examResultsModal.classList.add('active');
+
+    // Bind inline guest name claim
+    const btnClaimName = document.getElementById('btn-claim-exam-name');
+    const inputClaimName = document.getElementById('input-claim-exam-name');
+    if (btnClaimName && inputClaimName && savedEntry && typeof MapleLeaderboard !== 'undefined') {
+      btnClaimName.addEventListener('click', () => {
+        const chosenName = inputClaimName.value.trim();
+        if (!chosenName) return;
+        MapleLeaderboard.updateEntryName(savedEntry.id, chosenName);
+        if (typeof SoundFX !== 'undefined') SoundFX.playCorrect();
+        const banner = document.getElementById('exam-rank-banner');
+        if (banner) {
+          banner.innerHTML = `✅ تم حفظ النتيجة باسمك في لوحة الاختبارات! ترتيبك الحالي: <strong>المركز #${currentRank || '-'}</strong>`;
+        }
+      });
+    }
+
+    // View Leaderboard button
+    const viewLbBtn = document.getElementById('btn-view-exam-leaderboard');
+    if (viewLbBtn) viewLbBtn.addEventListener('click', () => {
+      this.elements.examResultsModal.classList.remove('active');
+      if (typeof window.exitExamUI === 'function') {
+        window.exitExamUI('leaderboard', savedEntry ? savedEntry.id : null);
+      } else {
+        this.setMode('practice');
+      }
+    });
 
     // Bind results modal buttons
     const retakeBtn = document.getElementById('btn-retake-exam');
@@ -779,7 +828,11 @@ class MapleCaptchaGame {
     const closeBtn = document.getElementById('btn-close-exam-modal');
     if (closeBtn) closeBtn.addEventListener('click', () => {
       this.elements.examResultsModal.classList.remove('active');
-      this.setMode('practice');
+      if (typeof window.exitExamUI === 'function') {
+        window.exitExamUI('exam', savedEntry ? savedEntry.id : null);
+      } else {
+        this.setMode('practice');
+      }
     });
 
     this.elements.examResultsModal.querySelectorAll('.btn-listen-exam-word').forEach(btn => {

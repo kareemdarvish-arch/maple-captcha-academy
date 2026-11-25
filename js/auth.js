@@ -109,6 +109,16 @@ const PlayerAuth = (() => {
     }
   }
 
+  function recordExamResult(score, total) {
+    if (!currentProfile) return;
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+    currentProfile.totalExams = (currentProfile.totalExams || 0) + 1;
+    if (pct > (currentProfile.bestScore || 0)) {
+      currentProfile.bestScore = pct;
+    }
+    saveProfile(currentProfile);
+  }
+
   function signOut() {
     currentProfile = null;
     localStorage.removeItem(STORAGE_KEY);
@@ -123,9 +133,14 @@ const PlayerAuth = (() => {
     markHangulRead,
     markLookalikesRead,
     markDrillCompleted,
+    recordExamResult,
     signOut
   };
 })();
+
+if (typeof window !== 'undefined') {
+  window.PlayerAuth = PlayerAuth;
+}
 
 // Export
 if (typeof module !== 'undefined' && module.exports) {
